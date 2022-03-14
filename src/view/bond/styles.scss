@@ -1,0 +1,62 @@
+@import "./src/assets/styles/basic/variables";
+
+.bond.modal {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  position: fixed !important;
+  z-index: 1300;
+  
+  .bond {
+    &__backdrop {
+      background: var(--modal_overlay_bg);
+      
+      @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+        backdrop-filter: blur(13px);
+      }
+    }
+    
+    &__wrapper {
+      width: 100%;
+      max-width: 975px;
+      max-height: 100vh;
+      display: flex;
+      padding: 28px 40px 37px;
+      overflow-y: auto;
+      border-radius: 16px;
+      background: var(--modal_bg);
+      flex-direction: column;
+    }
+  
+    &__togglers {
+      display: flex;
+      margin-top: 101px;
+      align-items: center;
+      justify-content: center;
+      
+      &__btn {
+        height: 56px;
+        display: inline-flex;
+        padding: 0 32px;
+        border-radius: 8px;
+        align-items: center;
+        justify-content: center;
+        color: var(--card_primary_color);
+        font: 400 24px/29px $basic_font_family;
+        cursor: pointer;
+        
+        &:nth-child(n+2) {
+          margin-left: 24px;
+        }
+        
+        &.active,
+        &:hover {
+          background-color: var(--secondary_color);
+        }
+      }
+    }
+  }
+}

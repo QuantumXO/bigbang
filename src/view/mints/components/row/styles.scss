@@ -1,0 +1,99 @@
+@import "./src/assets/styles/basic/variables";
+
+.mints.page {
+  .bond {
+    &:first-child {
+      .bond__col {
+        padding-top: 32px;
+      }
+    }
+    
+    &__col {
+      padding-bottom: 18px;
+      border: none;
+      
+      &:first-child {
+        padding-left: 56px;
+      }
+      
+      &:last-child {
+        padding-right: 40px;
+      }
+      
+      &:not(:first-child) {
+        padding-top: 18px;
+      }
+  
+      &.mint {
+        width: 337px;
+      }
+  
+      &.price {
+        width: 187px;
+        text-align: right;
+      }
+  
+      &.ROI {
+        width: 165px;
+        text-align: right;
+      }
+  
+      &.purchased {
+        width: 178px;
+        text-align: right;
+      }
+  
+      &.action {
+        text-align: center;
+      }
+    }
+    
+    &__name {
+      margin-left: 16px;
+    }
+    
+    &__text {
+      color: var(--card_primary_color);
+      font: 400 16px/20px $basic_font_family;
+    }
+    
+    &__price {
+      display: inline-flex;
+      align-items: center;
+      
+      .currency-icon {
+        display: inline-block;
+        min-width: 15px;
+      }
+    }
+    
+    &__ROI {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    
+    &__purchased {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+  
+    &__link {
+      width: 115px;
+      height: 40px;
+      display: inline-flex;
+      text-decoration: none;
+      align-items: center;
+      border-radius: 6px;
+      justify-content: center;
+      background-color: var(--secondary_color);
+      color: var(--card_primary_color);
+      font: 400 16px/20px $basic_font_family;
+      
+      &:hover {
+        background-color: var(--active_el_color);
+      }
+    }
+  }
+}

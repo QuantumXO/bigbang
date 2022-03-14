@@ -1,0 +1,94 @@
+@import "./src/assets/styles/basic/variables";
+
+.bond.modal {
+  .mint__tab {
+    display: flex;
+    margin-top: 35px;
+    flex-direction: column;
+    
+    &__inner {
+      display: flex;
+      flex-wrap: wrap;
+      
+      .field__wrapper {
+        width: 100%;
+        display: flex;
+        align-items: stretch;
+        justify-content: space-between;
+      }
+      
+      .input {
+        padding-left: 40px;
+        
+        &__wrapper {
+          width: 100%;
+          height: 56px;
+          max-width: 464px;
+          padding-right: 40px;
+          outline: none;
+          border-radius: 8px;
+          border: 1px solid var(--card_bg_color);
+          background: var(--bg_color);
+          color: var(--card_primary_color);
+          font: 400 16px/20px $basic_font_family;
+        }
+        
+        &__btn {
+          cursor: pointer;
+          color: var(--text_color);
+          font: 700 16px/20px $basic_font_family;
+        }
+      }
+      
+      .action__btn {
+        width: 100%;
+        max-width: 308px;
+        display: inline-flex;
+        margin-left: 15px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background-color: var(--secondary_color);
+        color: var(--card_primary_color);
+        font: 400 24px/29px $basic_font_family;
+        cursor: pointer;
+        
+        &:hover {
+          background-color: var(--active_el_color);
+        }
+      }
+    }
+    
+    .description {
+      margin-top: 24px;
+      text-align: center;
+      color: var(--text_color);
+      font: 400 16px/20px $basic_font_family;
+    }
+    
+    .data {
+      margin-top: 31px;
+      
+      &__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        
+        &:nth-child(n+2) {
+          margin-top: 20px;
+        }
+        
+        &__title {
+          color: var(--card_primary_color);
+          font: 400 16px/20px $basic_font_family;
+        }
+        
+        &__value {
+          margin-left: 15px;
+          color: var(--card_primary_color);
+          font: 400 16px/20px $basic_font_family;
+        }
+      }
+    }
+  }
+}

@@ -1,11 +1,11 @@
 /* eslint-disable */
 
 module.exports = api => {
-  const validEnv = ['development', 'test', 'production'];
+  const validEnv = ["development", "test", "production"];
   const currentEnv = api.env();
-  const isDevelopmentEnv = api.env('development');
-  const isProductionEnv = api.env('production');
-  const isTestEnv = api.env('test');
+  const isDevelopmentEnv = api.env("development");
+  const isProductionEnv = api.env("production");
+  const isTestEnv = api.env("test");
 
   if (!validEnv.includes(currentEnv)) {
     throw new Error(
@@ -18,90 +18,90 @@ module.exports = api => {
   return {
     presets: [
       isTestEnv && [
-        '@babel/preset-env',
+        "@babel/preset-env",
         {
           targets: {
-            node: 'current',
+            node: "current"
           },
-          modules: 'commonjs',
+          modules: "commonjs"
         },
-        '@babel/preset-react',
+        "@babel/preset-react"
       ],
-      isTestEnv && ['@babel/preset-typescript'],
+      isTestEnv && ["@babel/preset-typescript"],
       (isProductionEnv || isDevelopmentEnv) && [
-        '@babel/preset-env',
+        "@babel/preset-env",
         {
           forceAllTransforms: true,
-          useBuiltIns: 'entry',
+          useBuiltIns: "entry",
           corejs: 3,
           modules: false,
-          exclude: ['transform-typeof-symbol'],
-        },
+          exclude: ["transform-typeof-symbol"]
+        }
       ],
       [
-        '@babel/preset-react',
+        "@babel/preset-react",
         {
           development: isDevelopmentEnv || isTestEnv,
-          useBuiltIns: true,
-        },
-      ],
+          useBuiltIns: true
+        }
+      ]
     ].filter(Boolean),
     plugins: [
-      'lodash',
-      'babel-plugin-macros',
-      '@babel/plugin-syntax-dynamic-import',
-      isTestEnv && 'babel-plugin-dynamic-import-node',
-      '@babel/plugin-transform-destructuring',
+      "lodash",
+      "babel-plugin-macros",
+      "@babel/plugin-syntax-dynamic-import",
+      isTestEnv && "babel-plugin-dynamic-import-node",
+      "@babel/plugin-transform-destructuring",
       [
-        '@babel/plugin-proposal-class-properties',
+        "@babel/plugin-proposal-class-properties",
         {
-          loose: true,
-        },
+          loose: true
+        }
       ],
       [
-        '@babel/plugin-proposal-object-rest-spread',
+        "@babel/plugin-proposal-object-rest-spread",
         {
-          useBuiltIns: true,
-        },
+          useBuiltIns: true
+        }
       ],
       [
-        '@babel/plugin-transform-runtime',
+        "@babel/plugin-transform-runtime",
         {
           helpers: false,
           regenerator: true,
-          corejs: false,
-        },
-      ],
-      [
-        '@babel/plugin-transform-regenerator',
-        {
-          async: false,
-        },
-      ],
-      [
-        'transform-imports', {
-          '@fortawesome/pro-light-svg-icons': {
-            'transform': '@fortawesome/pro-light-svg-icons/${member}',
-            'skipDefaultConversion': true,
-            'preventFullImport': true,
-          },
-          '@fortawesome/free-solid-svg-icons': {
-            'transform': '@fortawesome/free-solid-svg-icons/${member}',
-            'skipDefaultConversion': true,
-            'preventFullImport': true,
-          },
-          'lodash': {
-            'transform': 'lodash/${member}',
-            'preventFullImport': true,
-          }
+          corejs: false
         }
       ],
-      isProductionEnv && [
-        'babel-plugin-transform-react-remove-prop-types',
+      [
+        "@babel/plugin-transform-regenerator",
         {
-          removeImport: true,
-        },
+          async: false
+        }
       ],
-    ].filter(Boolean),
+      [
+        "transform-imports", {
+        "@fortawesome/pro-light-svg-icons": {
+          "transform": "@fortawesome/pro-light-svg-icons/${member}",
+          "skipDefaultConversion": true,
+          "preventFullImport": true
+        },
+        "@fortawesome/free-solid-svg-icons": {
+          "transform": "@fortawesome/free-solid-svg-icons/${member}",
+          "skipDefaultConversion": true,
+          "preventFullImport": true
+        },
+        "lodash": {
+          "transform": "lodash/${member}",
+          "preventFullImport": true
+        }
+      }
+      ],
+      isProductionEnv && [
+        "babel-plugin-transform-react-remove-prop-types",
+        {
+          removeImport: true
+        }
+      ]
+    ].filter(Boolean)
   };
 };

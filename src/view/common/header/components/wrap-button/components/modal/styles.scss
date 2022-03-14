@@ -1,0 +1,122 @@
+@import "./src/assets/styles/basic/variables";
+
+.wrap.modal {
+  .wrapper {
+    max-width: 883px;
+  }
+  
+  .modal {
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      
+      .title {
+        color: var(--modal_primary_color);
+        font: 700 24px/29px $basic_font_family;
+      }
+      
+      .wrap--price {
+        margin-top: 3px;
+        color: var(--modal_secondary_color);
+        font: 400 24px/29px $basic_font_family;
+        cursor: pointer;
+      }
+    }
+  
+    &__container {
+      margin-top: 103px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      
+      .balance {
+        width: 100%;
+        color: var(--modal_primary_color);
+        font: 400 24px/29px $basic_font_family;
+      }
+      
+      .bonds {
+        width: 100%;
+        display: flex;
+        margin-top: 37px;
+        align-items: center;
+        justify-content: space-between;
+      }
+    
+      .field {
+        &__wrapper {
+          display: inline-flex;
+          align-items: center;
+        }
+        
+        &__input {
+          width: 200px;
+          padding-left: 5px;
+          color: var(--modal_primary_color);
+          font: 400 16px/20px $basic_font_family;
+          border-bottom: 1px solid var(--modal_secondary_color);
+          
+          &:hover,
+          &:focus {
+            border-bottom: 1px solid var(--modal_secondary_color);
+          }
+          
+          &::placeholder {
+            color: var(--modal_secondary_color);
+            font: 400 16px/20px $basic_font_family;
+          }
+          
+          &__wrapper {
+            &::after,
+            &::before {
+              content: none;
+            }
+          }
+        }
+        
+        &__label {
+          margin-right: 16px;
+          color: var(--modal_primary_color);
+          font: 400 24px/29px $basic_font_family;
+        }
+      }
+    
+      .bonds--toggle {
+        margin: 0 10px;
+      }
+    
+      .action--btn {
+        width: 100%;
+        max-width: 308px;
+        display: flex;
+        margin-top: 116px;
+        padding: 14px 0;
+        border-radius: 8px;
+        align-items: center;
+        justify-content: center;
+        background: var(--secondary_color);
+        cursor: pointer;
+      
+        span {
+          text-align: center;
+          color: var(--modal_secondary_color);
+          font: 400 24px/29px $basic_font_family;
+        }
+      }
+    
+      .modal__description {
+        width: 100%;
+        max-width: 513px;
+        margin-top: 26px;
+      
+        p {
+          text-align: center;
+          color: var(--modal_secondary_color);
+          font: 400 16px/20px $basic_font_family;
+        }
+      }
+    }
+  }
+}

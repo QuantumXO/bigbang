@@ -1,0 +1,39 @@
+@import "./src/assets/styles/basic/variables";
+
+.bond.modal {
+  .metrics {
+    margin-top: 56px;
+    
+    &__card {
+      flex: 1;
+      max-width: 202px;
+      display: inline-flex;
+      padding: 25px;
+      border-radius: 16px;
+      background-color: var(--bg_color);
+    
+      &:nth-child(n+2) {
+        margin-left: 10px;
+      }
+    
+      &__inner {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+      }
+    
+      &__title {
+        color: var(--text_color);
+        font: 400 24px/29px $basic_font_family;
+      }
+    
+      &__value {
+        margin-top: 16px;
+        color: var(--card_primary_color);
+        font: 700 24px/29px $basic_font_family;
+      }
+    }
+  }
+}

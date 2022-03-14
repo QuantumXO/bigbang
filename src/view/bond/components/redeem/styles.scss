@@ -1,0 +1,63 @@
+@import "./src/assets/styles/basic/variables";
+
+.bond.modal {
+  .redeem__tab {
+    display: flex;
+    margin-top: 35px;
+    flex-direction: column;
+    
+    &__inner {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      
+      .action__btn {
+        width: 100%;
+        height: 56px;
+        max-width: 450px;
+        display: inline-flex;
+        margin-left: 15px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background-color: var(--secondary_color);
+        color: var(--card_primary_color);
+        font: 400 24px/29px $basic_font_family;
+        cursor: pointer;
+        
+        &:nth-child(n+2) {
+          margin-top: 24px;
+        }
+        
+        &:hover {
+          background-color: var(--active_el_color);
+        }
+      }
+    }
+    
+    .data {
+      margin-top: 31px;
+      
+      &__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        
+        &:nth-child(n+2) {
+          margin-top: 20px;
+        }
+        
+        &__title {
+          color: var(--card_primary_color);
+          font: 400 16px/20px $basic_font_family;
+        }
+        
+        &__value {
+          margin-left: 15px;
+          color: var(--card_primary_color);
+          font: 400 16px/20px $basic_font_family;
+        }
+      }
+    }
+  }
+}

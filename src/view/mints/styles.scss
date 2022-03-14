@@ -1,0 +1,114 @@
+@import "./src/assets/styles/basic/variables";
+
+.mints.page {
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: auto;
+  
+  @media screen and (max-width: 1240px) {
+    width: 100%;
+  }
+  
+  .mints {
+    &__wrapper {
+      width: 100%;
+    }
+    
+    &__title {
+      color: var(--page_title_color);
+      font: 400 24px/29px $basic_font_family;
+    }
+    
+    &__metrics {
+      margin-top: 77px;
+      
+      .card {
+        width: 100%;
+        max-width: 453px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        
+        &:nth-child(n+2) {
+          margin-left: 10px;
+        }
+  
+        &__inner {
+          width: 100%;
+          padding: 25px;
+          border-radius: 16px;
+          background: var(--card_bg_color);
+        }
+  
+        &__title {
+          color: var(--text_color);
+          font: 400 24px/29px $basic_font_family;
+        }
+  
+        &__value {
+          margin-top: 16px;
+          color: var(--card_primary_color);
+          font: 700 24px/29px $basic_font_family;
+        }
+      }
+    }
+    
+    &__table {
+      &__wrap {
+        margin-top: 75px;
+        border-radius: 16px;
+        background-color: var(--card_bg_color);
+      }
+      
+      &__title {
+        color: var(--card_primary_color);
+        font: 600 16px/20px $basic_font_family;
+      }
+      
+      &__thead {
+        border-bottom: 1px solid var(--secondary_color);
+  
+        .mints__table__col {
+          &:first-child {
+            padding-left: 56px;
+          }
+  
+          &:last-child {
+            padding-right: 40px;
+          }
+  
+          &:not(:first-child) {
+            padding-top: 18px;
+          }
+  
+          &.mint {
+            width: 337px;
+          }
+  
+          &.price {
+            width: 187px;
+            text-align: center;
+          }
+  
+          &.ROI {
+            width: 165px;
+            text-align: center;
+          }
+  
+          &.purchased {
+            width: 178px;
+            text-align: center;
+          }
+  
+          &.action {
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+}

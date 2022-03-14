@@ -1,0 +1,9 @@
+@import "./src/assets/styles/basic/variables";
+
+.rebase--timer {
+  div {
+    margin-top: 3px;
+    color: var(--page_title_color);
+    font: 400 24px/29px $basic_font_family;
+  }
+}

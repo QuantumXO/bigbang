@@ -1,0 +1,17 @@
+@import "./src/assets/styles/basic/variables";
+
+.chart.donut {
+  width: 310px;
+  height: 310px;
+  min-width: 310px;
+  overflow: hidden;
+  .chart  {
+    &__svg {
+    
+    }
+    &__label {
+      fill: var(--card_primary_color);
+      font: 600 9px/29px $basic_font_family;
+    }
+  }
+}

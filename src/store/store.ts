@@ -8,15 +8,15 @@ import messagesReducer from "./slices/messages-slice";
 import wrappingReducer from "./slices/wrap-slice";
 
 const store = configureStore({
-    reducer: {
-        account: accountReducer,
-        bonding: bondingReducer,
-        app: appReducer,
-        pendingTransactions: pendingTransactionsReducer,
-        messages: messagesReducer,
-        wrapping: wrappingReducer,
-    },
-    middleware: getDefaultMiddleware => getDefaultMiddleware({ serializableCheck: false }),
+  reducer: {
+    account: accountReducer,
+    bonding: bondingReducer,
+    app: appReducer,
+    pendingTransactions: pendingTransactionsReducer,
+    messages: messagesReducer,
+    wrapping: wrappingReducer
+  },
+  middleware: getDefaultMiddleware => getDefaultMiddleware({ serializableCheck: false })
 });
 
 export type RootState = ReturnType<typeof store.getState>;

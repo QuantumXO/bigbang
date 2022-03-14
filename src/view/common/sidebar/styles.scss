@@ -1,0 +1,161 @@
+@import "./src/assets/styles/basic/variables";
+
+.sidebar {
+  height: 100vh;
+  min-width: 398px;
+  display: flex;
+  padding-bottom: 55px;
+  overflow-y: auto;
+  flex-direction: column;
+  
+  &__drawer__paper {
+    background-color: var(--primary_color);
+  }
+
+  &--logo {
+    width: 118px;
+    height: 74px;
+    display: inline-block;
+    text-decoration: none;
+    background: var(--sidebar_logo_url) 50% no-repeat;
+    background-size: contain;
+    z-index: 9;
+  }
+  
+  &--header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    margin: 35px 0 0;
+    
+    .wallet-link {
+      margin: 10px;
+  
+      p {
+        font-size: 14px;
+        color: #FFFFFF;
+      }
+    }
+  }
+
+  &__menu {
+    flex: 1;
+    display: flex;
+    margin-top: 46px;
+    margin-left: 70px;
+    align-items: flex-start;
+    flex-direction: column;
+    
+    .menu__item {
+      &:nth-child(n+2) {
+        margin-top: 41px;
+      }
+      
+      &__link {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        
+        &:hover,
+        &.active {
+          &::before {
+            background-color: var(--active_el_color);
+          }
+          .menu__item__label {
+            color: var(--active_el_color);
+          }
+        }
+        
+        &::before {
+          width: 32px;
+          height: 32px;
+          content: '';
+          mask-size: contain;
+          mask-repeat: no-repeat;
+          mask-position: 50%;
+          background-color: var(--sidebar_link_color);
+        }
+
+        &.dashboard {
+          &::before {
+            mask-image: url(../../../assets/images/common/sidebar/dashboard-icon.svg);
+          }
+        }
+        &.stake {
+          &::before {
+            mask-image: url(../../../assets/images/common/sidebar/stake-icon.svg);
+          }
+        }
+        &.mints {
+          &::before {
+            mask-image: url(../../../assets/images/common/sidebar/mint-icon.svg);
+          }
+        }
+        &.calculator {
+          &::before {
+            mask-image: url(../../../assets/images/common/sidebar/calculator-icon.svg);
+          }
+        }
+        &.fund {
+          &::before {
+            mask-image: url(../../../assets/images/common/sidebar/fund-icon.svg);
+          }
+        }
+        &.docs {
+          &::before {
+            mask-image: url(../../../assets/images/common/sidebar/docs-icon.svg);
+          }
+        }
+      }
+      &__label {
+        margin-left: 17px;
+        text-transform: capitalize;
+        color: var(--sidebar_link_color);
+        font: 600 24px/29px $basic_font_family;
+      }
+      
+      &__with__submenu {
+        .submenu {
+          display: flex;
+          margin-top: 18px;
+          margin-left: 49px;
+          flex-direction: column;
+          
+          &__item__link {
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--text_color);
+            font: 400 24px/29px $basic_font_family;
+            
+            &:hover,
+            &.active {
+              color: var(--active_el_color);
+            }
+            
+            &:nth-child(n+2) {
+              margin-top: 19px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.MuiDrawer-root{
+  .MuiPaper-root{
+    z-index: 7;
+
+    @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+      background: rgba(36, 39, 41, 0.1);
+      backdrop-filter: blur(40px);
+    }
+  
+    /* slightly transparent fallback for Firefox (not supporting backdrop-filter) */
+    @supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+      background: #181B1C;
+    }
+  }
+}
