@@ -4,7 +4,7 @@ import { shorten } from '@services/helpers';
 import { useAddress } from '@services/hooks';
 import cx from 'classnames';
 import linkUrl from '@services/common/get-link-url';
-import Socials from '@view/common/socials';
+import Socials from '@view/common/sidebar/components/socials';
 import useBonds, { IAllBondData } from '@services/hooks/bonds';
 import { Skeleton } from '@material-ui/lab';
 
@@ -24,8 +24,6 @@ export const SidebarMenu = (): ReactElement => {
     { id: 'dashboard', url: linkUrl().get.dashboard(), label: 'dashboard' },
     { id: 'stake', url: linkUrl().get.stake(), label: 'stake' },
     { id: 'mints', url: linkUrl().get.mints(), label: 'mint' },
-    { id: 'calculator', url: linkUrl().get.calculator(), label: 'calculator' },
-    { id: 'fund', url: linkUrl().get.fund(), label: 'fund' },
     { id: 'docs', url: linkUrl().get.docs(), label: 'docs' },
   ];
   
@@ -84,17 +82,17 @@ export const SidebarMenu = (): ReactElement => {
   return (
     <div className="sidebar">
       <div className="sidebar--header">
-        <Link to="/" className="sidebar--logo" />
+        <Link to="/" className="sidebar--logo">{'Logo'}</Link>
         {address && (
-          <div className="wallet-link">
+          <div className="wallet--link">
             <Link to={`https://cchain.explorer.avax.network/address/${address}`} target="_blank">
-              <p>{shorten(address)}</p>
+              <span>{shorten(address)}</span>
             </Link>
           </div>
         )}
       </div>
       {onRenderMenu()}
-      <Socials styles={{ marginTop: 48 }} />
+      <Socials styles={{ marginTop: 20 }} />
     </div>
   );
 };

@@ -6,7 +6,7 @@ import ConnectButton from './components/connect-button';
 import WrapButton from './components/wrap-button';
 import cx from 'classnames';
 import { DRAWER_WIDTH, TRANSITION_DURATION } from '@constants/style';
-import SideButton from '@view/common/header/components/side-button';
+import TokenButton from '@view/common/header/components/token-button';
 
 import './styles.scss';
 
@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   appBar: {
     [theme.breakpoints.up('sm'  )]: {
       width: '100%',
-      padding: '58px 0 20px 0',
+      padding: '40px 0 20px 0',
     },
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
@@ -62,14 +62,11 @@ export function Header({ handleSidebarToggle, drawe }: IHeader): ReactElement {
       >
         <Toolbar disableGutters className="toolbar">
           <div className="toolbar-btns-wrap">
-            {!isVerySmallScreen && <SideButton />}
+            {!isVerySmallScreen && <TokenButton />}
             {!isVerySmallScreen && <WrapButton />}
             <ConnectButton />
           </div>
-          <span
-            onClick={handleSidebarToggle}
-            className="btn--toggle--sidebar"
-          />
+          {/*<span onClick={handleSidebarToggle} className="btn--toggle--sidebar" />*/}
         </Toolbar>
       </AppBar>
     </div>

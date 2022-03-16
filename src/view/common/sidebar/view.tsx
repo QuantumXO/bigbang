@@ -51,7 +51,7 @@ const CommonSidebar = (): ReactElement => {
         PaperProps={{
           style: {
             border: 'none',
-            background: 'var(--primary_color)'
+            background: '#F2F3F7'
           }
         }}
         classes={{

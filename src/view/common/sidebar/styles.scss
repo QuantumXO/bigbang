@@ -2,38 +2,39 @@
 
 .sidebar {
   height: 100vh;
-  min-width: 398px;
+  min-width: 280px;
   display: flex;
-  padding-bottom: 55px;
+  padding-bottom: 47px;
   overflow-y: auto;
   flex-direction: column;
-  
+
   &__drawer__paper {
-    background-color: var(--primary_color);
+    box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, .7) !important;
   }
 
   &--logo {
-    width: 118px;
-    height: 74px;
+    width: 55px;
+    height: 23px;
     display: inline-block;
     text-decoration: none;
-    background: var(--sidebar_logo_url) 50% no-repeat;
-    background-size: contain;
+    color: $brand_color;
+    text-transform: uppercase;
+    font: 500 20px/23px $basic_font_family;
     z-index: 9;
   }
-  
+
   &--header {
     display: flex;
+    margin: 37px 0 0 28px;
+    align-items: flex-start;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
     text-decoration: none;
-    margin: 35px 0 0;
-    
-    .wallet-link {
+
+    .wallet--link {
       margin: 10px;
-  
-      p {
+
+      span {
         font-size: 14px;
         color: #FFFFFF;
       }
@@ -43,39 +44,40 @@
   &__menu {
     flex: 1;
     display: flex;
-    margin-top: 46px;
-    margin-left: 70px;
+    margin-top: 118px;
+    margin-left: 24px;
     align-items: flex-start;
     flex-direction: column;
-    
+
     .menu__item {
       &:nth-child(n+2) {
-        margin-top: 41px;
+        margin-top: 32px;
       }
-      
+
       &__link {
-        display: inline-flex;
         align-items: center;
+        display: inline-flex;
         text-decoration: none;
-        
+
         &:hover,
         &.active {
           &::before {
-            background-color: var(--active_el_color);
+            background-color: $brand_color;
           }
+
           .menu__item__label {
-            color: var(--active_el_color);
+            color: $brand_color;
           }
         }
-        
+
         &::before {
-          width: 32px;
-          height: 32px;
+          width: 27px;
+          height: 27px;
           content: '';
           mask-size: contain;
           mask-repeat: no-repeat;
           mask-position: 50%;
-          background-color: var(--sidebar_link_color);
+          background-color: #5A5A5C;
         }
 
         &.dashboard {
@@ -83,79 +85,69 @@
             mask-image: url(../../../assets/images/common/sidebar/dashboard-icon.svg);
           }
         }
+
         &.stake {
           &::before {
             mask-image: url(../../../assets/images/common/sidebar/stake-icon.svg);
           }
         }
+
         &.mints {
           &::before {
             mask-image: url(../../../assets/images/common/sidebar/mint-icon.svg);
           }
         }
+
         &.calculator {
           &::before {
             mask-image: url(../../../assets/images/common/sidebar/calculator-icon.svg);
           }
         }
+
         &.fund {
           &::before {
             mask-image: url(../../../assets/images/common/sidebar/fund-icon.svg);
           }
         }
+
         &.docs {
           &::before {
             mask-image: url(../../../assets/images/common/sidebar/docs-icon.svg);
           }
         }
       }
+
       &__label {
-        margin-left: 17px;
+        margin-left: 15px;
+        color: #5A5A5C;
         text-transform: capitalize;
-        color: var(--sidebar_link_color);
-        font: 600 24px/29px $basic_font_family;
+        font: 400 14px/16px $basic_font_family;
       }
-      
+
       &__with__submenu {
         .submenu {
           display: flex;
-          margin-top: 18px;
+          margin-top: 32px;
           margin-left: 49px;
           flex-direction: column;
-          
+
           &__item__link {
             text-transform: uppercase;
             text-decoration: none;
-            color: var(--text_color);
-            font: 400 24px/29px $basic_font_family;
-            
+            color: #808080;
+            font: 400 12px/14px $basic_font_family;
+
             &:hover,
             &.active {
-              color: var(--active_el_color);
+              color: $brand_color;
             }
-            
+
             &:nth-child(n+2) {
               margin-top: 19px;
             }
           }
         }
       }
-    }
-  }
-}
-
-.MuiDrawer-root{
-  .MuiPaper-root{
-    z-index: 7;
-
-    @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
-      background: rgba(36, 39, 41, 0.1);
-      backdrop-filter: blur(40px);
-    }
-  
-    /* slightly transparent fallback for Firefox (not supporting backdrop-filter) */
-    @supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-      background: #181B1C;
     }
   }
 }

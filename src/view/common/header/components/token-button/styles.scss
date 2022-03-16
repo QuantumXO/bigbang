@@ -1,0 +1,121 @@
+@import "./src/assets/styles/basic/variables";
+
+.header__side__btn {
+  display: inline-block;
+  cursor: pointer;
+  
+  .btn__label {
+    width: 126px;
+    height: 40px;
+    display: inline-flex;
+    color: $brand_color;
+    text-align: center;
+    border-radius: 20px;
+    position: relative;
+    align-items: center;
+    justify-content: flex-start;
+    border: 1px solid $brand_color;
+    font: 400 14px/40px $basic_font_family;
+
+    &::before {
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      margin: 0 22px 0 12px;
+      content: 'i';
+      border-radius: 50%;
+      font: 500 14px/20px $basic_font_family;
+      border: 1px solid $brand_color;
+    }
+  }
+  
+  &:hover,
+  &.active {
+    .btn__label {
+      //background-color: var(--active_el_color);
+    }
+  }
+}
+
+.header__side__btn__popper {
+  width: 100%;
+  max-width: 350px;
+  margin-top: 57px;
+  padding: 24px 28px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #F2F3F7;
+  box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, 0.7);
+  z-index: 10;
+  
+  .tooltip {
+    display: flex;
+    flex-direction: column;
+    
+    .tooltip--item {
+      width: 100%;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      color: #5A5A5C;
+      justify-content: center;
+      border: 1px solid #E5E4E4;
+      //border-image-source: linear-gradient(282.84deg, #FFFFFF 6.1%, #E4E3E3 92.41%);
+      text-decoration: none;
+      border-radius: 20px;
+      font: 400 14px/40px $basic_font_family;
+      cursor: pointer;
+      
+      &.token {
+        &:nth-child(n+3) {
+          margin-top: 16px;
+        }
+      }
+      
+      &:hover {
+        border-color: $brand_color;
+
+        span {
+          color: $brand_color;
+        }
+      }
+      
+      span {
+        text-align: center;
+        color: var(--header_side_menu_color);
+        font: 400 16px/20px $basic_font_family;
+      }
+    }
+    
+    .add--tokens {
+      display: flex;
+      flex-direction: column;
+
+      .add--tokens--title {
+        margin: 12px 0;
+        padding: 14px 0;
+        text-align: center;
+        position: relative;
+        color: var(--header_side_menu_color);
+        font: 400 16px/20px $basic_font_family;
+        
+        &::before,
+        &::after {
+          left: 0;
+          width: 100%;
+          height: 1px;
+          content: '';
+          position: absolute;
+          background-color: var(--header_side_menu_divider_color);
+        }
+  
+        &::before {
+          top: 0;
+        }
+        &::after {
+          bottom: 0;
+        }
+      }
+    }
+  }
+}

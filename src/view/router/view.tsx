@@ -1,6 +1,6 @@
 import React, { FC, ReactElement } from 'react';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import { Bond, Calculator, Dashboard, NotFound, Stake, Fund, Mints } from '@view/index';
+import { Bond, Dashboard, NotFound, Stake, Mints } from '@view/index';
 import useBonds, { IAllBondData } from '@services/hooks/bonds';
 import CommonRoute from '@view/router/components/common-route';
 
@@ -26,8 +26,6 @@ export const Router: FC = (): ReactElement => {
             })}
           </>
         </Route>
-        <Route path="calculator" element={<CommonRoute Component={Calculator} />} />
-        <Route path="fund" element={<CommonRoute Component={Fund} />} />
         <Route path="*" element={<CommonRoute Component={NotFound}/>} />
       </Routes>
     </HashRouter>
