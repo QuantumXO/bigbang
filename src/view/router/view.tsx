@@ -10,10 +10,10 @@ export const Router: FC = (): ReactElement => {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={<CommonRoute Component={Dashboard} />} />
-        <Route path="/dashboard" element={<CommonRoute Component={Dashboard} />} />
+        <Route index element={<CommonRoute Component={Dashboard} />} />
+        <Route path="dashboard" element={<CommonRoute Component={Dashboard} />} />
         <Route path="stake" element={<CommonRoute Component={Stake} />} />
-        <Route path=":side/mints" element={<CommonRoute Component={Mints} />}>
+        <Route path="mints" element={<CommonRoute Component={Mints} />}>
           <>
             {bonds.map((bond: IAllBondData): ReactElement => {
               return (

@@ -21,7 +21,7 @@ export const SidebarMenu = (): ReactElement => {
   const { bonds } = useBonds();
   
   const menu: IMenuItem[] = [
-    { id: 'dashboard', url: linkUrl().get.dashboard(), label: 'dashboard' },
+    { id: 'dashboard', url: '/', label: 'dashboard' },
     { id: 'stake', url: linkUrl().get.stake(), label: 'stake' },
     { id: 'mints', url: linkUrl().get.mints(), label: 'mint' },
     { id: 'docs', url: linkUrl().get.docs(), label: 'docs' },

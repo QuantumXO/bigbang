@@ -28,13 +28,6 @@
       border: 1px solid $brand_color;
     }
   }
-  
-  &:hover,
-  &.active {
-    .btn__label {
-      //background-color: var(--active_el_color);
-    }
-  }
 }
 
 .header__side__btn__popper {
@@ -57,10 +50,8 @@
       height: 40px;
       display: inline-flex;
       align-items: center;
-      color: #5A5A5C;
       justify-content: center;
       border: 1px solid #E5E4E4;
-      //border-image-source: linear-gradient(282.84deg, #FFFFFF 6.1%, #E4E3E3 92.41%);
       text-decoration: none;
       border-radius: 20px;
       font: 400 14px/40px $basic_font_family;
@@ -82,7 +73,7 @@
       
       span {
         text-align: center;
-        color: var(--header_side_menu_color);
+        color: #5A5A5C;
         font: 400 16px/20px $basic_font_family;
       }
     }

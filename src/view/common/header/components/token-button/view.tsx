@@ -2,6 +2,7 @@ import React, { ReactElement, ReactNode, useState } from 'react';
 import { Fade, Popper } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import cx from 'classnames';
+import WrapButton from './../wrap-button';
 
 import './styles.scss';
 
@@ -68,7 +69,7 @@ export function TokenButton(): ReactElement {
               <Link to="/" className="tooltip--item">
                 <span>{'Buy on Lorem Ipsum'}</span>
               </Link>
-              {onRenderSideTokens()}
+              <WrapButton />
             </div>
           </Fade>
         )}

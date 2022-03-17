@@ -1,22 +1,29 @@
 @import "./src/assets/styles/basic/variables";
 
 .btn--wrap {
-  height: 56px;
+  width: 100%;
+  height: 40px;
+  display: inline-flex;
+  margin-top: 16px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e4e4;
+  text-decoration: none;
+  border-radius: 20px;
+  cursor: pointer;
   
   &:hover,
   &.active {
+    border-color: $brand_color;
+
     .btn--wrap__label {
-      background-color: var(--active_el_color);
+      color: $brand_color;
     }
   }
   
   &__label {
-    display: inline-block;
-    padding: 0 32px;
-    border-radius: 8px;
-    color: #FFFFFF;
-    font: 400 24px/56px $basic_font_family;
-    background-color: var(--secondary_color);
-    cursor: pointer;
+    text-align: center;
+    color: #5A5A5C;
+    font: 400 16px/20px $basic_font_family;
   }
 }

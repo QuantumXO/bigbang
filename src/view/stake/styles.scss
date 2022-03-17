@@ -12,6 +12,12 @@
     color: var(--page_title_color);
     font: 700 24px/29px $basic_font_family;
   }
+
+  .cards__grid {
+    .card {
+      max-width: 445px;
+    }
+  }
   
   .stake {
     &__container {

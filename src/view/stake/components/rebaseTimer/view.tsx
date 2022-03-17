@@ -1,7 +1,7 @@
-import { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { secondsUntilBlock, prettifySeconds } from '@services/helpers';
-import { Box } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { IReduxState } from '@store/slices/state.interface';
 
@@ -39,8 +39,11 @@ export function RebaseTimer(): ReactElement {
   }
   
   return (
-    <Box className="rebase--timer">
-      <div>{layout}</div>
-    </Box>
+    <Grid item lg={6} md={6} sm={6} xs={12} className="card big">
+      <p className="card__title">BIG Staking</p>
+      <div>
+        {layout}
+      </div>
+    </Grid>
   );
 }

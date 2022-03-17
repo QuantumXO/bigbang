@@ -1,14 +1,24 @@
 @import "./src/assets/styles/basic/variables";
 
 .button--connect {
+  width: 160px;
+  height: 40px;
   display: inline-flex;
-  margin-left: 24px;
+  border-radius: 20px;
+  margin-left: 30px;
+  border: 1px solid transparent;
   align-items: center;
+  justify-content: center;
+  background-color: $brand_color;
+  cursor: pointer;
   
   &:hover,
   &.active {
+    background-color: transparent;
+    border-color: $brand_color;
+
     span {
-      background-color: var(--active_el_color);
+      color: $brand_color;
     }
   }
   
@@ -18,13 +28,8 @@
   }
   
   span {
-    height: 56px;
     display: inline-block;
-    padding: 0 32px;
-    border-radius: 8px;
-    color: #FFFFFF;
-    font: 400 24px/56px $basic_font_family;
-    background-color: var(--secondary_color);
-    cursor: pointer;
+    color: #ffffff;
+    font: 400 14px/16px $basic_font_family;
   }
 }

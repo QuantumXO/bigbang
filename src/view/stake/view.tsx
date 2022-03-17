@@ -1,4 +1,4 @@
-import { useState, useCallback, ReactElement, ReactNode } from 'react';
+import React, { useState, useCallback, ReactElement, ReactNode } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Grid, InputAdornment, OutlinedInput, Zoom } from '@material-ui/core';
 import RebaseTimer from './components/rebaseTimer';
@@ -108,7 +108,9 @@ export function Stake(): ReactElement {
           <div className="stake__wallet__btn" onClick={connect}>
             <p>{'Connect Wallet'}</p>
           </div>
-          <p className="stake__wallet__description">{'Connect your wallet to stake TIME tokens!'}</p>
+          <p className="stake__wallet__description">
+            {'Connect your wallet to stake TIME tokens!'}
+          </p>
         </div>
       );
     }
@@ -284,82 +286,92 @@ export function Stake(): ReactElement {
   
   return (
     <div className="stake page">
-      <h1 className="title">{'JEDI Staking'}</h1>
-      <RebaseTimer />
       <Zoom in={true}>
-        <div className='stake__container'>
-          <Grid
-            container
-            className="stake__metrics"
-            justifyContent="space-between"
-          >
-            <Grid item className="metrics__card" md={3}>
-              <div className="metrics__card__inner">
-                <div className="metrics__card__title">{'APY'}</div>
-                <div className="metrics__card__value">
-                  {stakingAPY
-                    ? <>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</>
-                    : <Skeleton width="150px" />}
-                </div>
-              </div>
+        <>
+          <Grid container spacing={0} justifyContent="space-between" className="cards__grid">
+            <Grid item lg={6} md={6} sm={6} xs={12} className="card welcome">
+              <p className="card__title">{'Stake'}</p>
+              <p className="card__value">
+                {'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet' +
+                  ' sint. Velit officia consequat duis enim velit mollit. Exercitation veniam '}
+              </p>
             </Grid>
-            <Grid item className="metrics__card" md={3}>
-              <div className="metrics__card__inner">
-                <div className="metrics__card__title">{'TVL'}</div>
-                <div className="metrics__card__value">
-                  {stakingTVL
-                    ? (
-                      new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        maximumFractionDigits: 0,
-                        minimumFractionDigits: 0,
-                      }).format(stakingTVL)
-                    )
-                    : (
-                      <Skeleton width="150px" />
-                    )
-                  }
-                </div>
-              </div>
-            </Grid>
-            <Grid item className="metrics__card" md={3}>
-              <div className="metrics__card__inner">
-                <div className="metrics__card__title">{'Current Index'}</div>
-                <div className="metrics__card__value">
-                  {currentIndex ? <>{trim(Number(currentIndex), 2)} TIME</> : <Skeleton width="150px" />}
-                </div>
-              </div>
-            </Grid>
+            <RebaseTimer />
           </Grid>
-          <div className='stake__inner'>
-            {!!address && (
-              <div className="stake__actions">
-                <div
-                  onClick={changeView(0)}
-                  className={cx('stake__actions__btn', { active: !view })}
-                >
-                  <span>{'Stake'}</span>
+          <div className='stake__container'>
+            <Grid
+              container
+              className="stake__metrics"
+              justifyContent="space-between"
+            >
+              <Grid item className="metrics__card" md={3}>
+                <div className="metrics__card__inner">
+                  <div className="metrics__card__title">{'APY'}</div>
+                  <div className="metrics__card__value">
+                    {stakingAPY
+                      ? <>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</>
+                      : <Skeleton width="150px" />}
+                  </div>
                 </div>
-                <div
-                  onClick={changeView(1)}
-                  className={cx('stake__actions__btn', { active: view })}
-                >
-                  <span>{'Unstake'}</span>
+              </Grid>
+              <Grid item className="metrics__card" md={3}>
+                <div className="metrics__card__inner">
+                  <div className="metrics__card__title">{'TVL'}</div>
+                  <div className="metrics__card__value">
+                    {stakingTVL
+                      ? (
+                        new Intl.NumberFormat('en-US', {
+                          style: 'currency',
+                          currency: 'USD',
+                          maximumFractionDigits: 0,
+                          minimumFractionDigits: 0,
+                        }).format(stakingTVL)
+                      )
+                      : (
+                        <Skeleton width="150px" />
+                      )
+                    }
+                  </div>
                 </div>
-              </div>
-            )}
-            
-            {onRenderConnectButton()}
-  
-            {!!address && (
-              <div className="stake__content">
-                {onRenderForm()}
-                {onRenderUserData()}
-              </div>
-            )}
+              </Grid>
+              <Grid item className="metrics__card" md={3}>
+                <div className="metrics__card__inner">
+                  <div className="metrics__card__title">{'Current Index'}</div>
+                  <div className="metrics__card__value">
+                    {currentIndex ? <>{trim(Number(currentIndex), 2)} TIME</> : <Skeleton width="150px" />}
+                  </div>
+                </div>
+              </Grid>
+            </Grid>
+            <div className='stake__inner'>
+              {!!address && (
+                <div className="stake__actions">
+                  <div
+                    onClick={changeView(0)}
+                    className={cx('stake__actions__btn', { active: !view })}
+                  >
+                    <span>{'Stake'}</span>
+                  </div>
+                  <div
+                    onClick={changeView(1)}
+                    className={cx('stake__actions__btn', { active: view })}
+                  >
+                    <span>{'Unstake'}</span>
+                  </div>
+                </div>
+              )}
+      
+              {onRenderConnectButton()}
+      
+              {!!address && (
+                <div className="stake__content">
+                  {onRenderForm()}
+                  {onRenderUserData()}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       </Zoom>
     </div>
   );

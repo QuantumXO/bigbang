@@ -26,29 +26,78 @@ body {
   }
 }
 
+.card {
+  border-radius: 20px;
+  background: #F2F3F7;
+  box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, 0.7);
+
+  &.welcome {
+    padding: 48px 56px 34px;
+
+    .card__title {
+      color: $brand_color;
+      font: 500 30px/34px $basic_font_family;
+    }
+    .card__value {
+      margin-top: 51px;
+      color: #808080;
+      font: 400 12px/1.7 $basic_font_family;
+    }
+  }
+
+  &.big {
+    padding: 48px 56px 40px;
+
+    .card__title {
+      color: #808080;
+      font: 500 20px/1.1 $basic_font_family;
+    }
+
+    .card__value {
+      margin-top: 33px;
+      color: $brand_color;
+      font: 500 30px/1.1 $basic_font_family;
+    }
+  }
+
+  &:not(.welcome):not(.big) {
+    padding: 38px 15px;
+
+    .card__title {
+      color: #808080;
+      font: 500 16px/1.1 $basic_font_family;
+    }
+    .card__value {
+      margin-top: 25px;
+      color: $brand_color;
+      font: 500 25px/1.1 $basic_font_family;
+    }
+  }
+}
+
 .web3modal-modal-lightbox {
   z-index: 10 !important;
   background: rgba(0, 0, 0, 0.2) !important;
   backdrop-filter: blur(100px) !important;
-  
+
   .web3modal-modal-card {
     background: #181B1C;
     backdrop-filter: blur(100px);
     border-radius: 10px;
-    
+
     .web3modal-provider-wrapper {
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 0;
       padding: 0;
-      
+
       .web3modal-provider-container {
         background-color: rgb(0, 0, 0, 0);
         border-radius: 0;
-        
+
         &:hover {
           background-color: rgb(0, 0, 0, 0.2);
         }
-        
+
         .web3modal-provider-name {
           font-family: Montserrat SemiBold;
           font-weight: 600;
@@ -56,7 +105,7 @@ body {
           text-align: center;
           color: #FFFFFF;
         }
-        
+
         .web3modal-provider-description {
           font-family: Montserrat Light;
           font-weight: 300;

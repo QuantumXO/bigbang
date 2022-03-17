@@ -3,7 +3,6 @@ import { AppBar, Toolbar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ConnectButton from './components/connect-button';
-import WrapButton from './components/wrap-button';
 import cx from 'classnames';
 import { DRAWER_WIDTH, TRANSITION_DURATION } from '@constants/style';
 import TokenButton from '@view/common/header/components/token-button';
@@ -63,7 +62,6 @@ export function Header({ handleSidebarToggle, drawe }: IHeader): ReactElement {
         <Toolbar disableGutters className="toolbar">
           <div className="toolbar-btns-wrap">
             {!isVerySmallScreen && <TokenButton />}
-            {!isVerySmallScreen && <WrapButton />}
             <ConnectButton />
           </div>
           {/*<span onClick={handleSidebarToggle} className="btn--toggle--sidebar" />*/}
