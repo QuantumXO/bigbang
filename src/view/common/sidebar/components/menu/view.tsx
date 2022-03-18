@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, Fragment } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { shorten } from '@services/helpers';
 import { useAddress } from '@services/hooks';
@@ -36,7 +36,6 @@ export const SidebarMenu = (): ReactElement => {
             layout = (
               <NavLink
                 to={url}
-                key={id}
                 className={cx('menu__item menu__item__link', id)}
               >
                 <span className="menu__item__label">{label}</span>
@@ -44,7 +43,7 @@ export const SidebarMenu = (): ReactElement => {
             );
           } else {
             layout = (
-              <div key={id} className="menu__item menu__item__with__submenu">
+              <div className="menu__item menu__item__with__submenu">
                 <NavLink
                   to={url}
                   className={cx('menu__item__link', id)}
@@ -73,7 +72,11 @@ export const SidebarMenu = (): ReactElement => {
             );
           }
           
-          return layout;
+          return (
+            <Fragment key={id}>
+              {layout}
+            </Fragment>
+          );
         })}
       </div>
     );

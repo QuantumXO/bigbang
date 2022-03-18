@@ -105,11 +105,11 @@ export function Stake(): ReactElement {
     if (!address) {
       layout = (
         <div className="stake__wallet">
-          <div className="stake__wallet__btn" onClick={connect}>
-            <p>{'Connect Wallet'}</p>
+          <div className="stake__wallet__btn btn__primary--fulfilled" onClick={connect}>
+            <span>{'Connect Wallet'}</span>
           </div>
           <p className="stake__wallet__description">
-            {'Connect your wallet to stake TIME tokens!'}
+            {'Connect you wallet to stake BIG tokens!'}
           </p>
         </div>
       );
@@ -118,120 +118,12 @@ export function Stake(): ReactElement {
     return layout;
   };
   
-  const onRenderForm = (): ReactNode => {
-    let layout: ReactNode = null;
-  
-    if (!!address) {
-      layout = (
-        <div className="stake__form__wrap">
-          <div className='field'>
-            <div className='field__inner'>
-              <OutlinedInput
-                type="number"
-                labelWidth={0}
-                className="input__wrapper"
-                value={quantity}
-                placeholder="Amount"
-                inputProps={{
-                  className: "input",
-                }}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <div onClick={setMax} className="input__btn">
-                      <p>Max</p>
-                    </div>
-                  </InputAdornment>
-                }
-                onChange={e => setQuantity(e.target.value)}
-              />
-              {onRenderFormButton()}
-            </div>
-            {address
-              && ((!hasAllowance('time') && view === 0) || (!hasAllowance('memo') && view === 1))
-              && (
-                <p className='field__description'>
-                  Note: The "Approve" transaction is only needed when staking/unstaking for the first time; subsequent
-                  staking/unstaking only requires you to perform the "Stake" or "Unstake" transaction.
-                </p>
-              )
-            }
-          </div>
-        </div>
-      );
-    }
-  
-    return layout;
-  };
-  
-  const onRenderFormButton = (): ReactElement => {
-    return (
-      <div className="field__action">
-        {view === 0 && (
-          <>
-            {address && hasAllowance('time')
-              ? (
-                <div
-                  className="field__action__btn"
-                  onClick={() => {
-                    if (isPendingTxn(pendingTransactions, 'staking')) return;
-                    onChangeStake('stake');
-                  }}
-                >
-                  <span>{txnButtonText(pendingTransactions, 'staking', 'Stake TIME')}</span>
-                </div>
-              )
-              : (
-                <div
-                  className="field__action__btn"
-                  onClick={() => {
-                    if (isPendingTxn(pendingTransactions, 'approve_staking')) return;
-                    onSeekApproval('time');
-                  }}
-                >
-                  <span>{txnButtonText(pendingTransactions, 'approve_staking', 'Approve')}</span>
-                </div>
-              )
-            }
-          </>
-        )}
-        {view === 1 && (
-          <>
-            {address && hasAllowance('memo')
-              ? (
-                <div
-                  className="field__action__btn"
-                  onClick={() => {
-                    if (isPendingTxn(pendingTransactions, 'unstaking')) return;
-                    onChangeStake('unstake');
-                  }}
-                >
-                  <span>{txnButtonText(pendingTransactions, 'unstaking', 'Unstake TIME')}</span>
-                </div>
-              )
-              : (
-                <div
-                  className="field__action__btn"
-                  onClick={() => {
-                    if (isPendingTxn(pendingTransactions, 'approve_unstaking')) return;
-                    onSeekApproval('memo');
-                  }}
-                >
-                  <span>{txnButtonText(pendingTransactions, 'approve_unstaking', 'Approve')}</span>
-                </div>
-              )
-            }
-          </>
-        )}
-      </div>
-    );
-  };
-  
   const onRenderUserData = (): ReactNode => {
     let layout: ReactNode = null;
     
     if (!!address) {
       layout = (
-        <div className='stake__user__data'>
+        <Grid item xs={6} className='stake__user__data card additional__card'>
           <div className='row'>
             <div className='row__label'>{'Your Balance'}</div>
             <div className='row__value'>
@@ -247,19 +139,19 @@ export function Stake(): ReactElement {
               {isAppLoading ? <Skeleton width="80px" /> : <>{`${trimmedMemoBalance} Token`}</>}
             </div>
           </div>
-          <div className='row'>
+          <div className='row divide--top'>
             <div className='row__label'>{'Wrapped Balance'}</div>
             <div className='row__value'>
               <Skeleton width="80px" /> {/* getSide().wrapTokenType */}
             </div>
           </div>
-          <div className='row'>
+          <div className='row exchange--rate'>
             <div className='row__label'>{'Exchange rate'}</div>
             <div className='row__value'>
               <Skeleton width="80px" />
             </div>
           </div>
-          <div className='row'>
+          <div className='row divide--top'>
             <div className='row__label'>{'Next Reward Amount'}</div>
             <div className='row__value'>
               {isAppLoading ? <Skeleton width="80px" /> : <>{`${nextRewardValue} Token`}</>}
@@ -277,18 +169,141 @@ export function Stake(): ReactElement {
               {isAppLoading ? <Skeleton width="80px" /> : <>{trim(Number(fiveDayRate) * 100, 4)}%</>}
             </div>
           </div>
-        </div>
+        </Grid>
       );
     }
     
     return layout;
   };
   
+  const onRenderStakingForm = (): ReactNode => {
+    let layout: ReactNode = null;
+  
+    if (!!address) {
+      layout = (
+        <div className="stake__form__wrap card additional__card">
+          <div className="stake__actions">
+            <div
+              onClick={changeView(0)}
+              className={cx('stake__actions__btn', { active: !view })}
+            >
+              <span>{'Stake'}</span>
+            </div>
+            <div
+              onClick={changeView(1)}
+              className={cx('stake__actions__btn', { active: view })}
+            >
+              <span>{'Unstake'}</span>
+            </div>
+          </div>
+          <div className="stake__form">
+            <div className='field'>
+              <OutlinedInput
+                notched
+                type="number"
+                labelWidth={0}
+                value={quantity}
+                placeholder="Amount"
+                inputProps={{
+                  className: "input",
+                }}
+                className="input__wrapper"
+                endAdornment={
+                  <InputAdornment position="end">
+                    <div onClick={setMax} className="input__btn">
+                      <p>Max</p>
+                    </div>
+                  </InputAdornment>
+                }
+                onChange={e => setQuantity(e.target.value)}
+              />
+              {address
+                && ((!hasAllowance('time') && view === 0) || (!hasAllowance('memo') && view === 1))
+                && (
+                  <p className='field__description'>
+                    Note: The "Approve" transaction is only needed when staking/unstaking for the first time; subsequent
+                    staking/unstaking only requires you to perform the "Stake" or "Unstake" transaction.
+                  </p>
+                )
+              }
+              {onRenderStakingFormButton()}
+            </div>
+          </div>
+        </div>
+      );
+    }
+  
+    return layout;
+  };
+  
+  const onRenderStakingFormButton = (): ReactElement => {
+    return (
+      <div className="field__action">
+        {view === 0 && (
+          <>
+            {address && hasAllowance('time')
+              ? (
+                <div
+                  className="field__action__btn btn__primary--fulfilled"
+                  onClick={() => {
+                    if (isPendingTxn(pendingTransactions, 'staking')) return;
+                    onChangeStake('stake');
+                  }}
+                >
+                  <span>{txnButtonText(pendingTransactions, 'staking', 'Stake TIME')}</span>
+                </div>
+              )
+              : (
+                <div
+                  className="field__action__btn btn__primary--fulfilled"
+                  onClick={() => {
+                    if (isPendingTxn(pendingTransactions, 'approve_staking')) return;
+                    onSeekApproval('time');
+                  }}
+                >
+                  <span>{txnButtonText(pendingTransactions, 'approve_staking', 'Approve')}</span>
+                </div>
+              )
+            }
+          </>
+        )}
+        {view === 1 && (
+          <>
+            {address && hasAllowance('memo')
+              ? (
+                <div
+                  className="field__action__btn btn__primary--fulfilled"
+                  onClick={() => {
+                    if (isPendingTxn(pendingTransactions, 'unstaking')) return;
+                    onChangeStake('unstake');
+                  }}
+                >
+                  <span>{txnButtonText(pendingTransactions, 'unstaking', 'Unstake TIME')}</span>
+                </div>
+              )
+              : (
+                <div
+                  className="field__action__btn btn__primary--fulfilled"
+                  onClick={() => {
+                    if (isPendingTxn(pendingTransactions, 'approve_unstaking')) return;
+                    onSeekApproval('memo');
+                  }}
+                >
+                  <span>{txnButtonText(pendingTransactions, 'approve_unstaking', 'Approve')}</span>
+                </div>
+              )
+            }
+          </>
+        )}
+      </div>
+    );
+  };
+  
   return (
     <div className="stake page">
       <Zoom in={true}>
         <>
-          <Grid container spacing={0} justifyContent="space-between" className="cards__grid">
+          <Grid container spacing={0} justifyContent="space-between" className="header__cards__grid">
             <Grid item lg={6} md={6} sm={6} xs={12} className="card welcome">
               <p className="card__title">{'Stake'}</p>
               <p className="card__value">
@@ -299,77 +314,69 @@ export function Stake(): ReactElement {
             <RebaseTimer />
           </Grid>
           <div className='stake__container'>
-            <Grid
-              container
-              className="stake__metrics"
-              justifyContent="space-between"
-            >
-              <Grid item className="metrics__card" md={3}>
-                <div className="metrics__card__inner">
-                  <div className="metrics__card__title">{'APY'}</div>
-                  <div className="metrics__card__value">
-                    {stakingAPY
-                      ? <>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</>
-                      : <Skeleton width="150px" />}
+            <div className="stake__container__main card">
+              <Grid
+                container
+                className="stake__metrics"
+                justifyContent="space-between"
+              >
+                <Grid item className="metrics__card" md={3}>
+                  <div className="metrics__card__inner">
+                    <div className="metrics__card__title">{'APY'}</div>
+                    <div className="metrics__card__value">
+                      {stakingAPY
+                        ? <>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</>
+                        : <Skeleton width="150px" />}
+                    </div>
                   </div>
-                </div>
+                </Grid>
+                <Grid item className="metrics__card" md={3}>
+                  <div className="metrics__card__inner">
+                    <div className="metrics__card__title">{'TVL'}</div>
+                    <div className="metrics__card__value">
+                      {stakingTVL
+                        ? (
+                          new Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                            maximumFractionDigits: 0,
+                            minimumFractionDigits: 0,
+                          }).format(stakingTVL)
+                        )
+                        : (
+                          <Skeleton width="150px" />
+                        )
+                      }
+                    </div>
+                  </div>
+                </Grid>
+                <Grid item className="metrics__card" md={3}>
+                  <div className="metrics__card__inner">
+                    <div className="metrics__card__title">{'Current Index'}</div>
+                    <div className="metrics__card__value">
+                      {currentIndex ? <>{trim(Number(currentIndex), 2)} TIME</> : <Skeleton width="150px" />}
+                    </div>
+                  </div>
+                </Grid>
               </Grid>
-              <Grid item className="metrics__card" md={3}>
-                <div className="metrics__card__inner">
-                  <div className="metrics__card__title">{'TVL'}</div>
-                  <div className="metrics__card__value">
-                    {stakingTVL
-                      ? (
-                        new Intl.NumberFormat('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
-                          maximumFractionDigits: 0,
-                          minimumFractionDigits: 0,
-                        }).format(stakingTVL)
-                      )
-                      : (
-                        <Skeleton width="150px" />
-                      )
-                    }
-                  </div>
-                </div>
-              </Grid>
-              <Grid item className="metrics__card" md={3}>
-                <div className="metrics__card__inner">
-                  <div className="metrics__card__title">{'Current Index'}</div>
-                  <div className="metrics__card__value">
-                    {currentIndex ? <>{trim(Number(currentIndex), 2)} TIME</> : <Skeleton width="150px" />}
-                  </div>
-                </div>
-              </Grid>
-            </Grid>
-            <div className='stake__inner'>
-              {!!address && (
-                <div className="stake__actions">
-                  <div
-                    onClick={changeView(0)}
-                    className={cx('stake__actions__btn', { active: !view })}
-                  >
-                    <span>{'Stake'}</span>
-                  </div>
-                  <div
-                    onClick={changeView(1)}
-                    className={cx('stake__actions__btn', { active: view })}
-                  >
-                    <span>{'Unstake'}</span>
-                  </div>
-                </div>
-              )}
-      
               {onRenderConnectButton()}
-      
-              {!!address && (
-                <div className="stake__content">
-                  {onRenderForm()}
-                  {onRenderUserData()}
-                </div>
-              )}
             </div>
+  
+            {!!address && (
+             <></>
+            )}
+    
+            {!!address && (
+              <Grid
+                container
+                wrap={'nowrap'}
+                className="stake__additional"
+                justifyContent="space-between"
+              >
+                {onRenderUserData()}
+                {onRenderStakingForm()}
+              </Grid>
+            )}
           </div>
         </>
       </Zoom>
