@@ -12,4 +12,8 @@ export interface BondAddresses {
 
 export interface NetworkAddresses {
   [Networks.AVAX]: BondAddresses;
+  [Networks.ETH]: BondAddresses;
+  [Networks.MATIC]: BondAddresses;
+  [Networks.BNB]: BondAddresses;
+  [Networks.FTM]: BondAddresses;
 }

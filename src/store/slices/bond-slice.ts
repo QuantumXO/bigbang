@@ -1,19 +1,19 @@
-import { BigNumber, constants, ethers } from "ethers";
-import { getMarketPrice, getTokenPrice, sleep } from "../../services/helpers";
-import { calculateUserBondDetails, fetchAccountSuccess, getBalances } from "./account-slice";
-import { getAddresses } from "../../constants";
-import { clearPendingTxn, fetchPendingTxns } from "./pending-txns-slice";
-import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
-import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
-import { Bond } from "../../services/helpers/bond/bond";
-import { Networks } from "../../constants/blockchain";
-import { getBondCalculator } from "../../services/helpers/bond-calculator";
-import { RootState } from "../store";
-import { avaxTime, wavax } from "../../services/helpers/bond";
-import { error, info, success, warning } from "../slices/messages-slice";
-import { messages } from "../../constants/messages";
-import { getGasPrice } from "../../services/helpers/get-gas-price";
-import { metamaskErrorWrap } from "../../services/helpers/metamask-error-wrap";
+import { BigNumber, constants, ethers } from 'ethers';
+import { getMarketPrice, getTokenPrice, sleep } from '@services/helpers';
+import { calculateUserBondDetails, fetchAccountSuccess, getBalances } from './account-slice';
+import { getAddresses } from '../../constants';
+import { clearPendingTxn, fetchPendingTxns } from './pending-txns-slice';
+import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
+import { Bond } from '@services/helpers/bond/bond';
+import { Networks } from '@constants/blockchain';
+import { getBondCalculator } from '@services/helpers/bond-calculator';
+import { RootState } from '../store';
+import { wavax } from '@services/helpers/bond';
+import { error, info, success, warning } from '../slices/messages-slice';
+import { messages } from '@constants/messages';
+import { getGasPrice } from '@services/helpers/get-gas-price';
+import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
 
 interface IChangeApproval {
   bond: Bond;
@@ -22,58 +22,57 @@ interface IChangeApproval {
   address: string;
 }
 
-export const changeApproval = createAsyncThunk("bonding/changeApproval", async ({
-                                                                                  bond,
-                                                                                  provider,
-                                                                                  networkID,
-                                                                                  address
-                                                                                }: IChangeApproval, { dispatch }) => {
-  if (!provider) {
-    dispatch(warning({ text: messages.please_connect_wallet }));
-    return;
-  }
-  
-  const signer = provider.getSigner();
-  const reserveContract = bond.getContractForReserve(networkID, signer);
-  
-  let approveTx;
-  try {
-    const gasPrice = await getGasPrice(provider);
-    const bondAddr = bond.getAddressForBond(networkID);
-    approveTx = await reserveContract.approve(bondAddr, constants.MaxUint256, { gasPrice });
-    dispatch(
-      fetchPendingTxns({
-        txnHash: approveTx.hash,
-        text: "Approving " + bond.displayName,
-        type: "approve_" + bond.name
+export const changeApproval = createAsyncThunk(
+  'bonding/changeApproval',
+  async ({ bond, provider, networkID, address }: IChangeApproval,
+  { dispatch }) => {
+    if (!provider) {
+      dispatch(warning({ text: messages.please_connect_wallet }));
+      return;
+    }
+    
+    const signer = provider.getSigner();
+    const reserveContract = bond.getContractForReserve(networkID, signer);
+    
+    let approveTx;
+    try {
+      const gasPrice = await getGasPrice(provider);
+      const bondAddr = bond.getAddressForBond(networkID);
+      approveTx = await reserveContract.approve(bondAddr, constants.MaxUint256, { gasPrice });
+      dispatch(
+        fetchPendingTxns({
+          txnHash: approveTx.hash,
+          text: 'Approving ' + bond.displayName,
+          type: 'approve_' + bond.name
+        })
+      );
+      await approveTx.wait();
+      dispatch(success({ text: messages.tx_successfully_send }));
+    } catch (err: any) {
+      metamaskErrorWrap(err, dispatch);
+    } finally {
+      if (approveTx) {
+        dispatch(clearPendingTxn(approveTx.hash));
+      }
+    }
+    
+    await sleep(2);
+    
+    let allowance = '0';
+    
+    allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
+    
+    return dispatch(
+      fetchAccountSuccess({
+        bonds: {
+          [bond.name]: {
+            allowance: Number(allowance)
+          }
+        }
       })
     );
-    await approveTx.wait();
-    dispatch(success({ text: messages.tx_successfully_send }));
-  } catch (err: any) {
-    metamaskErrorWrap(err, dispatch);
-  } finally {
-    if (approveTx) {
-      dispatch(clearPendingTxn(approveTx.hash));
-    }
   }
-  
-  await sleep(2);
-  
-  let allowance = "0";
-  
-  allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
-  
-  return dispatch(
-    fetchAccountSuccess({
-      bonds: {
-        [bond.name]: {
-          allowance: Number(allowance)
-        }
-      }
-    })
-  );
-});
+);
 
 interface ICalcBondDetails {
   bond: Bond;
@@ -94,111 +93,110 @@ export interface IBondDetails {
   maxBondPriceToken: number;
 }
 
-export const calcBondDetails = createAsyncThunk("bonding/calcBondDetails", async ({
-                                                                                    bond,
-                                                                                    value,
-                                                                                    provider,
-                                                                                    networkID
-                                                                                  }: ICalcBondDetails, { dispatch }) => {
-  if (!value) {
-    value = "0";
-  }
-  
-  const amountInWei = ethers.utils.parseEther(value);
-  
-  let bondPrice = 0,
-    bondDiscount = 0,
-    valuation = 0,
-    bondQuote = 0;
-  
-  const addresses = getAddresses(networkID);
-  
-  const bondContract = bond.getContractForBond(networkID, provider);
-  const bondCalcContract = getBondCalculator(networkID, provider);
-  
-  const terms = await bondContract.terms();
-  const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9);
-  
-  let marketPrice = await getMarketPrice(networkID, provider);
-  
-  const mimPrice = getTokenPrice("MIM");
-  marketPrice = (marketPrice / Math.pow(10, 9)) * mimPrice;
-  
-  try {
-    bondPrice = await bondContract.bondPriceInUSD();
-    
-    if (bond.name === avaxTime.name) {
-      const avaxPrice = getTokenPrice("AVAX");
-      bondPrice = bondPrice * avaxPrice;
+export const calcBondDetails = createAsyncThunk(
+  'bonding/calcBondDetails',
+  async ({ bond, value, provider, networkID }: ICalcBondDetails,
+  { dispatch }) => {
+    if (!value) {
+      value = '0';
     }
     
-    bondDiscount = (marketPrice * Math.pow(10, 18) - bondPrice) / bondPrice;
-  } catch (e) {
-    console.log("error getting bondPriceInUSD", e);
-  }
-  
-  let maxBondPriceToken = 0;
-  const maxBodValue = ethers.utils.parseEther("1");
-  
-  if (bond.isLP) {
-    valuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), amountInWei);
-    bondQuote = await bondContract.payoutFor(valuation);
-    bondQuote = bondQuote / Math.pow(10, 9);
+    const amountInWei = ethers.utils.parseEther(value);
     
-    const maxValuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), maxBodValue);
-    const maxBondQuote = await bondContract.payoutFor(maxValuation);
-    maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9));
-  } else {
-    bondQuote = await bondContract.payoutFor(amountInWei);
-    bondQuote = bondQuote / Math.pow(10, 18);
+    let bondPrice = 0,
+      bondDiscount = 0,
+      valuation = 0,
+      bondQuote = 0;
     
-    const maxBondQuote = await bondContract.payoutFor(maxBodValue);
-    maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -18));
-  }
-  
-  if (!!value && bondQuote > maxBondPrice) {
-    dispatch(error({ text: messages.try_mint_more(maxBondPrice.toFixed(2).toString()) }));
-  }
-  
-  // Calculate bonds purchased
-  const token = bond.getContractForReserve(networkID, provider);
-  let purchased = await token.balanceOf(addresses.TREASURY_ADDRESS);
-  
-  if (bond.isLP) {
-    const assetAddress = bond.getAddressForReserve(networkID);
-    const markdown = await bondCalcContract.markdown(assetAddress);
+    const addresses = getAddresses(networkID);
     
-    purchased = await bondCalcContract.valuation(assetAddress, purchased);
-    purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 9));
+    const bondContract = bond.getContractForBond(networkID, provider);
+    const bondCalcContract = getBondCalculator(networkID, provider);
     
-    if (bond.name === avaxTime.name) {
-      const avaxPrice = getTokenPrice("AVAX");
-      purchased = purchased * avaxPrice;
+    const terms = await bondContract.terms();
+    const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9);
+    
+    let marketPrice = await getMarketPrice(networkID, provider);
+    
+    const mimPrice = getTokenPrice('MIM');
+    marketPrice = (marketPrice / Math.pow(10, 9)) * mimPrice;
+    
+    try {
+      bondPrice = await bondContract.bondPriceInUSD();
+      
+      /*if (bond.name === avaxTime.name) {
+        const avaxPrice = getTokenPrice('AVAX');
+        bondPrice = bondPrice * avaxPrice;
+      }*/
+      
+      bondDiscount = (marketPrice * Math.pow(10, 18) - bondPrice) / bondPrice;
+    } catch (e) {
+      console.log('error getting bondPriceInUSD', e);
     }
-  } else {
-    if (bond.tokensInStrategy) {
-      purchased = BigNumber.from(purchased).add(BigNumber.from(bond.tokensInStrategy)).toString();
-    }
-    purchased = purchased / Math.pow(10, 18);
     
-    if (bond.name === wavax.name) {
-      const avaxPrice = getTokenPrice("AVAX");
-      purchased = purchased * avaxPrice;
+    let maxBondPriceToken = 0;
+    const maxBodValue = ethers.utils.parseEther('1');
+    
+    if (bond.isLP) {
+      valuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), amountInWei);
+      bondQuote = await bondContract.payoutFor(valuation);
+      bondQuote = bondQuote / Math.pow(10, 9);
+      
+      const maxValuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), maxBodValue);
+      const maxBondQuote = await bondContract.payoutFor(maxValuation);
+      maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9));
+    } else {
+      bondQuote = await bondContract.payoutFor(amountInWei);
+      bondQuote = bondQuote / Math.pow(10, 18);
+      
+      const maxBondQuote = await bondContract.payoutFor(maxBodValue);
+      maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -18));
     }
+    
+    if (!!value && bondQuote > maxBondPrice) {
+      dispatch(error({ text: messages.try_mint_more(maxBondPrice.toFixed(2).toString()) }));
+    }
+    
+    // Calculate bonds purchased
+    const token = bond.getContractForReserve(networkID, provider);
+    let purchased = await token.balanceOf(addresses.TREASURY_ADDRESS);
+    
+    if (bond.isLP) {
+      const assetAddress = bond.getAddressForReserve(networkID);
+      const markdown = await bondCalcContract.markdown(assetAddress);
+      
+      purchased = await bondCalcContract.valuation(assetAddress, purchased);
+      purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 9));
+      
+      /*if (bond.name === avaxTime.name) {
+        const avaxPrice = getTokenPrice('AVAX');
+        purchased = purchased * avaxPrice;
+      }*/
+    } else {
+      if (bond.tokensInStrategy) {
+        purchased = BigNumber.from(purchased).add(BigNumber.from(bond.tokensInStrategy)).toString();
+      }
+      purchased = purchased / Math.pow(10, 18);
+      
+      if (bond.name === wavax.name) {
+        const avaxPrice = getTokenPrice('AVAX');
+        purchased = purchased * avaxPrice;
+      }
+    }
+    
+    return {
+      bond: bond.name,
+      bondDiscount,
+      bondQuote,
+      purchased,
+      vestingTerm: Number(terms.vestingTerm),
+      maxBondPrice,
+      bondPrice: bondPrice / Math.pow(10, 18),
+      marketPrice,
+      maxBondPriceToken
+    };
   }
-  
-  return {
-    bond: bond.name,
-    bondDiscount,
-    bondQuote,
-    purchased,
-    vestingTerm: Number(terms.vestingTerm),
-    maxBondPrice,
-    bondPrice: bondPrice / Math.pow(10, 18),
-    marketPrice,
-    maxBondPriceToken
-  };
-});
+);
 
 interface IBondAsset {
   value: string;
@@ -210,7 +208,7 @@ interface IBondAsset {
   useAvax: boolean;
 }
 
-export const bondAsset = createAsyncThunk("bonding/bondAsset", async ({
+export const bondAsset = createAsyncThunk('bonding/bondAsset', async ({
                                                                         value,
                                                                         address,
                                                                         bond,
@@ -221,7 +219,7 @@ export const bondAsset = createAsyncThunk("bonding/bondAsset", async ({
                                                                       }: IBondAsset, { dispatch }) => {
   const depositorAddress = address;
   const acceptedSlippage = slippage / 100 || 0.005;
-  const valueInWei = ethers.utils.parseUnits(value, "ether");
+  const valueInWei = ethers.utils.parseUnits(value, 'ether');
   const signer = provider.getSigner();
   const bondContract = bond.getContractForBond(networkID, signer);
   
@@ -240,8 +238,8 @@ export const bondAsset = createAsyncThunk("bonding/bondAsset", async ({
     dispatch(
       fetchPendingTxns({
         txnHash: bondTx.hash,
-        text: "Bonding " + bond.displayName,
-        type: "bond_" + bond.name
+        text: 'Bonding ' + bond.displayName,
+        type: 'bond_' + bond.name
       })
     );
     await bondTx.wait();
@@ -268,7 +266,7 @@ interface IRedeemBond {
   autostake: boolean;
 }
 
-export const redeemBond = createAsyncThunk("bonding/redeemBond", async ({
+export const redeemBond = createAsyncThunk('bonding/redeemBond', async ({
                                                                           address,
                                                                           bond,
                                                                           networkID,
@@ -288,11 +286,11 @@ export const redeemBond = createAsyncThunk("bonding/redeemBond", async ({
     const gasPrice = await getGasPrice(provider);
     
     redeemTx = await bondContract.redeem(address, autostake === true, { gasPrice });
-    const pendingTxnType = "redeem_bond_" + bond.name + (autostake === true ? "_autostake" : "");
+    const pendingTxnType = 'redeem_bond_' + bond.name + (autostake === true ? '_autostake' : '');
     dispatch(
       fetchPendingTxns({
         txnHash: redeemTx.hash,
-        text: "Redeeming " + bond.displayName,
+        text: 'Redeeming ' + bond.displayName,
         type: pendingTxnType
       })
     );
@@ -332,7 +330,7 @@ const setBondState = (state: IBondSlice, payload: any) => {
 };
 
 const bondingSlice = createSlice({
-  name: "bonding",
+  name: 'bonding',
   initialState,
   reducers: {
     fetchBondSuccess(state, action) {
@@ -341,17 +339,17 @@ const bondingSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(calcBondDetails.pending, state => {
-        state.loading = true;
-      })
-      .addCase(calcBondDetails.fulfilled, (state, action) => {
-        setBondState(state, action.payload);
-        state.loading = false;
-      })
-      .addCase(calcBondDetails.rejected, (state, { error }) => {
-        state.loading = false;
-        console.log(error);
-      });
+    .addCase(calcBondDetails.pending, state => {
+      state.loading = true;
+    })
+    .addCase(calcBondDetails.fulfilled, (state, action) => {
+      setBondState(state, action.payload);
+      state.loading = false;
+    })
+    .addCase(calcBondDetails.rejected, (state, { error }) => {
+      state.loading = false;
+      console.log(error);
+    });
   }
 });
 

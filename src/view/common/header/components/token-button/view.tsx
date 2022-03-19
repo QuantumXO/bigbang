@@ -13,7 +13,7 @@ interface IToken {
 
 export function TokenButton(): ReactElement {
   const [anchorEl, setAnchorEl] = useState(null);
-  const isEthereumAPIAvailable = window.ethereum;
+  const isEthereumAPIAvailable: boolean = !!window.ethereum;
   const isOpen: boolean = Boolean(anchorEl);
   
   const handleClick = (event: any): void => {
@@ -49,10 +49,7 @@ export function TokenButton(): ReactElement {
   
   return (
     <div
-      className={cx(
-        'header__side__btn',
-        { active: isOpen }
-      )}
+      className={cx('header__side__btn', { active: isOpen })}
       onMouseEnter={(e): void => handleClick(e)}
       onMouseLeave={(e): void => handleClick(e)}
     >

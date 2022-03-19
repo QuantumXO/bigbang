@@ -1,8 +1,8 @@
 {
-  "short_name": "Wonderland",
+  "short_name": "BigBang",
   "start_url": ".",
   "homepage": "./",
-  "name": "Wonderland",
+  "name": "BigBang",
   "launch_path": "/public/index.html",
   "icons": [
     {

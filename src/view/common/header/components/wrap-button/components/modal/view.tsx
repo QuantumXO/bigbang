@@ -21,7 +21,7 @@ interface IAdvancedSettingsProps {
 
 export function WrapModal({ open, handleClose }: IAdvancedSettingsProps): ReactElement {
   const dispatch = useDispatch();
-  const { provider, address, chainID, checkWrongNetwork } = useWeb3Context();
+  const { provider, address, chainID, checkIsWrongNetwork } = useWeb3Context();
   const wrapBond: string = 'LIGHT'
   const unwrapBond: string = 'wLIGHT'
   
@@ -86,7 +86,7 @@ export function WrapModal({ open, handleClose }: IAdvancedSettingsProps): ReactE
   const getBalance = (): string => isWrap ? `${trimmedMemoBalance} ${wrapBond}` : `${trimmedWmemoBalance} ${unwrapBond}`;
   
   const handleOnWrap = async () => {
-    if (await checkWrongNetwork()) return;
+    if (await checkIsWrongNetwork()) return;
     
     if (value === '' || parseFloat(value) === 0) {
       dispatch(warning({ text: isWrap ? messages.before_wrap : messages.before_unwrap }));
@@ -97,7 +97,7 @@ export function WrapModal({ open, handleClose }: IAdvancedSettingsProps): ReactE
   };
   
   const onSeekApproval = async () => {
-    if (await checkWrongNetwork()) return;
+    if (await checkIsWrongNetwork()) return;
     
     await dispatch(changeApproval({ address, provider, networkID: chainID }));
   };

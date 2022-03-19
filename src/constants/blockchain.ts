@@ -1,7 +1,4 @@
+import { IBlockchain } from '@models/blockchain';
+
 export const TOKEN_DECIMALS = 9;
-
-export enum Networks {
-  AVAX = 43114,
-}
-
-export const DEFAULD_NETWORK = Networks.AVAX;
+export const DEFAULT_NETWORK = IBlockchain.NetworksEnum.AVAX;

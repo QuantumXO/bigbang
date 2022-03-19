@@ -1,4 +1,4 @@
-import { Networks } from "./blockchain";
+import { IBlockchain } from "@models/blockchain";
 
 const AVAX_MAINNET = {
   DAO_ADDRESS: "0x78a9e536EBdA08b5b9EDbE5785C9D1D50fA3278C",
@@ -14,7 +14,7 @@ const AVAX_MAINNET = {
 };
 
 export const getAddresses = (networkID: number) => {
-  if (networkID === Networks.AVAX) return AVAX_MAINNET;
+  if (networkID === IBlockchain.NetworksEnum.AVAX) return AVAX_MAINNET;
   
   throw Error("Network don't support");
 };

@@ -21,7 +21,7 @@ interface IBondPurchaseProps {
 
 export function MintTab({ bond, slippage }: IBondPurchaseProps): ReactElement {
   const dispatch = useDispatch();
-  const { provider, address, chainID, checkWrongNetwork } = useWeb3Context();
+  const { provider, address, chainID, checkIsWrongNetwork } = useWeb3Context();
 
   const [quantity, setQuantity] = useState<string>('');
   const [useAvax, setUseAvax] = useState<boolean>(false);
@@ -47,7 +47,7 @@ export function MintTab({ bond, slippage }: IBondPurchaseProps): ReactElement {
   };
 
   async function onBond() {
-    if (await checkWrongNetwork()) return;
+    if (await checkIsWrongNetwork()) return;
 
     if (quantity === '') {
       dispatch(warning({ text: messages.before_minting }));
@@ -105,7 +105,7 @@ export function MintTab({ bond, slippage }: IBondPurchaseProps): ReactElement {
 
 
   const onSeekApproval = async () => {
-    if (!await checkWrongNetwork()) {
+    if (!await checkIsWrongNetwork()) {
       dispatch(changeApproval({ address, bond, provider, networkID: chainID }));
     }
   };

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, ReactElement, ReactNode } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Grid, InputAdornment, OutlinedInput, Zoom } from '@material-ui/core';
+import { Grid, InputAdornment, OutlinedInput, Zoom, Slider } from '@material-ui/core';
 import RebaseTimer from './components/rebaseTimer';
 import { trim } from '@services/helpers';
 import { changeStake, changeApproval } from '@store/slices/stake-thunk';
@@ -14,9 +14,17 @@ import { warning } from '@store/slices/messages-slice';
 
 import './styles.scss';
 
+const stakeSliderMarks = [
+  { value: 0, label: '0%' },
+  { value: 25, label: '25%' },
+  { value: 50, label: '50%' },
+  { value: 75, label: '75%' },
+  { value: 100, label: '100%' },
+];
+
 export function Stake(): ReactElement {
   const dispatch = useDispatch();
-  const { provider, address, connect, chainID, checkWrongNetwork } = useWeb3Context();
+  const { provider, address, connect, chainID, checkIsWrongNetwork } = useWeb3Context();
   
   const [view, setView] = useState(0);
   const [quantity, setQuantity] = useState<string>('');
@@ -53,6 +61,14 @@ export function Stake(): ReactElement {
     return state.pendingTransactions;
   });
   
+  const trimmedMemoBalance: string = trim(Number(memoBalance), 6);
+  const trimmedStakingAPY: string = trim(stakingAPY * 100, 1);
+  const stakingRebasePercentage: string = trim(stakingRebase * 100, 4);
+  const nextRewardValue: string = trim((
+    Number(stakingRebasePercentage) / 100) * Number(trimmedMemoBalance),
+    6
+  );
+  
   const setMax = (): void => {
     if (view === 0) {
       setQuantity(timeBalance);
@@ -62,13 +78,13 @@ export function Stake(): ReactElement {
   };
   
   const onSeekApproval = async (token: string): Promise<void> => {
-    if (await checkWrongNetwork()) return;
+    if (await checkIsWrongNetwork()) return;
     
     await dispatch(changeApproval({ address, token, provider, networkID: chainID }));
   };
   
   const onChangeStake = async (action: string): Promise<void> => {
-    if (await checkWrongNetwork()) return;
+    if (await checkIsWrongNetwork()) return;
     if (quantity === '' || parseFloat(quantity) === 0) {
       dispatch(warning({ text: action === 'stake' ? messages.before_stake : messages.before_unstake }));
     } else {
@@ -78,7 +94,7 @@ export function Stake(): ReactElement {
   };
   
   const hasAllowance = useCallback(
-    token => {
+    (token): boolean | 0 => {
       if (token === 'time') return stakeAllowance > 0;
       if (token === 'memo') return unstakeAllowance > 0;
       return 0;
@@ -91,13 +107,12 @@ export function Stake(): ReactElement {
     setQuantity('');
   };
   
-  const trimmedMemoBalance: string = trim(Number(memoBalance), 6);
-  const trimmedStakingAPY: string = trim(stakingAPY * 100, 1);
-  const stakingRebasePercentage: string = trim(stakingRebase * 100, 4);
-  const nextRewardValue: string = trim((
-    Number(stakingRebasePercentage) / 100) * Number(trimmedMemoBalance),
-    6
-  );
+  const onHandleStakeSlider = (value: number | number[]): void => {
+    const maxValue: number = (view === 0) ? Number(timeBalance) : Number(memoBalance);
+    const newValue: number = (value as number) * maxValue / 100;
+    
+    setQuantity((''+newValue) as string);
+  };
   
   const onRenderConnectButton = (): ReactNode => {
     let layout: ReactNode = null;
@@ -176,66 +191,6 @@ export function Stake(): ReactElement {
     return layout;
   };
   
-  const onRenderStakingForm = (): ReactNode => {
-    let layout: ReactNode = null;
-  
-    if (!!address) {
-      layout = (
-        <div className="stake__form__wrap card additional__card">
-          <div className="stake__actions">
-            <div
-              onClick={changeView(0)}
-              className={cx('stake__actions__btn', { active: !view })}
-            >
-              <span>{'Stake'}</span>
-            </div>
-            <div
-              onClick={changeView(1)}
-              className={cx('stake__actions__btn', { active: view })}
-            >
-              <span>{'Unstake'}</span>
-            </div>
-          </div>
-          <div className="stake__form">
-            <div className='field'>
-              <OutlinedInput
-                notched
-                type="number"
-                labelWidth={0}
-                value={quantity}
-                placeholder="Amount"
-                inputProps={{
-                  className: "input",
-                }}
-                className="input__wrapper"
-                endAdornment={
-                  <InputAdornment position="end">
-                    <div onClick={setMax} className="input__btn">
-                      <p>Max</p>
-                    </div>
-                  </InputAdornment>
-                }
-                onChange={e => setQuantity(e.target.value)}
-              />
-              {address
-                && ((!hasAllowance('time') && view === 0) || (!hasAllowance('memo') && view === 1))
-                && (
-                  <p className='field__description'>
-                    Note: The "Approve" transaction is only needed when staking/unstaking for the first time; subsequent
-                    staking/unstaking only requires you to perform the "Stake" or "Unstake" transaction.
-                  </p>
-                )
-              }
-              {onRenderStakingFormButton()}
-            </div>
-          </div>
-        </div>
-      );
-    }
-  
-    return layout;
-  };
-  
   const onRenderStakingFormButton = (): ReactElement => {
     return (
       <div className="field__action">
@@ -297,6 +252,94 @@ export function Stake(): ReactElement {
         )}
       </div>
     );
+  };
+  
+  const onRenderStakeFormSlider = (): ReactElement => {
+    const maxValue: number = (view === 0) ? Number(timeBalance) : Number(memoBalance);
+    const value: number = (quantity as unknown as number || 0) * 100 / maxValue;
+    
+    return (
+      <div className="stake__form__slider__wrap">
+        <Slider
+          min={0}
+          max={100}
+          // step={25}
+          value={value}
+          classes={{
+            rail: 'rail',
+            track: 'track',
+            thumb: 'thumb',
+            mark: 'mark',
+            markLabel: 'mark__label'
+          }}
+          defaultValue={0}
+          className="slider"
+          marks={stakeSliderMarks}
+          onChange={(e: React.ChangeEvent<{}>, newValue: number | number[]) => onHandleStakeSlider(newValue)}
+        />
+      </div>
+    );
+  };
+  
+  const onRenderStakingForm = (): ReactNode => {
+    let layout: ReactNode = null;
+  
+    if (!!address) {
+      layout = (
+        <div className="stake__form__wrap card additional__card">
+          <div className="stake__actions">
+            <div
+              onClick={changeView(0)}
+              className={cx('stake__actions__btn', { active: !view })}
+            >
+              <span>{'Stake'}</span>
+            </div>
+            <div
+              onClick={changeView(1)}
+              className={cx('stake__actions__btn', { active: view })}
+            >
+              <span>{'Unstake'}</span>
+            </div>
+          </div>
+          <div className="stake__form">
+            <div className='field'>
+              <OutlinedInput
+                notched
+                type="number"
+                labelWidth={0}
+                value={quantity}
+                placeholder="Amount"
+                inputProps={{
+                  className: "input",
+                }}
+                className="input__wrapper"
+                endAdornment={
+                  <InputAdornment position="end">
+                    <div onClick={setMax} className="input__btn">
+                      <p>Max</p>
+                    </div>
+                  </InputAdornment>
+                }
+                onChange={e => setQuantity(e.target.value)}
+              />
+              {onRenderStakeFormSlider()}
+              {address
+                && ((!hasAllowance('time') && view === 0) || (!hasAllowance('memo') && view === 1))
+                && (
+                  <p className='stake__form__description'>
+                    Note: The "Approve" transaction is only needed when staking/unstaking for the first time;
+                    subsequent staking/unstaking only requires you to perform the "Stake" or "Unstake" transaction.
+                  </p>
+                )
+              }
+              {onRenderStakingFormButton()}
+            </div>
+          </div>
+        </div>
+      );
+    }
+  
+    return layout;
   };
   
   return (

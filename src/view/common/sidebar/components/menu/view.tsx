@@ -87,11 +87,13 @@ export const SidebarMenu = (): ReactElement => {
       <div className="sidebar--header">
         <Link to="/" className="sidebar--logo">{'Logo'}</Link>
         {address && (
-          <div className="wallet--link">
-            <Link to={`https://cchain.explorer.avax.network/address/${address}`} target="_blank">
-              <span>{shorten(address)}</span>
-            </Link>
-          </div>
+          <Link
+            to={`https://cchain.explorer.avax.network/address/${address}`}
+            className="wallet--link"
+            target="_blank"
+          >
+            <span>{shorten(address)}</span>
+          </Link>
         )}
       </div>
       {onRenderMenu()}

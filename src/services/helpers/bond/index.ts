@@ -1,4 +1,4 @@
-import { Networks } from "@constants/blockchain";
+import { IBlockchain } from '@models/blockchain';
 import { CustomLPBond, LPBond } from "./lp-bond";
 import { CustomBond, StableBond } from "./stable-bond";
 
@@ -15,7 +15,7 @@ import {
   WavaxBondContract
 } from "../../abi";
 
-export const mim = new StableBond({
+/*export const mim = new StableBond({
   name: "mim",
   displayName: "MIM",
   bondToken: "MIM",
@@ -29,7 +29,7 @@ export const mim = new StableBond({
     }
   },
   tokensInStrategy: "60500000000000000000000000"
-});
+});*/
 
 export const wavax = new CustomBond({
   name: "wavax",
@@ -39,15 +39,31 @@ export const wavax = new CustomBond({
   bondContractABI: WavaxBondContract,
   reserveContractAbi: StableReserveContract,
   networkAddrs: {
-    [Networks.AVAX]: {
+    [IBlockchain.NetworksEnum.AVAX]: {
       bondAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318",
       reserveAddress: "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
-    }
+    },
+    [IBlockchain.NetworksEnum.FTM]: {
+      bondAddress: "0x1111",
+      reserveAddress: "0x1111"
+    },
+    [IBlockchain.NetworksEnum.BNB]: {
+      bondAddress: "0x1111",
+      reserveAddress: "0x1111"
+    },
+    [IBlockchain.NetworksEnum.MATIC]: {
+      bondAddress: "0x1111",
+      reserveAddress: "0x1111"
+    },
+    [IBlockchain.NetworksEnum.ETH]: {
+      bondAddress: "0x1111",
+      reserveAddress: "0x1111"
+    },
   },
   tokensInStrategy: "756916000000000000000000"
 });
 
-export const mimTime = new LPBond({
+/*export const mimTime = new LPBond({
   name: "mim_time_lp",
   displayName: "TIME-MIM LP",
   bondToken: "MIM",
@@ -61,9 +77,9 @@ export const mimTime = new LPBond({
     }
   },
   lpUrl: "https://www.traderjoexyz.com/#/pool/0x130966628846BFd36ff31a822705796e8cb8C18D/0xb54f16fB19478766A268F172C9480f8da1a7c9C3"
-});
+});*/
 
-export const avaxTime = new CustomLPBond({
+/*export const avaxTime = new CustomLPBond({
   name: "avax_time_lp",
   displayName: "TIME-AVAX LP",
   bondToken: "AVAX",
@@ -77,6 +93,6 @@ export const avaxTime = new CustomLPBond({
     }
   },
   lpUrl: "https://www.traderjoexyz.com/#/pool/AVAX/0xb54f16fB19478766A268F172C9480f8da1a7c9C3"
-});
+});*/
 
-export default [mim, wavax, mimTime, avaxTime];
+export default [wavax];

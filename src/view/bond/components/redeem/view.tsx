@@ -20,7 +20,7 @@ interface IBondRedeem {
 
 export function BondRedeem({ bond }: IBondRedeem): ReactElement {
   const dispatch = useDispatch();
-  const { provider, address, chainID, checkWrongNetwork } = useWeb3Context();
+  const { provider, address, chainID, checkIsWrongNetwork } = useWeb3Context();
 
   const isBondLoading: boolean = useSelector<IReduxState, boolean>(state => state.bonding.loading ?? true);
   const currentBlockTime: number = useSelector<IReduxState, number>(state => {
@@ -38,7 +38,7 @@ export function BondRedeem({ bond }: IBondRedeem): ReactElement {
   });
 
   async function onRedeem(autostake: boolean) {
-    if (await checkWrongNetwork()) return;
+    if (await checkIsWrongNetwork()) return;
 
     if (bond.interestDue === 0 || bond.pendingPayout === 0) {
       dispatch(warning({ text: messages.nothing_to_claim }));

@@ -32,11 +32,11 @@
     text-decoration: none;
 
     .wallet--link {
-      margin: 10px;
-
+      margin-top: 10px;
+      text-decoration: none;
       span {
-        font-size: 14px;
-        color: #FFFFFF;
+        color: #333333;
+        font: 400 12px/14px $basic_font_family;
       }
     }
   }
