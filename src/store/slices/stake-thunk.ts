@@ -5,7 +5,7 @@ import { clearPendingTxn, fetchPendingTxns, getStakingTypeText } from "./pending
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchAccountSuccess, getBalances } from "./account-slice";
 import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
-import { Networks } from "../../constants/blockchain";
+import { IBlockchain } from "@models/blockchain";
 import { info, success, warning } from "../../store/slices/messages-slice";
 import { messages } from "../../constants/messages";
 import { getGasPrice } from "../../services/helpers/get-gas-price";
@@ -16,7 +16,7 @@ interface IChangeApproval {
   token: string;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   address: string;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
 }
 
 export const changeApproval = createAsyncThunk("stake/changeApproval", async ({
@@ -81,7 +81,7 @@ interface IChangeStake {
   value: string;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   address: string;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
 }
 
 export const changeStake = createAsyncThunk("stake/changeStake", async ({

@@ -13,6 +13,7 @@ const AVAX_MAINNET = {
   WMEMO_ADDRESS: "0x0da67235dD5787D67955420C84ca1cEcd4E5Bb3b"
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const getAddresses = (networkID: number) => {
   if (networkID === IBlockchain.NetworksEnum.AVAX) return AVAX_MAINNET;
   

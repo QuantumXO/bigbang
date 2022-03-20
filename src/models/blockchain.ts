@@ -1,4 +1,4 @@
-export declare namespace IBlockchain {
+export namespace IBlockchain {
   export enum NetworksEnum {
     AVAX = 43114,
     ETH = 1, // Ethereum

@@ -1,4 +1,4 @@
-import { Networks } from "@constants/blockchain";
+import { IBlockchain } from "@models//blockchain";
 
 export enum BondType {
   StableAsset,
@@ -11,9 +11,9 @@ export interface BondAddresses {
 }
 
 export interface NetworkAddresses {
-  [Networks.AVAX]: BondAddresses;
-  [Networks.ETH]: BondAddresses;
-  [Networks.MATIC]: BondAddresses;
-  [Networks.BNB]: BondAddresses;
-  [Networks.FTM]: BondAddresses;
+  [IBlockchain.NetworksEnum.AVAX]: BondAddresses;
+  [IBlockchain.NetworksEnum.ETH]: BondAddresses;
+  [IBlockchain.NetworksEnum.MATIC]: BondAddresses;
+  [IBlockchain.NetworksEnum.BNB]: BondAddresses;
+  [IBlockchain.NetworksEnum.FTM]: BondAddresses;
 }

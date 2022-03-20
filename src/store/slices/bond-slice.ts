@@ -6,7 +6,7 @@ import { clearPendingTxn, fetchPendingTxns } from './pending-txns-slice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Bond } from '@services/helpers/bond/bond';
-import { Networks } from '@constants/blockchain';
+import { IBlockchain } from '@models//blockchain';
 import { getBondCalculator } from '@services/helpers/bond-calculator';
 import { RootState } from '../store';
 import { wavax } from '@services/helpers/bond';
@@ -18,7 +18,7 @@ import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
 interface IChangeApproval {
   bond: Bond;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
   address: string;
 }
 
@@ -78,7 +78,7 @@ interface ICalcBondDetails {
   bond: Bond;
   value: string | null;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
 }
 
 export interface IBondDetails {
@@ -202,7 +202,7 @@ interface IBondAsset {
   value: string;
   address: string;
   bond: Bond;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   slippage: number;
   useAvax: boolean;
@@ -261,7 +261,7 @@ export const bondAsset = createAsyncThunk('bonding/bondAsset', async ({
 interface IRedeemBond {
   address: string;
   bond: Bond;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   autostake: boolean;
 }

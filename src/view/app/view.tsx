@@ -13,9 +13,10 @@ import { loadTokenPrices } from '@services/helpers';
 import SnackMessage from '@view/common/messages/snackbar';
 import { SnackbarProvider } from 'notistack';
 import Router from '@view/router';
+import { Dispatch } from 'redux';
 
 export function App(): ReactElement {
-  const dispatch = useDispatch();
+  const dispatch: Dispatch<any> = useDispatch();
   const { connect, provider, hasCachedProvider, chainID, connected } = useWeb3Context();
   const address = useAddress();
   let layout: ReactElement;
@@ -34,7 +35,7 @@ export function App(): ReactElement {
   }, []);
 
   async function loadDetails(whichDetails: string) {
-    let loadProvider = provider;
+    const loadProvider = provider;
 
     if (whichDetails === 'app') {
       loadApp(loadProvider);

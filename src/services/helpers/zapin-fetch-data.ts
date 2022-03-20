@@ -1,11 +1,12 @@
 import { IToken } from "./tokens";
 import { BigNumber, ethers, utils } from "ethers";
 import { IAllBondData } from "../hooks/bonds";
-import { getAddresses, Networks } from "@constants/index";
+import { getAddresses } from "@constants/index";
+import { IBlockchain } from "@models/blockchain";
 import axios from "axios";
 import { TraderZapinContract } from "../abi";
 
-export const zapinLpData = async (bond: IAllBondData, token: IToken, tokenAmmount: string, network: Networks, slippage: number) => {
+export const zapinLpData = async (bond: IAllBondData, token: IToken, tokenAmmount: string, network: IBlockchain.NetworksEnum, slippage: number) => {
   const addresses = getAddresses(network);
   
   const sellToken = token.isAvax ? ethers.constants.AddressZero : token.address;
@@ -22,7 +23,7 @@ export const zapinLpData = async (bond: IAllBondData, token: IToken, tokenAmmoun
   return [_swapTarget, swapData, data.minTokens];
 };
 
-export const zapinData = async (bond: IAllBondData, token: IToken, tokenAmmount: string, network: Networks, slippage: number) => {
+export const zapinData = async (bond: IAllBondData, token: IToken, tokenAmmount: string, network: IBlockchain.NetworksEnum, slippage: number) => {
   const sellToken = token.isAvax ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : token.address;
   const buyToken = bond.getAddressForReserve(network);
   

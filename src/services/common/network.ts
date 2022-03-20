@@ -19,7 +19,7 @@ export class Network {
   }
   
   get getIsWrongNetwork(): boolean {
-    let result: boolean = false;
+    const result: boolean = false;
   
     /*if (this.getCurrentChainId !== DEFAULT_NETWORK) {
       const shouldSwitch = window.confirm(messages.switch_to_avalanche);

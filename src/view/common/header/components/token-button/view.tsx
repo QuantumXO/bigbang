@@ -20,11 +20,12 @@ export function TokenButton(): ReactElement {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
   
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onRenderSideTokens = (): ReactNode => {
     let layout: ReactNode;
     
     if (isEthereumAPIAvailable) {
-      let tokens: IToken[] = [];
+      const tokens: IToken[] = [];
       
       layout = (
         <div className="add--tokens">

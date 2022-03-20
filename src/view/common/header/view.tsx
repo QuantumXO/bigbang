@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export function Header({ handleSidebarToggle, drawe }: IHeader): ReactElement {
+export function Header({ drawe }: IHeader): ReactElement {
   const classes = useStyles();
   const isVerySmallScreen: boolean = useMediaQuery('(max-width: 400px)');
 

@@ -111,7 +111,7 @@ export function Stake(): ReactElement {
     const maxValue: number = (view === 0) ? Number(timeBalance) : Number(memoBalance);
     const newValue: number = (value as number) * maxValue / 100;
     
-    setQuantity((''+newValue) as string);
+    setQuantity((String(newValue)));
   };
   
   const onRenderConnectButton = (): ReactNode => {
@@ -275,7 +275,7 @@ export function Stake(): ReactElement {
           defaultValue={0}
           className="slider"
           marks={stakeSliderMarks}
-          onChange={(e: React.ChangeEvent<{}>, newValue: number | number[]) => onHandleStakeSlider(newValue)}
+          onChange={(e: React.ChangeEvent<Record<string, never>>, newValue: number | number[]) => onHandleStakeSlider(newValue)}
         />
       </div>
     );

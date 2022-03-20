@@ -1,5 +1,5 @@
 import { BondType, NetworkAddresses } from "./constants";
-import { Networks } from "@constants/blockchain";
+import { IBlockchain } from "@models//blockchain";
 import { Contract, ContractInterface } from "ethers";
 import { JsonRpcSigner, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getTokenPrice } from "../token-price";
@@ -30,11 +30,11 @@ export abstract class Bond {
   public abstract displayUnits: string;
   
   // Async method that returns a Promise
-  public abstract getTreasuryBalance(networkID: Networks, provider: StaticJsonRpcProvider): Promise<number>;
+  public abstract getTreasuryBalance(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
   
-  public abstract getTokenAmount(networkID: Networks, provider: StaticJsonRpcProvider): Promise<number>;
+  public abstract getTokenAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
   
-  public abstract getTimeAmount(networkID: Networks, provider: StaticJsonRpcProvider): Promise<number>;
+  public abstract getTimeAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
   
   constructor(type: BondType, bondOpts: BondOpts) {
     this.name = bondOpts.name;
@@ -46,20 +46,20 @@ export abstract class Bond {
     this.bondToken = bondOpts.bondToken;
   }
   
-  public getAddressForBond(networkID: Networks) {
+  public getAddressForBond(networkID: IBlockchain.NetworksEnum) {
     return this.networkAddrs[networkID].bondAddress;
   }
   
-  public getContractForBond(networkID: Networks, provider: StaticJsonRpcProvider | JsonRpcSigner) {
+  public getContractForBond(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider | JsonRpcSigner) {
     const bondAddress = this.getAddressForBond(networkID);
     return new Contract(bondAddress, this.bondContractABI, provider);
   }
   
-  public getAddressForReserve(networkID: Networks) {
+  public getAddressForReserve(networkID: IBlockchain.NetworksEnum) {
     return this.networkAddrs[networkID].reserveAddress;
   }
   
-  public getContractForReserve(networkID: Networks, provider: StaticJsonRpcProvider | JsonRpcSigner) {
+  public getContractForReserve(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider | JsonRpcSigner) {
     const reserveAddress = this.getAddressForReserve(networkID);
     return new Contract(reserveAddress, this.reserveContractAbi, provider);
   }

@@ -1,7 +1,7 @@
 import { BigNumber, ContractInterface } from "ethers";
 import { Bond, BondOpts } from "./bond";
 import { BondType } from "./constants";
-import { Networks } from "@constants/blockchain";
+import { IBlockchain } from "@models/blockchain";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getAddresses } from "@constants/addresses";
 
@@ -25,7 +25,7 @@ export class StableBond extends Bond {
     this.tokensInStrategy = stableBondOpts.tokensInStrategy;
   }
   
-  public async getTreasuryBalance(networkID: Networks, provider: StaticJsonRpcProvider) {
+  public async getTreasuryBalance(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) {
     const addresses = getAddresses(networkID);
     const token = this.getContractForReserve(networkID, provider);
     let tokenAmount = await token.balanceOf(addresses.TREASURY_ADDRESS);
@@ -35,24 +35,23 @@ export class StableBond extends Bond {
     return tokenAmount / Math.pow(10, 18);
   }
   
-  public async getTokenAmount(networkID: Networks, provider: StaticJsonRpcProvider) {
+  public async getTokenAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) {
     return this.getTreasuryBalance(networkID, provider);
   }
   
-  public getTimeAmount(networkID: Networks, provider: StaticJsonRpcProvider) {
+  public getTimeAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) {
     return new Promise<number>(reserve => reserve(0));
   }
 }
 
 // These are special bonds that have different valuation methods
-export interface CustomBondOpts extends StableBondOpts {
-}
+export interface CustomBondOpts extends StableBondOpts { }
 
 export class CustomBond extends StableBond {
   constructor(customBondOpts: CustomBondOpts) {
     super(customBondOpts);
     
-    this.getTreasuryBalance = async (networkID: Networks, provider: StaticJsonRpcProvider) => {
+    this.getTreasuryBalance = async (networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) => {
       const tokenAmount = await super.getTreasuryBalance(networkID, provider);
       const tokenPrice = this.getTokenPrice();
       

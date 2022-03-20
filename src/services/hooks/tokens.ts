@@ -17,9 +17,8 @@ function useTokens() {
   const [tokens, setTokens] = useState<IAllTokenData[]>(initialTokenArray);
   
   useEffect(() => {
-    let tokenDetails: IAllTokenData[];
     //@ts-ignore
-    tokenDetails = allTokens.flatMap(token => {
+    const tokenDetails: IAllTokenData[] = allTokens.flatMap(token => {
       if (accountTokensState[token.name]) {
         return Object.assign(token, accountTokensState[token.name]);
       }

@@ -1,7 +1,8 @@
 import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { createAsyncThunk, Dispatch } from "@reduxjs/toolkit";
 import { messages } from "../../constants/messages";
-import { getAddresses, Networks } from "../../constants";
+import { getAddresses } from "../../constants";
+import { IBlockchain } from "@models/blockchain";
 import { IToken } from "../../services/helpers/tokens";
 import { info, success, warning } from "./messages-slice";
 import { clearPendingTxn, fetchPendingTxns } from "./pending-txns-slice";
@@ -19,7 +20,7 @@ interface IChangeApproval {
   token: IToken;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   address: string;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
 }
 
 export const changeApproval = createAsyncThunk("zapin/changeApproval", async ({
@@ -76,7 +77,7 @@ export const changeApproval = createAsyncThunk("zapin/changeApproval", async ({
 interface ITokenZapin {
   token: IToken;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
   bond: IAllBondData;
   slippage: number;
   value: string;
@@ -157,7 +158,7 @@ export const calcZapinDetails = async ({
 
 interface IZapinMint {
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
   bond: IAllBondData;
   token: IToken;
   value: string;

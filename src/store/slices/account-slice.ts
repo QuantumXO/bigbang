@@ -6,13 +6,13 @@ import { setAll } from "../../services/helpers";
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { Bond } from "../../services/helpers/bond/bond";
-import { Networks } from "../../constants/blockchain";
+import { IBlockchain } from "@models/blockchain";
 import { RootState } from "../store";
 import { IToken } from "../../services/helpers/tokens";
 
 interface IGetBalances {
   address: string;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
 }
 
@@ -49,7 +49,7 @@ export const getBalances = createAsyncThunk("account/getBalances", async ({
 
 interface ILoadAccountDetails {
   address: string;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
 }
 
@@ -125,7 +125,7 @@ interface ICalcUserBondDetails {
   address: string;
   bond: Bond;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
 }
 
 export interface IUserBondDetails {
@@ -163,17 +163,14 @@ export const calculateUserBondDetails = createAsyncThunk("account/calculateUserB
   const bondContract = bond.getContractForBond(networkID, provider);
   const reserveContract = bond.getContractForReserve(networkID, provider);
   
-  let interestDue, pendingPayout, bondMaturationBlock;
-  
   const bondDetails = await bondContract.bondInfo(address);
-  interestDue = bondDetails.payout / Math.pow(10, 9);
-  bondMaturationBlock = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
-  pendingPayout = await bondContract.pendingPayoutFor(address);
+  const interestDue = bondDetails.payout / Math.pow(10, 9);
+  const bondMaturationBlock = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
+  const pendingPayout = await bondContract.pendingPayoutFor(address);
   
-  let allowance,
-    balance = "0";
+  let balance = "0";
   
-  allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
+  const allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
   balance = await reserveContract.balanceOf(address);
   const balanceVal = ethers.utils.formatEther(balance);
   
@@ -200,7 +197,7 @@ interface ICalcUserTokenDetails {
   address: string;
   token: IToken;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
 }
 
 export interface IUserTokenDetails {
@@ -243,10 +240,9 @@ export const calculateUserTokenDetails = createAsyncThunk("account/calculateUser
   
   const tokenContract = new ethers.Contract(token.address, MimTokenContract, provider);
   
-  let allowance,
-    balance = "0";
+  let balance = "0";
   
-  allowance = await tokenContract.allowance(address, addresses.ZAPIN_ADDRESS);
+  const allowance = await tokenContract.allowance(address, addresses.ZAPIN_ADDRESS);
   balance = await tokenContract.balanceOf(address);
   
   const balanceVal = Number(balance) / Math.pow(10, token.decimals);
@@ -332,7 +328,7 @@ const accountSlice = createSlice({
         state.loading = false;
         console.log(error);
       })
-      .addCase(calculateUserTokenDetails.pending, (state, action) => {
+      .addCase(calculateUserTokenDetails.pending, (state) => {
         state.loading = true;
       })
       .addCase(calculateUserTokenDetails.fulfilled, (state, action) => {

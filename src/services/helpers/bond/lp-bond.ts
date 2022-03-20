@@ -1,7 +1,7 @@
 import { ContractInterface } from "ethers";
 import { Bond, BondOpts } from "./bond";
 import { BondType } from "./constants";
-import { Networks } from "@constants/blockchain";
+import { IBlockchain } from "@models/blockchain";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getBondCalculator } from "../bond-calculator";
 import { getAddresses } from "@constants/addresses";
@@ -26,7 +26,7 @@ export class LPBond extends Bond {
     this.displayUnits = "LP";
   }
   
-  async getTreasuryBalance(networkID: Networks, provider: StaticJsonRpcProvider) {
+  async getTreasuryBalance(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) {
     const addresses = getAddresses(networkID);
     
     const token = this.getContractForReserve(networkID, provider);
@@ -40,15 +40,15 @@ export class LPBond extends Bond {
     return tokenUSD;
   }
   
-  public getTokenAmount(networkID: Networks, provider: StaticJsonRpcProvider) {
+  public getTokenAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) {
     return this.getReserves(networkID, provider, true);
   }
   
-  public getTimeAmount(networkID: Networks, provider: StaticJsonRpcProvider) {
+  public getTimeAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) {
     return this.getReserves(networkID, provider, false);
   }
   
-  private async getReserves(networkID: Networks, provider: StaticJsonRpcProvider, isToken: boolean): Promise<number> {
+  private async getReserves(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider, isToken: boolean): Promise<number> {
     const addresses = getAddresses(networkID);
     
     const token = this.getContractForReserve(networkID, provider);
@@ -73,14 +73,14 @@ export class CustomLPBond extends LPBond {
   constructor(customBondOpts: CustomLPBondOpts) {
     super(customBondOpts);
     
-    this.getTreasuryBalance = async (networkID: Networks, provider: StaticJsonRpcProvider) => {
+    this.getTreasuryBalance = async (networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) => {
       const tokenAmount = await super.getTreasuryBalance(networkID, provider);
       const tokenPrice = this.getTokenPrice();
       
       return tokenAmount * tokenPrice;
     };
     
-    this.getTokenAmount = async (networkID: Networks, provider: StaticJsonRpcProvider) => {
+    this.getTokenAmount = async (networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) => {
       const tokenAmount = await super.getTokenAmount(networkID, provider);
       const tokenPrice = this.getTokenPrice();
       

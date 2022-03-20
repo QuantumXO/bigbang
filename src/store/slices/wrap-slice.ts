@@ -1,7 +1,8 @@
 import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 import { messages } from "../../constants/messages";
-import { getAddresses, Networks } from "../../constants";
+import { getAddresses } from "../../constants";
+import { IBlockchain } from "@models/blockchain";
 import { setAll, sleep } from "../../services/helpers";
 import { info, success, warning } from "./messages-slice";
 import { RootState } from "../store";
@@ -14,7 +15,7 @@ import { fetchAccountSuccess, getBalances } from "./account-slice";
 
 export interface IChangeApproval {
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
   address: string;
 }
 
@@ -69,7 +70,7 @@ export interface IChangeWrap {
   isWrap: boolean;
   value: string;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
   address: string;
 }
 
@@ -124,7 +125,7 @@ export interface IWrapDetails {
   isWrap: boolean;
   value: string;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
 }
 
 const calcWrapValue = async ({ isWrap, value, provider, networkID }: IWrapDetails): Promise<number> => {
@@ -176,7 +177,7 @@ export const calcWrapDetails = createAsyncThunk("wrapping/calcWrapDetails", asyn
 export interface IWrapPrice {
   isWrap: boolean;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: Networks;
+  networkID: IBlockchain.NetworksEnum;
 }
 
 export const calcWrapPrice = createAsyncThunk("wrapping/calcWrapPrice", async ({

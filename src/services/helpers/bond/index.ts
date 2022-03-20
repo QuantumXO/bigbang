@@ -1,16 +1,18 @@
 import { IBlockchain } from '@models/blockchain';
-import { CustomLPBond, LPBond } from "./lp-bond";
+// import { CustomLPBond, LPBond } from "./lp-bond";
 import { CustomBond, StableBond } from "./stable-bond";
 
-import MimIcon from "@assets/images/tokens/MIM.svg";
+
+
+// import MimIcon from "@assets/images/tokens/MIM.svg";
 import AvaxIcon from "@assets/images/tokens/AVAX.svg";
-import MimTimeIcon from "@assets/images/tokens/TIME-MIM.svg";
-import AvaxTimeIcon from "@assets/images/tokens/TIME-AVAX.svg";
+// import MimTimeIcon from "@assets/images/tokens/TIME-MIM.svg";
+// import AvaxTimeIcon from "@assets/images/tokens/TIME-AVAX.svg";
 
 import {
-  LpBondContract,
-  LpReserveContract,
-  StableBondContract,
+  // LpBondContract,
+  // LpReserveContract,
+  // StableBondContract,
   StableReserveContract,
   WavaxBondContract
 } from "../../abi";

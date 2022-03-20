@@ -2,33 +2,15 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@store/*": [
-        "./src/store/*"
-      ],
-      "@selectors/*": [
-        "./src/selectors/*"
-      ],
-      "@models/*": [
-        "./src/models/*"
-      ],
-      "@view/*": [
-        "./src/view/*"
-      ],
-      "@sagas/*": [
-        "./src/sagas/*"
-      ],
-      "@services/*": [
-        "./src/services/*"
-      ],
-      "@assets/*": [
-        "./src/assets/*"
-      ],
-      "@data/*": [
-        "./src/data/*"
-      ],
-      "@constants/*": [
-        "./src/constants/*"
-      ]
+      "@store/*": ["./src/store/*"],
+      "@selectors/*": ["./src/selectors/*"],
+      "@models/*": ["./src/models/*"],
+      "@view/*": ["./src/view/*"],
+      "@sagas/*": ["./src/sagas/*"],
+      "@services/*": ["./src/services/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@data/*": ["./src/data/*"],
+      "@constants/*": ["./src/constants/*"]
     }
   }
 }

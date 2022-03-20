@@ -1,5 +1,5 @@
-import { SvgIcon } from "@material-ui/core";
-import { ReactComponent as MimImg } from "@assets/images/tokens/MIM.svg";
+// import { SvgIcon } from "@material-ui/core";
+// import { ReactComponent as MimImg } from "@assets/images/tokens/MIM.svg";
 import { IAllBondData } from "../hooks/bonds";
 // import { mim } from "./bond";
 

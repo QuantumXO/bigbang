@@ -1,8 +1,12 @@
 {
-  "extends": [],
-  "plugins": [
-    "@typescript-eslint"
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
   ],
+  "plugins": ["react", "@typescript-eslint", "import"],
   "env": {
     "browser": true,
     "es2021": true
@@ -21,18 +25,36 @@
     }
   },
   "rules": {
-    "import/prefer-default-export": "off",
-    "prefer-destructuring": "off",
-    "prefer-template": "off",
-    "react/prop-types": "off",
-    "react/destructuring-assignment": "off",
-    "no-console": "off",
-    "jsx-a11y/accessible-emoji": ["off"],
-    "jsx-a11y/click-events-have-key-events": ["off"],
-    "jsx-a11y/no-static-element-interactions": ["off"],
-    "no-underscore-dangle": "off",
-    "no-nested-ternary": "off",
-    "no-restricted-syntax": "off",
-    "no-plusplus": "off"
+    "@typescript-eslint/no-namespace": 0,
+    "@typescript-eslint/no-unsafe-member-access": 0,                         // #TODO fix
+    "@typescript-eslint/no-unsafe-call": 0,                                  // #TODO fix
+    "@typescript-eslint/no-unsafe-return": 0,                                // #TODO fix
+    "@typescript-eslint/explicit-module-boundary-types": 0,                  // #TODO fix
+    "@typescript-eslint/no-unsafe-assignment": 0,                            // #TODO fix
+    "@typescript-eslint/await-thenable": 0,                                  // #TODO fix
+    "@typescript-eslint/require-await":  0,                                  // #TODO fix
+    "@typescript-eslint/no-misused-promises":  0,                            // #TODO fix
+    "@typescript-eslint/no-explicit-any":  0,                                // #TODO fix
+    "react-hooks/exhaustive-deps":  0,                                       // #TODO fix
+    "@typescript-eslint/no-unused-vars":  0,                                 // #TODO fix
+    "@typescript-eslint/no-empty-interface": [2, {"allowSingleExtends": true}],
+    "@typescript-eslint/no-inferrable-types": 0,
+    "@typescript-eslint/ban-ts-ignore": 0,
+    "@typescript-eslint/ban-ts-comment": 0,
+    "@typescript-eslint/no-floating-promises": 0,
+    "no-extra-boolean-cast": 0,
+    "import/prefer-default-export": 0,
+    "prefer-destructuring": 0,
+    "prefer-template": 0,
+    "react/prop-types": 0,
+    "react/destructuring-assignment": 0,
+    "no-console": 0,
+    "jsx-a11y/accessible-emoji": [0],
+    "jsx-a11y/click-events-have-key-events": [0],
+    "jsx-a11y/no-static-element-interactions": [0],
+    "no-underscore-dangle": 0,
+    "no-nested-ternary": 0,
+    "no-restricted-syntax": 0,
+    "no-plusplus": 0
   }
 }

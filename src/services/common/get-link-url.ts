@@ -1,8 +1,10 @@
 import { ICommon } from '@models/common';
 
 export class LinkUrl {
-  constructor(args?: any) {
+  args: any;
   
+  constructor(args?: any) {
+    this.args = args;
   }
   
   get get(): ICommon.GetLinkType {

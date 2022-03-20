@@ -3,7 +3,8 @@ import Web3Modal from "web3modal";
 import { JsonRpcProvider, StaticJsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { getMainnetURI } from "./helpers";
-import { DEFAULT_NETWORK, Networks } from "@constants/index";
+import { DEFAULT_NETWORK } from "@constants/index";
+import { IBlockchain } from "@models/blockchain";
 import { messages } from "@constants/messages";
 import { useDispatch } from "react-redux";
 import network from "../../common/network";
@@ -14,7 +15,7 @@ type onChainProvider = {
   checkIsWrongNetwork: () => Promise<boolean>;
   provider: JsonRpcProvider;
   address: string;
-  connected: Boolean;
+  connected: boolean;
   web3Modal: Web3Modal;
   chainID: number;
   web3?: any;
@@ -63,7 +64,7 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
           package: WalletConnectProvider,
           options: {
             rpc: {
-              [Networks.AVAX]: getMainnetURI()
+              [IBlockchain.NetworksEnum.AVAX]: getMainnetURI()
             }
           }
         }
@@ -76,7 +77,7 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
     else if (!web3Modal.cachedProvider) return false;
     return true;
   };
-  
+
   const _initListeners = useCallback(
     (rawProvider: JsonRpcProvider) => {
       if (!rawProvider.on) {
@@ -88,7 +89,7 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
         () => setTimeout(() => window.location.reload(), 1)
       );
       
-      rawProvider.on("chainChanged", async (chain: number) => {
+      rawProvider.on("chainChanged", async (chain: number): Promise<void> => {
         await changeNetwork(chain);
       });
       
@@ -119,7 +120,7 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
     
     setProviderChainID(chainId);
     
-    if (chainId === Networks.AVAX) {
+    if (chainId === IBlockchain.NetworksEnum.AVAX) {
       setProvider(connectedProvider);
     }
     
@@ -141,7 +142,7 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
     return false;
   };
   
-  const disconnect = useCallback(async () => {
+  const disconnect = useCallback(() => {
     web3Modal.clearCachedProvider();
     setConnected(false);
     

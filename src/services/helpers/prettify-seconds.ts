@@ -3,17 +3,17 @@ export const prettifySeconds = (seconds?: number, resolution?: string) => {
     return "";
   }
   
-  const d = Math.floor(seconds / (3600 * 24));
-  const h = Math.floor((seconds % (3600 * 24)) / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
+  const d: number = Math.floor(seconds / (3600 * 24));
+  const h: number = Math.floor((seconds % (3600 * 24)) / 3600);
+  const m: number = Math.floor((seconds % 3600) / 60);
   
   if (resolution === "day") {
-    return d + (d == 1 ? " day" : " days");
+    return String(d) + (d == 1 ? " day" : " days");
   }
   
-  const dDisplay = d > 0 ? d + (d == 1 ? " day, " : " days, ") : "";
-  const hDisplay = h > 0 ? h + (h == 1 ? " Hour, " : " Hours, ") : "";
-  const mDisplay = m > 0 ? m + (m == 1 ? " Min" : " Mins") : "";
+  const dDisplay = d > 0 ? String(d) + (d == 1 ? " day, " : " days, ") : "";
+  const hDisplay = h > 0 ? String(h) + (h == 1 ? " Hour, " : " Hours, ") : "";
+  const mDisplay = m > 0 ? String(m) + (m == 1 ? " Min" : " Mins") : "";
   
   return dDisplay + hDisplay + mDisplay;
 };

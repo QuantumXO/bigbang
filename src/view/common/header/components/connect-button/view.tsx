@@ -27,7 +27,7 @@ export function ConnectMenu() {
   
   if (pendingTransactions && pendingTransactions.length > 0) {
     buttonText = `${pendingTransactions.length} Pending `;
-    clickFunc = () => {};
+    clickFunc = () => null;
   }
   
   if (isConnected && providerChainID !== DEFAULT_NETWORK) {
