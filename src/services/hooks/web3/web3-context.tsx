@@ -1,15 +1,13 @@
-import React, { ReactElement, useCallback, useContext, useMemo, useState } from "react";
+import React, { Context, ReactElement, useCallback, useContext, useMemo, useState } from 'react';
 import Web3Modal from "web3modal";
 import { JsonRpcProvider, StaticJsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { getMainnetURI } from "./helpers";
 import { DEFAULT_NETWORK } from "@constants/index";
 import { IBlockchain } from "@models/blockchain";
-import { messages } from "@constants/messages";
-import { useDispatch } from "react-redux";
-import network from "../../common/network";
+import network from "@services/common/network";
 
-type onChainProvider = {
+type OnChainProviderType = {
   connect: () => Promise<Web3Provider>;
   disconnect: () => void;
   checkIsWrongNetwork: () => Promise<boolean>;
@@ -23,20 +21,20 @@ type onChainProvider = {
   hasCachedProvider: () => boolean;
 };
 
-export type Web3ContextData = {
-  onChainProvider: onChainProvider;
+export type Web3ContextDataType = {
+  OnChainProviderType: OnChainProviderType;
 } | null;
 
-const Web3Context = React.createContext<Web3ContextData>(null);
+const Web3Context: Context<Web3ContextDataType> = React.createContext<Web3ContextDataType>(null);
 
 export const useWeb3Context = () => {
   const web3Context = useContext(Web3Context);
   if (!web3Context) {
     throw new Error("useWeb3Context() can only be used inside of <Web3ContextProvider />, " + "please declare it at a higher level.");
   }
-  const { onChainProvider } = web3Context;
+  const { OnChainProviderType } = web3Context;
   return useMemo(() => {
-    return { ...onChainProvider };
+    return { ...OnChainProviderType };
   }, [web3Context]);
 };
 
@@ -46,14 +44,12 @@ export const useAddress = () => {
 };
 
 export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ children }) => {
-  const dispatch = useDispatch();
+  const [connected, setConnected] = useState<boolean>(false);
+  const [chainID, setChainID] = useState<string | undefined>(network().getCurrentChainId);
+  const [providerChainID, setProviderChainID] = useState<string>(DEFAULT_NETWORK.chainId);
+  const [address, setAddress] = useState<string>("");
   
-  const [connected, setConnected] = useState(false);
-  const [chainID, setChainID] = useState(DEFAULT_NETWORK);
-  const [providerChainID, setProviderChainID] = useState(DEFAULT_NETWORK);
-  const [address, setAddress] = useState("");
-  
-  const [uri, setUri] = useState(getMainnetURI());
+  const [uri, setUri] = useState<string>(getMainnetURI());
   const [provider, setProvider] = useState<JsonRpcProvider>(new StaticJsonRpcProvider(uri));
   
   const [web3Modal] = useState<Web3Modal>(
@@ -89,8 +85,8 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
         () => setTimeout(() => window.location.reload(), 1)
       );
       
-      rawProvider.on("chainChanged", async (chain: number): Promise<void> => {
-        await changeNetwork(chain);
+      rawProvider.on("chainChanged", async (chainId: number): Promise<void> => {
+        await onHandleNetworkChange(chainId);
       });
       
       rawProvider.on("network", (_newNetwork, oldNetwork) => {
@@ -101,10 +97,8 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
     [provider]
   );
   
-  const changeNetwork = async (otherChainID: number): Promise<void> => {
-    const network: number = Number(otherChainID);
-    
-    setProviderChainID(network);
+  const onHandleNetworkChange = async (chainId: number): Promise<void> => {
+    setProviderChainID(String(chainId));
   };
   
   const connect = useCallback(async (): Promise<Web3Provider> => {
@@ -118,7 +112,7 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
     
     setAddress(connectedAddress);
     
-    setProviderChainID(chainId);
+    setProviderChainID(String(chainId));
     
     if (chainId === IBlockchain.NetworksEnum.AVAX) {
       setProvider(connectedProvider);
@@ -129,18 +123,7 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
     return connectedProvider;
   }, [provider, web3Modal, connected]);
   
-  const checkIsWrongNetwork = async (): Promise<boolean> => {
-    if (providerChainID !== DEFAULT_NETWORK) {
-      const shouldSwitch = window.confirm(messages.switch_to_avalanche);
-      if (shouldSwitch) {
-        await network();
-        window.location.reload();
-      }
-      return true;
-    }
-    
-    return false;
-  };
+  const checkIsWrongNetwork = async () => await network().getIsWrongNetwork;
   
   const disconnect = useCallback(() => {
     web3Modal.clearCachedProvider();
@@ -151,7 +134,7 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
     }, 1);
   }, [provider, web3Modal, connected]);
   
-  const onChainProvider = useMemo(
+  const OnChainProviderType = useMemo(
     () => ({
       connect,
       disconnect,
@@ -167,5 +150,5 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
     [connect, disconnect, hasCachedProvider, provider, connected, address, chainID, web3Modal, providerChainID]
   );
   //@ts-ignore
-  return <Web3Context.Provider value={{ onChainProvider }}>{children}</Web3Context.Provider>;
+  return <Web3Context.Provider value={{ OnChainProviderType }}>{children}</Web3Context.Provider>;
 };

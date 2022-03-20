@@ -60,17 +60,57 @@
     &__item {
       width: 50px;
       height: 50px;
-      display: inline-block;
+      display: inline-flex;
       border-radius: 15px;
       background: #F2F3F7;
+      align-items: center;
+      justify-content: center;
       box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, 0.7);
       cursor: pointer;
       &:hover,
       &.active {
         background: $brand_color;
+        &:before {
+          background-color: #ffffff;
+        }
       }
       &:nth-child(n+2) {
         margin-top: 8px;
+      }
+      &:before {
+        display: inline-block;
+        content: '';
+        background-color: #C1C2C7;
+        mask-repeat: no-repeat;
+        mask-position: 50%;
+      }
+      &.ETH {
+        &:before {
+          width: 14px;
+          height: 20px;
+          mask-image: url(../../../../../assets/images/common/networks/eth_mainnet.svg);
+        }
+      }
+      &.FTM {
+        &:before {
+          width: 14px;
+          height: 19px;
+          mask-image: url(../../../../../assets/images/common/networks/fantom.svg);
+        }
+      }
+      &.BNB {
+        &:before {
+          width: 20px;
+          height: 20px;
+          mask-image: url(../../../../../assets/images/common/networks/binance.svg);
+        }
+      }
+      &.MATIC {
+        &:before {
+          width: 19px;
+          height: 17px;
+          mask-image: url(../../../../../assets/images/common/networks/polygon_MATIC.svg);
+        }
       }
     }
   }

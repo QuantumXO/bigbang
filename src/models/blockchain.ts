@@ -6,5 +6,34 @@ export namespace IBlockchain {
     BNB = 56, // Binance
     MATIC = 137, // Matic Mainnet / Polygon
   }
+  export interface INetwork {
+    id: NetworkType;
+    chainId: string;
+    hexadecimalChainId?: string;
+    chainNetwork?: 'mainnet';
+    blockExplorerUrls?: string[];
+    chainName?: string;
+    icon?: string;
+    iconUrls?: string[];
+    nativeCurrency?: {
+      name: string;
+      symbol: string;
+      decimals: number;
+    };
+    rpcUrls?: string[];
+  }
+  export interface IAddEthereumChainParameter {
+    chainId: string;
+    chainNetwork?: 'mainnet';
+    blockExplorerUrls?: string[];
+    chainName?: string;
+    iconUrls?: string[];
+    nativeCurrency?: {
+      name: string;
+      symbol: string;
+      decimals: number;
+    };
+    rpcUrls?: string[];
+  }
   export type NetworkType = keyof typeof NetworksEnum;
 }

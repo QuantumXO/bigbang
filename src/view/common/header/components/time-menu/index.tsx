@@ -32,9 +32,9 @@ const addTokenToWallet = (tokenSymbol: string, tokenAddress: string) => async ()
 function TimeMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
   const isEthereumAPIAvailable = window.ethereum;
-
+  
   const networkID = useSelector<IReduxState, number>(state => {
-    return (state.app && state.app.networkID) || DEFAULT_NETWORK;
+    return (state.app && state.app.networkID) || Number(DEFAULT_NETWORK.chainId);
   });
 
   const addresses = getAddresses(networkID);

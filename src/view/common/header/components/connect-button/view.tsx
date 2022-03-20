@@ -1,24 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useWeb3Context } from '@services/hooks';
-import { DEFAULT_NETWORK } from '@constants/index';
+import { SUPPORTED_NETWORKS_CHAIN_IDS } from '@constants/index';
 import { IReduxState } from '@store/slices/state.interface';
 import { IPendingTxn } from '@store/slices/pending-txns-slice';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import './styles.scss';
+import cx from 'classnames';
+import network from '@services/common/network';
 
 export function ConnectMenu() {
-  const { connect, disconnect, connected, web3, providerChainID, checkIsWrongNetwork } = useWeb3Context();
+  const { connect, disconnect, connected, web3, providerChainID } = useWeb3Context();
   const [isConnected, setConnected] = useState(connected);
   
   const pendingTransactions = useSelector<IReduxState, IPendingTxn[]>((state) => {
     return state.pendingTransactions;
   });
   
-  let buttonText = 'Connect Wallet';
+  let buttonText: string = 'Connect Wallet';
   let clickFunc: any = connect;
-  let buttonStyle = {};
+  let btnClasses: string = '';
   
   if (isConnected) {
     buttonText = 'Disconnect';
@@ -29,13 +31,11 @@ export function ConnectMenu() {
     buttonText = `${pendingTransactions.length} Pending `;
     clickFunc = () => null;
   }
-  
-  if (isConnected && providerChainID !== DEFAULT_NETWORK) {
+
+  if (isConnected && (!SUPPORTED_NETWORKS_CHAIN_IDS.includes(String(providerChainID)))) {
     buttonText = 'Wrong network';
-    buttonStyle = { backgroundColor: 'rgb(255, 67, 67)' };
-    clickFunc = () => {
-      checkIsWrongNetwork();
-    };
+    btnClasses = 'error';
+    clickFunc = () => network().getIsWrongNetwork;
   }
   
   useEffect((): void => {
@@ -43,7 +43,10 @@ export function ConnectMenu() {
   }, [web3, connected]);
   
   return (
-    <div className="button--connect" style={buttonStyle} onClick={clickFunc}>
+    <div
+      onClick={clickFunc}
+      className={cx('button--connect', { [btnClasses]: !!btnClasses })}
+    >
       <span>{buttonText}</span>
       {!!pendingTransactions.length && (
         <div className="button--connect--progress">

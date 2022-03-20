@@ -1,36 +1,50 @@
-import { IBlockchain } from '@models//blockchain';
+import { IBlockchain } from '@models/blockchain';
 import { messages } from '@constants/messages';
+import { NETWORKS, SUPPORTED_NETWORKS_CHAIN_IDS } from '@constants/blockchain';
 
 interface INetworkArgs {
-  newNetworkName?: IBlockchain.NetworkType
+  newNetworkId?: IBlockchain.NetworkType
 }
 
 export class Network {
-  newNetworkName: IBlockchain.NetworkType | undefined;
+  currentChainId: string | undefined;
+  newNetworkId: IBlockchain.NetworkType | undefined;
   
   constructor(props: INetworkArgs = {}) {
-    const { newNetworkName } = props;
+    const { newNetworkId } = props;
     
-    this.newNetworkName = newNetworkName;
+    this.newNetworkId = newNetworkId;
   }
   
-  get getCurrentChainId(): number | undefined {
+  setCurrentChainId(): void {
+    this.currentChainId = this.getCurrentChainId;
+  }
+  
+  get getCurrentChainId(): string | undefined {
     return window.ethereum?.networkVersion;
   }
   
-  get getIsWrongNetwork(): boolean {
-    const result: boolean = false;
+  get getIsEthereumAPIAvailable(): boolean {
+    return !!window.ethereum;
+  }
   
-    /*if (this.getCurrentChainId !== DEFAULT_NETWORK) {
-      const shouldSwitch = window.confirm(messages.switch_to_avalanche);
-      if (shouldSwitch) {
-        await network();
-        window.location.reload();
+  get getIsWrongNetwork(): Promise<boolean> {
+    let result: boolean = false;
+    
+    return (
+      async (): Promise<boolean> => {
+        if (!SUPPORTED_NETWORKS_CHAIN_IDS.includes(String(this.getCurrentChainId))) {
+          const shouldSwitch: boolean = window.confirm(messages.switch_to_eth);
+          if (shouldSwitch) {
+            await network({ newNetworkId: 'ETH' }).switchNetwork();
+            window.location.reload();
+          }
+          result = true;
+        }
+        
+        return result;
       }
-      result = true;
-    }*/
-  
-    return result;
+    )();
   }
   
   switchNetwork = async (): Promise<void> => {
@@ -52,76 +66,45 @@ export class Network {
   }
   
   switchRequest = (): any => {
-    return window.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: "0xa86a" }]
-    });
+    const newNetwork: IBlockchain.INetwork  | undefined = NETWORKS
+      .find(({ id }: IBlockchain.INetwork) => id === this.newNetworkId);
+    
+    if (newNetwork) {
+      const { chainId } = newNetwork;
+      
+      return window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId }]
+      });
+    } else {
+      //
+    }
   };
   
   addChainRequest = (): any => {
-    return window.ethereum.request({
-      method: "wallet_addEthereumChain",
-      params: [
-        {
-          chainId: "0xa86a",
-          chainName: "Avalanche Mainnet",
-          rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
-          blockExplorerUrls: ["https://cchain.explorer.avax.network/"],
-          nativeCurrency: {
-            name: "AVAX",
-            symbol: "AVAX",
-            decimals: 18
-          }
-        }
-      ]
-    });
+    const newNetwork: IBlockchain.INetwork  | undefined = NETWORKS
+      .find(({ id }: IBlockchain.INetwork) => id === this.newNetworkId);
+    
+    if (newNetwork) {
+      const { chainId, rpcUrls, blockExplorerUrls, nativeCurrency, chainName } = newNetwork;
+      const param: IBlockchain.IAddEthereumChainParameter = {
+        chainId,
+        chainName,
+        rpcUrls,
+        blockExplorerUrls,
+        nativeCurrency
+      }
+  
+      return window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [param]
+      });
+    } else {
+      //
+    }
   };
 }
 
 const network = (args?: INetworkArgs) => new Network(args);
 
 export default network;
-
-/*const switchRequest = () => {
- return window.ethereum.request({
- method: "wallet_switchEthereumChain",
- params: [{ chainId: "0xa86a" }]
- });
- };*/
-
-/*const addChainRequest = () => {
- return window.ethereum.request({
- method: "wallet_addEthereumChain",
- params: [
- {
- chainId: "0xa86a",
- chainName: "Avalanche Mainnet",
- rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
- blockExplorerUrls: ["https://cchain.explorer.avax.network/"],
- nativeCurrency: {
- name: "AVAX",
- symbol: "AVAX",
- decimals: 18
- }
- }
- ]
- });
- };*/
-
-/*export const switchNetwork = async (networkName?: NetworkType): Promise<void> => {
- if (window.ethereum) {
- try {
- await switchRequest();
- } catch (error: any) {
- if (error.code === 4902) {
- try {
- await addChainRequest();
- await switchRequest();
- } catch (addError) {
- console.log(error);
- }
- }
- console.log(error);
- }
- }
- };*/

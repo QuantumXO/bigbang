@@ -1,25 +1,16 @@
 import React, { ReactElement, useState } from 'react';
 import cx from 'classnames';
+import { NETWORKS } from '@constants/blockchain';
+import { IBlockchain } from '@models/blockchain';
 import { Fade, Popper } from '@material-ui/core';
+import network from '@services/common/network';
 // import { switchNetwork } from '@services/helpers/switch-network';
 
 import './styles.scss';
 
-interface INetwork {
-  id: string;
-  label: string;
-}
-
-const networks: INetwork[] = [
-  { id: 'ethereum', label: 'Ethereum' },
-  { id: 'subtrack', label: 'Subtrack' },
-  { id: 'network3', label: 'Network3' },
-  { id: 'network4', label: 'Network4' },
-];
-
 export const NetworkButton = (): ReactElement => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const isEthereumAPIAvailable = window.ethereum;
+  const isEthereumAPIAvailable: boolean = network().getIsEthereumAPIAvailable;
   const isOpen: boolean = Boolean(anchorEl);
   
   const handleClick = (event: any): void => {
@@ -45,7 +36,7 @@ export const NetworkButton = (): ReactElement => {
         {({ TransitionProps }): ReactElement => (
           <Fade {...TransitionProps} timeout={200}>
             <div className="networks__list">
-              {networks.map((item: INetwork): ReactElement => {
+              {NETWORKS.map((item: IBlockchain.INetwork): ReactElement => {
                 const { id } = item;
                 return (
                   <div key={id} className={cx('networks__list__item', { [id]: !!id })} />

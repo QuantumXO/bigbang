@@ -11,14 +11,20 @@
   justify-content: center;
   background-color: $brand_color;
   cursor: pointer;
-  
-  &:hover,
-  &.active {
-    background-color: transparent;
-    border-color: $brand_color;
+  &.error {
+    color: rgb(255, 67, 67);
+    background-color: rgb(255, 67, 67);
+    border-color: rgb(255, 67, 67);
+  }
+  &:not(.error) {
+    &:hover,
+    &.active {
+      border-color: $brand_color;
+      background-color: transparent;
 
-    span {
-      color: $brand_color;
+      span {
+        color: $brand_color;
+      }
     }
   }
   
