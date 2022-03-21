@@ -17,11 +17,10 @@ export function Settings({ open, handleClose, slippage, onSlippageChange }: IAdv
   const [value, setValue] = useState<number>(slippage);
 
   useEffect(() => {
-    let timeount: any = null;
-    clearTimeout(timeount);
+    let timeout: any = null;
 
-    timeount = setTimeout(() => onSlippageChange(value), 1000);
-    return () => clearTimeout(timeount);
+    timeout = setTimeout(() => onSlippageChange(value), 1000);
+    return () => clearTimeout(timeout);
   }, [value]);
 
   return (

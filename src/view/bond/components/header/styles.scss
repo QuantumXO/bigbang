@@ -1,42 +1,26 @@
 @import "./src/assets/styles/basic/variables";
 
-.bond.modal {
-  .bond__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    
-    .settings {
-      &__btn {
-      
-      }
-    }
-    
-    .title {
-      justify-content: center;
-      align-items: center;
-      text-align: center;
+.bond.page {
+  .bond {
+    &__header {
       display: flex;
-      flex-direction: row;
-      
-      .ohm-logo-bg {
-        height: 40px !important;
-        width: 40px !important;
-        padding: 8px !important;
-        margin-left: 0;
-      }
-      
-      .bond__name {
-        margin-left: 32px;
-        color: var(--card_primary_color);
-        font: 700 24px/29px $basic_font_family;
-      }
-    }
-    
-    .close__btn {
-      display: inline-flex;
+      padding: 39px 54px;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
+    }
+    &__name {
+      color: $brand_color;
+      font: 500 30px/34px $basic_font_family;
+    }
+  }
+  .back__link {
+    width: 37px;
+    height: 24px;
+    display: inline-block;
+    text-decoration: none;
+    background: url(../../../../assets/images/bond/arrow-right.svg) 50% no-repeat;
+    &:hover {
+      opacity: .7;
     }
   }
 }

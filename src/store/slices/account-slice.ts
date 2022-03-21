@@ -1,14 +1,14 @@
 import { ethers } from "ethers";
 import { getAddresses } from "../../constants";
 import { MemoTokenContract, MimTokenContract, TimeTokenContract, wMemoTokenContract } from "../../services/abi";
-import { setAll } from "../../services/helpers";
+import { setAll } from '@services/helpers';
 
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
-import { Bond } from "../../services/helpers/bond/bond";
+import { Bond } from '@services/helpers/bond/bond';
 import { IBlockchain } from "@models/blockchain";
 import { RootState } from "../store";
-import { IToken } from "../../services/helpers/tokens";
+import { IToken } from '@services/helpers/tokens';
 
 interface IGetBalances {
   address: string;
@@ -24,27 +24,29 @@ interface IAccountBalances {
   };
 }
 
-export const getBalances = createAsyncThunk("account/getBalances", async ({
-                                                                            address,
-                                                                            networkID,
-                                                                            provider
-                                                                          }: IGetBalances): Promise<IAccountBalances> => {
-  const addresses = getAddresses(networkID);
-  
-  const memoContract = new ethers.Contract(addresses.MEMO_ADDRESS, MemoTokenContract, provider);
-  const memoBalance = await memoContract.balanceOf(address);
-  const timeContract = new ethers.Contract(addresses.TIME_ADDRESS, TimeTokenContract, provider);
-  const timeBalance = await timeContract.balanceOf(address);
-  const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
-  const wmemoBalance = await wmemoContract.balanceOf(address);
-  
-  return {
-    balances: {
-      memo: ethers.utils.formatUnits(memoBalance, "gwei"),
-      time: ethers.utils.formatUnits(timeBalance, "gwei"),
-      wmemo: ethers.utils.formatEther(wmemoBalance)
-    }
-  };
+export const getBalances = createAsyncThunk(
+  "account/getBalances",
+  async ({
+    address,
+    networkID,
+    provider
+  }: IGetBalances): Promise<IAccountBalances> => {
+    const addresses = getAddresses(networkID);
+    
+    const memoContract = new ethers.Contract(addresses.MEMO_ADDRESS, MemoTokenContract, provider);
+    const memoBalance = await memoContract.balanceOf(address);
+    const timeContract = new ethers.Contract(addresses.TIME_ADDRESS, TimeTokenContract, provider);
+    const timeBalance = await timeContract.balanceOf(address);
+    const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
+    const wmemoBalance = await wmemoContract.balanceOf(address);
+    
+    return {
+      balances: {
+        memo: ethers.utils.formatUnits(memoBalance, "gwei"),
+        time: ethers.utils.formatUnits(timeBalance, "gwei"),
+        wmemo: ethers.utils.formatEther(wmemoBalance)
+      }
+    };
 });
 
 interface ILoadAccountDetails {
@@ -137,61 +139,64 @@ export interface IUserBondDetails {
   pendingPayout: number; //Payout formatted in gwei.
 }
 
-export const calculateUserBondDetails = createAsyncThunk("account/calculateUserBondDetails", async ({
-                                                                                                      address,
-                                                                                                      bond,
-                                                                                                      networkID,
-                                                                                                      provider
-                                                                                                    }: ICalcUserBondDetails) => {
-  if (!address) {
-    return new Promise<any>(resevle => {
-      resevle({
-        bond: "",
-        displayName: "",
-        bondIconSvg: "",
-        isLP: false,
-        allowance: 0,
-        balance: 0,
-        interestDue: 0,
-        bondMaturationBlock: 0,
-        pendingPayout: "",
-        avaxBalance: 0
+export const calculateUserBondDetails = createAsyncThunk(
+  "account/calculateUserBondDetails",
+  async ({
+    address,
+    bond,
+    networkID,
+    provider
+  }: ICalcUserBondDetails) => {
+    if (!address) {
+      return new Promise<any>(resevle => {
+        resevle({
+          bond: "",
+          displayName: "",
+          bondIconSvg: "",
+          isLP: false,
+          allowance: 0,
+          balance: 0,
+          interestDue: 0,
+          bondMaturationBlock: 0,
+          pendingPayout: "",
+          avaxBalance: 0
+        });
       });
-    });
+    }
+    
+    const bondContract = bond.getContractForBond(networkID, provider);
+    const reserveContract = bond.getContractForReserve(networkID, provider);
+    
+    const bondDetails = await bondContract.bondInfo(address);
+    const interestDue = bondDetails.payout / Math.pow(10, 9);
+    const bondMaturationBlock = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
+    const pendingPayout = await bondContract.pendingPayoutFor(address);
+    
+    let balance = "0";
+    
+    const allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
+    balance = await reserveContract.balanceOf(address);
+    const balanceVal = ethers.utils.formatEther(balance);
+    
+    const avaxBalance = await provider.getSigner().getBalance();
+    const avaxVal = ethers.utils.formatEther(avaxBalance);
+    
+    const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, "gwei");
+    
+    return {
+      bond: bond.name,
+      displayName: bond.displayName,
+      bondIconSvg: bond.bondIconSvg,
+      isLP: bond.isLP,
+      allowance: Number(allowance),
+      balance: Number(balanceVal),
+      avaxBalance: Number(avaxVal),
+      interestDue,
+      bondMaturationBlock,
+      pendingPayout: Number(pendingPayoutVal)
+    };
   }
-  
-  const bondContract = bond.getContractForBond(networkID, provider);
-  const reserveContract = bond.getContractForReserve(networkID, provider);
-  
-  const bondDetails = await bondContract.bondInfo(address);
-  const interestDue = bondDetails.payout / Math.pow(10, 9);
-  const bondMaturationBlock = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
-  const pendingPayout = await bondContract.pendingPayoutFor(address);
-  
-  let balance = "0";
-  
-  const allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
-  balance = await reserveContract.balanceOf(address);
-  const balanceVal = ethers.utils.formatEther(balance);
-  
-  const avaxBalance = await provider.getSigner().getBalance();
-  const avaxVal = ethers.utils.formatEther(avaxBalance);
-  
-  const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, "gwei");
-  
-  return {
-    bond: bond.name,
-    displayName: bond.displayName,
-    bondIconSvg: bond.bondIconSvg,
-    isLP: bond.isLP,
-    allowance: Number(allowance),
-    balance: Number(balanceVal),
-    avaxBalance: Number(avaxVal),
-    interestDue,
-    bondMaturationBlock,
-    pendingPayout: Number(pendingPayoutVal)
-  };
-});
+);
 
 interface ICalcUserTokenDetails {
   address: string;

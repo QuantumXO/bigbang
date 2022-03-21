@@ -1,14 +1,31 @@
-import React, { ComponentType, FC, ReactElement } from 'react';
+import React,
+  { ComponentType, FC, ReactElement, ReactNode, Children, isValidElement, cloneElement, ReactChildren }
+from 'react';
 import CommonWrapper from '@view/common/common-wrapper';
 
 interface IProps {
-  Component: ComponentType;
+  Component?: ComponentType;
+  props?: Record<string, any>;
+  children?: ReactNode;
 }
 
-export const CommonRoute: FC<IProps> = ({ Component }: IProps): ReactElement => {
+export const CommonRoute: FC<IProps> = ({ Component, props = {}, children }: IProps): ReactElement => {
+  let childrenWithProps: Record<string, unknown>[] | null | undefined = null;
+  
+  if (!!children) {
+    childrenWithProps = Children.map(children, child => {
+      if (isValidElement(child)) {
+        return cloneElement(child, { ...props });
+      }
+      return child;
+    });
+  }
+  
+  
   return (
     <CommonWrapper>
-      <Component />
+      {Component && <Component {...props} />}
+      {childrenWithProps}
     </CommonWrapper>
   );
 };

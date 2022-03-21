@@ -2,98 +2,68 @@
 
 .mints.page {
   .bond {
-    &:first-child {
-      .bond__col {
-        padding-top: 32px;
-      }
-    }
-    
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-top: 1px solid #FFFFFF;
     &__col {
-      padding-bottom: 18px;
-      border: none;
-      
-      &:first-child {
-        padding-left: 56px;
+      padding: 24px 0 24px 0;
+      border: 0;
+      &:not(:last-child) {
+        padding-right: 32px;
       }
-      
-      &:last-child {
-        padding-right: 40px;
-      }
-      
-      &:not(:first-child) {
-        padding-top: 18px;
-      }
-  
       &.mint {
-        width: 337px;
+        width: 256px;
       }
-  
       &.price {
-        width: 187px;
-        text-align: right;
+        width: 119px;
       }
-  
       &.ROI {
-        width: 165px;
-        text-align: right;
+        width: 97px;
       }
-  
       &.purchased {
-        width: 178px;
+        width: 163px;
+      }
+      &.action {
+        width: calc(100% - 635px);
         text-align: right;
       }
-  
-      &.action {
-        text-align: center;
-      }
     }
-    
-    &__name {
-      margin-left: 16px;
+    &__logo__wrap {
+      min-width: 120px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
     }
-    
+    &__mint {
+      margin-left: 12px;
+    }
     &__text {
-      color: var(--card_primary_color);
-      font: 400 16px/20px $basic_font_family;
+      opacity: .7;
+      color: #797A7C;
+      font: 400 16px/16px $basic_font_family;
     }
-    
+    &__contract__link {
+      margin-top: 16px;
+      color: #5A5A5C;
+      font: 400 16px/16px $basic_font_family;
+    }
     &__price {
-      display: inline-flex;
-      align-items: center;
-      
-      .currency-icon {
-        display: inline-block;
-        min-width: 15px;
-      }
+      text-align: right;
     }
-    
     &__ROI {
-      display: inline-flex;
-      align-items: center;
-      justify-content: flex-end;
+      text-align: right;
     }
-    
     &__purchased {
-      display: inline-flex;
-      align-items: center;
-      justify-content: flex-end;
+      text-align: right;
     }
-  
     &__link {
-      width: 115px;
+      width: 128px;
       height: 40px;
       display: inline-flex;
-      text-decoration: none;
       align-items: center;
-      border-radius: 6px;
       justify-content: center;
-      background-color: var(--secondary_color);
-      color: var(--card_primary_color);
-      font: 400 16px/20px $basic_font_family;
-      
-      &:hover {
-        background-color: var(--active_el_color);
-      }
     }
   }
 }

@@ -1,9 +1,8 @@
 @import "./src/assets/styles/basic/variables";
 
-.bond.modal {
+.bond.page {
   .metrics {
-    margin-top: 56px;
-    
+    margin-top: 30px;
     &__card {
       flex: 1;
       max-width: 202px;
@@ -11,11 +10,9 @@
       padding: 25px;
       border-radius: 16px;
       background-color: var(--bg_color);
-    
       &:nth-child(n+2) {
         margin-left: 10px;
       }
-    
       &__inner {
         width: 100%;
         display: flex;
@@ -23,16 +20,18 @@
         flex-direction: column;
         justify-content: center;
       }
-    
       &__title {
-        color: var(--text_color);
-        font: 400 24px/29px $basic_font_family;
+        color: #808080;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 110%;
       }
-    
       &__value {
-        margin-top: 16px;
-        color: var(--card_primary_color);
-        font: 700 24px/29px $basic_font_family;
+        margin-top: 27px;
+        color: $brand_color;
+        font-weight: 500;
+        font-size: 25px;
+        line-height: 110%;
       }
     }
   }

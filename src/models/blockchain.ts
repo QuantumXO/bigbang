@@ -8,8 +8,9 @@ export namespace IBlockchain {
   }
   export interface INetwork {
     id: NetworkType;
+    name: string;
     chainId: string;
-    hexadecimalChainId?: string;
+    hexadecimalChainId: string;
     chainNetwork?: 'mainnet';
     blockExplorerUrls?: string[];
     chainName?: string;

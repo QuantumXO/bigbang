@@ -8,7 +8,6 @@ import { IReduxState } from '@store/slices/state.interface';
 import { ReactElement } from 'react';
 import BondTableRow from './components/row';
 import BondDataCard from './components/card';
-import { Outlet } from "react-router-dom";
 
 import './styles.scss';
 
@@ -24,16 +23,33 @@ export function Mints(): ReactElement {
     return state.app.treasuryBalance;
   });
   
-  const onRenderMetrics = (): ReactElement => {
+  const onRenderMainCards = (): ReactElement => {
     return (
       <Grid
         item
         container
-        spacing={2}
-        className="mints__metrics"
+        className="mints__main--cards"
         justifyContent="space-between"
       >
-        <Grid item xs={12} sm={6} className="card">
+        <Grid item xs={12} sm={6} className="card welcome">
+          <div className='card__inner'>
+            <div className="card__title">{'Mint'}</div>
+            <p className="card__value">
+              {'The Mint page allow users to mint BIG from the protocol \n' +
+                'at a discount by trading it with i) liquidity (LP tokens) or ii) other assets'}
+            </p>
+          </div>
+        </Grid>
+        <Grid item xs={12} sm={6} className="card card--custom info">
+          <div className='card__inner'>
+            <span className="card__icon" />
+            <p className="card__text">
+              {'The minting action create bonds which take roughly XX epochs to vest, and BIG tokens are vested linearly \n' +
+                'to the user over that period'}
+            </p>
+          </div>
+        </Grid>
+        <Grid item xs={12} sm={6} className="card metric">
           <div className='card__inner'>
             <Box textAlign="center">
               <div className="card__title">{'Treasury Balance'}</div>
@@ -52,10 +68,10 @@ export function Mints(): ReactElement {
             </Box>
           </div>
         </Grid>
-        <Grid item xs={12} sm={6} className="card">
+        <Grid item xs={12} sm={6} className="card metric">
           <div className='card__inner'>
             <Box textAlign="center">
-              <div className="card__title">{`'tokenType'} Price`}</div>
+              <div className="card__title">{`BIG Price`}</div>
               <div className="card__value">
                 {isAppLoading ? <Skeleton width="100px" /> : `$${trim(marketPrice, 2)}`}
               </div>
@@ -66,49 +82,58 @@ export function Mints(): ReactElement {
     );
   };
   
+  const onRenderBondsTable = (): ReactElement | null => {
+    let layout: ReactElement | null = null;
+    
+    if (!isSmallScreen) {
+      layout = (
+        <Grid container item className="card card--custom bonds">
+          <TableContainer
+            classes={{
+              root: 'mints__table__wrap',
+            }}
+          >
+            <Table className="mints__table">
+              <TableHead className="mints__table__thead">
+                <TableRow  className="mints__table__row">
+                  <TableCell className="mints__table__col mint">
+                    <span className="mints__table__title">Mint</span>
+                  </TableCell>
+                  <TableCell className="mints__table__col price">
+                    <span className="mints__table__title">Price</span>
+                  </TableCell>
+                  <TableCell className="mints__table__col ROI">
+                    <span className="mints__table__title">ROI</span>
+                  </TableCell>
+                  <TableCell className="mints__table__col purchased">
+                    <span className="mints__table__title">Purchased</span>
+                  </TableCell>
+                  <TableCell className="mints__table__col action">
+                    <span className="mints__table__title" />
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody className="mints__table__tbody">
+                {bonds.map((bond: IAllBondData): ReactElement => (
+                  <BondTableRow key={bond.name} bond={bond} />
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+      );
+    }
+    
+    return layout;
+  }
+  
   return (
     <div className="mints page">
       <Zoom in={true}>
         <div className="mints__wrapper">
-          <h1 className='mints__title'>{'Mint (X, X)'}</h1>
-          {onRenderMetrics()}
-          
-          {!isSmallScreen && (
-            <Grid container item>
-              <TableContainer
-                classes={{
-                  root: 'mints__table__wrap',
-                }}
-              >
-                <Table className="mints__table">
-                  <TableHead className="mints__table__thead">
-                    <TableRow  className="mints__table__row">
-                      <TableCell className="mints__table__col mint">
-                        <span className="mints__table__title">Mint</span>
-                      </TableCell>
-                      <TableCell className="mints__table__col price">
-                        <span className="mints__table__title">Price</span>
-                      </TableCell>
-                      <TableCell className="mints__table__col ROI">
-                        <span className="mints__table__title">ROI</span>
-                      </TableCell>
-                      <TableCell className="mints__table__col purchased">
-                        <span className="mints__table__title">Purchased</span>
-                      </TableCell>
-                      <TableCell className="mints__table__col action">
-                        <span className="mints__table__title">{'Action'}</span>
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody className="mints__table__tbody">
-                    {bonds.map((bond: IAllBondData): ReactElement => (
-                      <BondTableRow key={bond.name} bond={bond} />
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
-          )}
+          {onRenderMainCards()}
+  
+          {onRenderBondsTable()}
         </div>
       </Zoom>
       
@@ -123,7 +148,6 @@ export function Mints(): ReactElement {
           </Grid>
         </div>
       )}
-      <Outlet /> {/* Bond modal */}
     </div>
   );
 }

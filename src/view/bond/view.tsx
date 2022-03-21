@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode, useState } from 'react';
-import { Grid, Backdrop, Fade } from '@material-ui/core';
+import { Zoom } from '@material-ui/core';
 import Header from './components/header';
 import Metrics from './components/metrics';
 import RedeemTab from './components/redeem';
@@ -12,35 +12,46 @@ import './styles.scss';
 interface IBondProps {
   bond: IAllBondData;
 }
+interface IUserData {
+  title: string;
+  value: string;
+  isDivided?: boolean;
+}
 
 export function Bond({ bond }: IBondProps): ReactElement {
-  const [slippage, setSlippage] = useState<number>(0.5);
   const [viewTab, setViewTab] = useState<number>(0);
-
-  const onSlippageChange = (value: any): void => setSlippage(value);
+  const [userData, handleUserData] = useState<IUserData[]>([]);
 
   const changeView = (newView: number) => (): void => setViewTab(newView);
 
-  const onRenderTabs = (): ReactNode => {
+  const onRenderTabContent = (): ReactNode => {
     let layout: ReactNode = null;
     
     switch (viewTab) {
-      case 0: layout = <MintTab bond={bond} slippage={slippage} />; break;
+      case 0: layout = <MintTab bond={bond} slippage={0.5} />; break;
       case 1: layout = <RedeemTab bond={bond} />; break;
     }
     
     return layout;
-  }; 
+  };
+  
+  const onRenderUserData = (): ReactElement => {
+    return (
+      <div className="user--data card card--custom">
+      
+      </div>
+    );
+  };
   
   return (
-    <Fade in={true} mountOnEnter unmountOnExit>
-      <Grid className="bond modal">
-        <Backdrop open={true} className="bond__backdrop">
-          <Fade in={true}>
-            <div className="bond__wrapper">
-              <Header bond={bond} slippage={slippage} onSlippageChange={onSlippageChange} />
-              <Metrics />
-              
+    <div className="bond page">
+      <Zoom in>
+        <div className="bond__wrapper">
+          <Header bond={bond} />
+          <Metrics />
+          <div style={{ display: 'flex', alignItems: 'stretch', justifyContent: 'space-between', marginTop: 30 }}>
+            {onRenderUserData()}
+            <div className="form card card--custom">
               <div className="bond__togglers">
                 <div
                   className={cx('bond__togglers__btn', { active: !viewTab })}
@@ -55,12 +66,11 @@ export function Bond({ bond }: IBondProps): ReactElement {
                   {'Redeem'}
                 </div>
               </div>
-  
-              {onRenderTabs()}
             </div>
-          </Fade>
-        </Backdrop>
-      </Grid>
-    </Fade>
+          </div>
+          {onRenderTabContent()}
+        </div>
+      </Zoom>
+    </div>
   );
 }

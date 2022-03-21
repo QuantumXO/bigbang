@@ -28,7 +28,7 @@ body {
   background: #F2F3F7;
   box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, 0.7);
   &.welcome {
-    padding: 48px 56px 34px;
+    padding: 48px 56px 34px !important;
     .card__title {
       color: $brand_color;
       font: 500 30px/34px $basic_font_family;
@@ -40,7 +40,7 @@ body {
     }
   }
   &.big {
-    padding: 48px 56px 40px;
+    padding: 48px 56px 40px !important;
     .card__title {
       color: #808080;
       font: 500 20px/1.1 $basic_font_family;
@@ -51,8 +51,8 @@ body {
       font: 500 30px/1.1 $basic_font_family;
     }
   }
-  &:not(.welcome):not(.big) {
-    padding: 38px 15px;
+  &:not(.welcome):not(.big):not(.card--custom) {
+    padding: 38px 15px !important;
     .card__title {
       color: #808080;
       font: 500 16px/1.1 $basic_font_family;
@@ -67,10 +67,14 @@ body {
 .btn__primary--fulfilled {
   color: #fff;
   border-radius: 20px;
+  text-decoration: none;
   background: $brand_color;
   border: 1px solid $brand_color;
   transition: all .15s ease-in-out;
   cursor: pointer;
+  &:link {
+    color: #fff;
+  }
   &:hover {
     color: $brand_color;
     background-color: #fff;

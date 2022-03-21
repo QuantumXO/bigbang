@@ -12,7 +12,7 @@ export function Metrics(): ReactElement {
   return (
     <Grid
       container
-      className="metrics"
+      className="metrics card card--custom"
       justifyContent="space-around"
     >
       <Grid item className="metrics__card" md={3}>
@@ -28,7 +28,7 @@ export function Metrics(): ReactElement {
   
       <Grid item className="metrics__card" md={3}>
         <div className="metrics__card__inner">
-          <div className="metrics__card__title">{'wrapTokenType'}</div>
+          <div className="metrics__card__title">{'BIG Price'}</div>
           <div className="metrics__card__value">
             {wrapTokenPrice
               ? <>{`$${wrapTokenPrice}`}</>
@@ -39,7 +39,7 @@ export function Metrics(): ReactElement {
   
       <Grid item className="metrics__card" md={3}>
         <div className="metrics__card__inner">
-          <div className="metrics__card__title">{`${'tokenType'} Price`}</div>
+          <div className="metrics__card__title">{`xTOK`}</div>
           <div className="metrics__card__value">
             {tokenPrice
               ? <>{`$${tokenPrice}`}</>

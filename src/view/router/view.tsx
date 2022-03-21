@@ -13,19 +13,20 @@ export const Router: FC = (): ReactElement => {
         <Route index element={<CommonRoute Component={Dashboard} />} />
         <Route path="dashboard" element={<CommonRoute Component={Dashboard} />} />
         <Route path="stake" element={<CommonRoute Component={Stake} />} />
-        <Route path="mints" element={<CommonRoute Component={Mints} />}>
-          <>
-            {bonds.map((bond: IAllBondData): ReactElement => {
-              return (
-                <Route
-                  key={bond.name}
-                  path={`${bond.name}`}
-                  element={<Bond bond={bond} />}
-                />
-              );
-            })}
-          </>
-        </Route>
+        <Route path="mints" element={<CommonRoute Component={Mints} />} />
+        {bonds.map((bond: IAllBondData): ReactElement => {
+          return (
+            <Route
+              key={bond.name}
+              path={`mints/${bond.name}`}
+              element={(
+                <CommonRoute>
+                  <Bond bond={bond} />
+                </CommonRoute>
+              )}
+            />
+          );
+        })}
         <Route path="*" element={<CommonRoute Component={NotFound}/>} />
       </Routes>
     </HashRouter>

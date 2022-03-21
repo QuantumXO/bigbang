@@ -97,12 +97,14 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
     [provider]
   );
   
-  const onHandleNetworkChange = async (chainId: number): Promise<void> => {
-    setProviderChainID(String(chainId));
+  const onHandleNetworkChange = async (hexadecimalChainId: number): Promise<void> => {
+    // from hex to decimal
+    // setProviderChainID(String(parseInt(String(hexadecimalChainId), 16)));
+    setChainID(String(parseInt(String(hexadecimalChainId), 16)));
   };
   
   const connect = useCallback(async (): Promise<Web3Provider> => {
-    const rawProvider = await web3Modal.connect();
+    const rawProvider: any = await web3Modal.connect();
     
     _initListeners(rawProvider);
     

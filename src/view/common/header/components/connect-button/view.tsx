@@ -11,7 +11,7 @@ import cx from 'classnames';
 import network from '@services/common/network';
 
 export function ConnectMenu() {
-  const { connect, disconnect, connected, web3, providerChainID } = useWeb3Context();
+  const { connect, disconnect, connected, web3, chainID } = useWeb3Context();
   const [isConnected, setConnected] = useState(connected);
   
   const pendingTransactions = useSelector<IReduxState, IPendingTxn[]>((state) => {
@@ -32,7 +32,7 @@ export function ConnectMenu() {
     clickFunc = () => null;
   }
 
-  if (isConnected && (!SUPPORTED_NETWORKS_CHAIN_IDS.includes(String(providerChainID)))) {
+  if (isConnected && (!SUPPORTED_NETWORKS_CHAIN_IDS.includes(String(chainID)))) {
     buttonText = 'Wrong network';
     btnClasses = 'error';
     clickFunc = () => network().getIsWrongNetwork;

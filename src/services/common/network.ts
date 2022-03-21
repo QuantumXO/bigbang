@@ -48,33 +48,33 @@ export class Network {
   }
   
   switchNetwork = async (): Promise<void> => {
-    if (window.ethereum) {
+    if (this.getIsEthereumAPIAvailable) {
       try {
-        await this.switchRequest();
+        await this.switchChainRequest();
       } catch (error: any) {
         if (error.code === 4902) {
           try {
             await this.addChainRequest();
-            await this.switchRequest();
+            await this.switchChainRequest();
           } catch (addError) {
-            console.log(error);
+            console.error(error);
           }
         }
-        console.log(error);
+        console.error(error);
       }
     }
   }
   
-  switchRequest = (): any => {
+  switchChainRequest = (): any => {
     const newNetwork: IBlockchain.INetwork  | undefined = NETWORKS
       .find(({ id }: IBlockchain.INetwork) => id === this.newNetworkId);
     
     if (newNetwork) {
-      const { chainId } = newNetwork;
+      const { hexadecimalChainId } = newNetwork;
       
       return window.ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId }]
+        params: [{ chainId: hexadecimalChainId }]
       });
     } else {
       //
@@ -86,9 +86,9 @@ export class Network {
       .find(({ id }: IBlockchain.INetwork) => id === this.newNetworkId);
     
     if (newNetwork) {
-      const { chainId, rpcUrls, blockExplorerUrls, nativeCurrency, chainName } = newNetwork;
+      const { rpcUrls, blockExplorerUrls, nativeCurrency, chainName, hexadecimalChainId } = newNetwork;
       const param: IBlockchain.IAddEthereumChainParameter = {
-        chainId,
+        chainId: hexadecimalChainId,
         chainName,
         rpcUrls,
         blockExplorerUrls,

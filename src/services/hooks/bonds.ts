@@ -7,8 +7,7 @@ import { IBondDetails, IBondSlice } from "@store/slices/bond-slice";
 import { IReduxState } from "@store/slices/state.interface";
 
 // Smash all the interfaces together to get the BondData Type
-export interface IAllBondData extends Bond, IBondDetails, IUserBondDetails {
-}
+export interface IAllBondData extends Bond, IBondDetails, IUserBondDetails { }
 
 const initialBondArray = allBonds;
 

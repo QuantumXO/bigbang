@@ -1,45 +1,89 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useState, MouseEvent, ChangeEvent } from 'react';
 import cx from 'classnames';
 import { NETWORKS } from '@constants/blockchain';
 import { IBlockchain } from '@models/blockchain';
 import { Fade, Popper } from '@material-ui/core';
 import network from '@services/common/network';
+import { useWeb3Context } from '@services/hooks';
 // import { switchNetwork } from '@services/helpers/switch-network';
 
 import './styles.scss';
 
 export const NetworkButton = (): ReactElement => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const isEthereumAPIAvailable: boolean = network().getIsEthereumAPIAvailable;
+  const { chainID } = useWeb3Context();
+  const filteredNetworks: IBlockchain.INetwork[] = NETWORKS
+    .filter(({ chainId: networkChainId }: IBlockchain.INetwork) => networkChainId !== String(chainID));
+  
+  const [anchorEl, setAnchorEl] = useState<any>(null);
+  
   const isOpen: boolean = Boolean(anchorEl);
   
-  const handleClick = (event: any): void => {
+  const onToggleNetworksPopUp = (event: MouseEvent<HTMLDivElement>): void => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+  
+  const onHandleNetwork = async (
+    { target: { id } }: MouseEvent<HTMLDivElement> & { target: { id: string } }
+  ): Promise<void> => {
+    const newNetwork: IBlockchain.INetwork | undefined = NETWORKS
+      .find(({ id: networkId }: IBlockchain.INetwork) => networkId === String(id));
+  
+    if (newNetwork) {
+      await network({ newNetworkId: newNetwork.id }).switchNetwork();
+    }
+  };
+  
+  const onRenderBtnLabel = (): ReactElement => {
+    const currentNetwork: IBlockchain.INetwork | undefined = NETWORKS
+    .find(({ chainId: networkChainId }: IBlockchain.INetwork) => networkChainId === String(chainID));
+    let btnLabel: string = 'Network';
+    let btnClasses: string = '';
+    
+    if (currentNetwork) {
+      const { name, id } = currentNetwork;
+    
+      btnLabel = name;
+      btnClasses = id;
+    }
+    
+    return (
+      <div className="btn__label">
+        <span className="text">{btnLabel}</span>
+        <span
+          className={cx(
+            'network__item current',
+            { [btnClasses]: !!btnClasses }
+          )}
+        />
+      </div>
+    );
   };
   
   return (
     <div
       className={cx('header__network__btn', { active: isOpen })}
-      onMouseEnter={(e): void => handleClick(e)}
-      onMouseLeave={(e): void => handleClick(e)}
+      onMouseEnter={(e: MouseEvent<HTMLDivElement>): void => onToggleNetworksPopUp(e)}
+      onMouseLeave={(e: MouseEvent<HTMLDivElement>): void => onToggleNetworksPopUp(e)}
     >
-      <div className="btn__label">
-        <span className="text">{'Ethereum'}</span>
-        <span className="network--icon" />
-      </div>
+      {onRenderBtnLabel()}
       <Popper
         transition
-        open={true}
+        open={isOpen}
         anchorEl={anchorEl}
         className="header__network__btn__popper"
       >
         {({ TransitionProps }): ReactElement => (
           <Fade {...TransitionProps} timeout={200}>
             <div className="networks__list">
-              {NETWORKS.map((item: IBlockchain.INetwork): ReactElement => {
+              {filteredNetworks.map((item: IBlockchain.INetwork): ReactElement => {
                 const { id } = item;
                 return (
-                  <div key={id} className={cx('networks__list__item', { [id]: !!id })} />
+                  <div
+                    id={id}
+                    key={id}
+                    className={cx('network__item', { [id]: !!id })}
+                    onClick={onHandleNetwork}
+                  />
                 )
               })}
             </div>

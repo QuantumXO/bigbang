@@ -2,112 +2,96 @@
 
 .mints.page {
   width: 100%;
-  display: flex;
-  overflow: hidden;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  margin: auto;
-  
   @media screen and (max-width: 1240px) {
     width: 100%;
   }
-  
   .mints {
     &__wrapper {
       width: 100%;
     }
-    
-    &__title {
-      color: var(--page_title_color);
-      font: 400 24px/29px $basic_font_family;
-    }
-    
-    &__metrics {
-      margin-top: 77px;
-      
+    &__main--cards {
       .card {
         width: 100%;
-        max-width: 453px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        
-        &:nth-child(n+2) {
-          margin-left: 10px;
-        }
-  
+        max-width: 445px;
+        margin-bottom: 30px;
         &__inner {
           width: 100%;
-          padding: 25px;
-          border-radius: 16px;
-          background: var(--card_bg_color);
         }
-  
-        &__title {
-          color: var(--text_color);
-          font: 400 24px/29px $basic_font_family;
-        }
-  
-        &__value {
-          margin-top: 16px;
-          color: var(--card_primary_color);
-          font: 700 24px/29px $basic_font_family;
+        &.card--custom {
+          &.info {
+            padding: 49px 75px 41px;
+            .card {
+              &__inner {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                flex-direction: column;
+              }
+              &__icon {
+                width: 20px;
+                height: 20px;
+                display: inline-flex;
+                border-radius: 50%;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid $brand_color;
+                &::before {
+                  display: inline-block;
+                  content: 'i';
+                  color: $brand_color;
+                  font: 500 14px/20px $basic_font_family;
+                }
+              }
+              &__text {
+                width: 100%;
+                margin-top: 58px;
+                text-align: center;
+                color: #808080;
+                font: 400 12px/1.7 $basic_font_family;
+              }
+            }
+          }
         }
       }
     }
-    
     &__table {
+      width: 100%;
+      display: block;
       &__wrap {
-        margin-top: 75px;
-        border-radius: 16px;
-        background-color: var(--card_bg_color);
+        padding: 40px 56px 64px;
       }
-      
       &__title {
-        color: var(--card_primary_color);
-        font: 600 16px/20px $basic_font_family;
+        color: $brand_color;
+        font: 500 14px/1.7 $basic_font_family;
       }
-      
       &__thead {
-        border-bottom: 1px solid var(--secondary_color);
-  
+        display: block;
+        .mints__table__row {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+        }
         .mints__table__col {
-          &:first-child {
-            padding-left: 56px;
-          }
-  
-          &:last-child {
-            padding-right: 40px;
-          }
-  
-          &:not(:first-child) {
-            padding-top: 18px;
-          }
-  
+          display: block;
+          padding: 0;
+          border: 0;
           &.mint {
-            width: 337px;
+            margin-left: 135px;
           }
-  
           &.price {
-            width: 187px;
-            text-align: center;
+            margin-left: 158px;
           }
-  
           &.ROI {
-            width: 165px;
-            text-align: center;
+            margin-left: 61px;
           }
-  
           &.purchased {
-            width: 178px;
-            text-align: center;
-          }
-  
-          &.action {
-            text-align: center;
+            margin-left: 72px;
           }
         }
+      }
+      &__tbody {
+        display: block;
+        margin-top: 30px;
       }
     }
   }
