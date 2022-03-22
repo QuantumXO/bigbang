@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, MouseEvent, ChangeEvent } from 'react';
+import React, { ReactElement, useState, MouseEvent } from 'react';
 import cx from 'classnames';
 import { NETWORKS } from '@constants/blockchain';
 import { IBlockchain } from '@models/blockchain';

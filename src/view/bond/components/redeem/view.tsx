@@ -10,15 +10,19 @@ import { IAllBondData } from '@services/hooks/bonds';
 import { IUserBondDetails } from '@store/slices/account-slice';
 import { messages } from '@constants/messages';
 import { warning } from '@store/slices/messages-slice';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
+import BondData from '@view/bond/components/bond-data';
+import Togglers from '@view/bond/components/togglers';
 
 import "./styles.scss";
+import { IBond } from '@models/bond';
 
 interface IBondRedeem {
   bond: IAllBondData;
+  handleChangeTab: () => void;
 }
 
-export function BondRedeem({ bond }: IBondRedeem): ReactElement {
+export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement {
   const dispatch = useDispatch();
   const { provider, address, chainID, checkIsWrongNetwork } = useWeb3Context();
 
@@ -56,54 +60,47 @@ export function BondRedeem({ bond }: IBondRedeem): ReactElement {
   };
 
   const vestingPeriod = (): string => {
-    return prettifySeconds(bondingState.vestingTerm, 'day');
+    return prettifySeconds(bondingState?.vestingTerm, 'day');
   };
   
   const onRenderBondData = (): ReactElement => {
-    return (
-      <Slide direction="right" in={true} mountOnEnter unmountOnExit {...{ timeout: 533 }}>
-        <Box className="data">
-          <div className="data__row">
-            <div className="data__row__title">{'Pending Rewards'}</div>
-            <div className="data__row__value">
-              {isBondLoading
-                ? <Skeleton width="100px" />
-                : `${trim(bond.interestDue, 4)} ${'tokenType'}`
-              }
-            </div>
-          </div>
-          <div className="data__row">
-            <div className="data__row__title">{'Claimable Rewards'}</div>
-            <div className="data__row__value">
-              {isBondLoading ? <Skeleton width="100px" /> : `${trim(bond.pendingPayout, 4)} ${'tokenType'}`}
-            </div>
-          </div>
-          <div className="data__row">
-            <div className="data__row__title">{'Time until fully vested'}</div>
-            <div className="data__row__value">
-              {isBondLoading ? <Skeleton width="100px" /> : vestingTime()}
-            </div>
-          </div>
-          <div className="data__row">
-            <div className="data__row__title">ROI</div>
-            <div className="data__row__value">
-              {isBondLoading ? <Skeleton width="100px" /> : `${trim(bond.bondDiscount * 100, 2)}%`}
-            </div>
-          </div>
-          <div className="data__row">
-            <div className="data__row__title">Vesting Term</div>
-            <div className="data__row__value">{isBondLoading ? <Skeleton width="100px" /> : vestingPeriod()}</div>
-          </div>
-        </Box>
-      </Slide>
-    );
+    const bondData: IBond.IUserData[] = [
+      {
+        id: 'pendingRewards',
+        label: 'Pending Rewards',
+        value: `${trim(bond.interestDue, 4)} ${'BIG'}`,
+      },
+      {
+        isDivided: true,
+        id: 'claimableRewards',
+        label: 'Claimable Rewards',
+        value: `${trim(bond.pendingPayout, 4)} ${'xTOK'}`,
+      },
+      {
+        isDivided: true,
+        id: 'timeUntilFullyVested',
+        label: 'Time until fully vested',
+        value: vestingTime(),
+      },
+      {
+        id: 'ROI',
+        label: 'ROI',
+        value: `${trim(bond.bondDiscount * 100, 2)}%`,
+      },
+      {
+        id: 'vestingTerm',
+        label: 'Vesting Term',
+        value: vestingPeriod(),
+      },
+    ];
+    return <BondData data={bondData} isBondLoading={isBondLoading} />;
   }
-
-  return (
-    <div className="redeem__tab">
-      <div className="redeem__tab__inner">
+  
+  const onRenderActionsBtns = (): ReactElement => {
+    return (
+      <>
         <div
-          className="action__btn"
+          className="action__btn btn__primary--fulfilled claim"
           onClick={() => {
             if (isPendingTxn(pendingTransactions, 'redeem_bond_' + bond.name)) return;
             onRedeem(false);
@@ -112,7 +109,7 @@ export function BondRedeem({ bond }: IBondRedeem): ReactElement {
           {txnButtonText(pendingTransactions, 'redeem_bond_' + bond.name, 'Claim')}
         </div>
         <div
-          className="action__btn"
+          className="action__btn claim--autostake"
           onClick={() => {
             if (isPendingTxn(pendingTransactions, 'redeem_bond_' + bond.name + '_autostake')) return;
             onRedeem(true);
@@ -124,9 +121,22 @@ export function BondRedeem({ bond }: IBondRedeem): ReactElement {
             'Claim and Autostake'
           )}
         </div>
-      </div>
+      </>
+    );
+  };
+
+  return (
+    <div className="tab__content redeem">
+      <div className="tab__inner">
+        {onRenderBondData()}
   
-      {onRenderBondData()}
+        <div className="form--card card card--custom">
+          <Togglers handleChangeView={handleChangeTab} activeTabIndex={1} />
+          <div className="form--card__inner">
+            {onRenderActionsBtns()}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

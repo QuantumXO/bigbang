@@ -1,0 +1,42 @@
+@import "./src/assets/styles/basic/variables";
+
+.bond.page {
+  .bond {
+    &__togglers {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &__btn {
+        width: 50%;
+        height: 64px;
+        display: inline-flex;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 18px;
+        background: #F2F3F7;
+        align-items: center;
+        justify-content: center;
+
+        &.active {
+          color: $brand_color;
+          box-shadow: inset -3px -3px 10px rgba(255, 255, 255, 0.4), inset 3px 3px 10px rgba(201, 208, 225, 0.4);
+        }
+        &:not(.active) {
+          color: #C5C6CF;
+          box-shadow: -3px -3px 10px rgba(255, 255, 255, 0.4), 3px 3px 10px rgba(201, 208, 225, 0.4);
+          cursor: pointer;
+          &:hover {
+            color: $brand_color;
+            box-shadow: inset -3px -3px 10px rgba(255, 255, 255, 0.4), inset 3px 3px 10px rgba(201, 208, 225, 0.4);
+          }
+        }
+        &:first-child {
+          border-radius: 20px 0 0 0;
+        }
+        &:last-child {
+          border-radius: 0 20px 0 0;
+        }
+      }
+    }
+  }
+}

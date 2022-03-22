@@ -1,4 +1,4 @@
-import React, { Context, ReactElement, useCallback, useContext, useMemo, useState } from 'react';
+import React, { Context, ReactElement, useCallback, useContext, useMemo, useState, createContext, FC, ReactNode } from 'react';
 import Web3Modal from "web3modal";
 import { JsonRpcProvider, StaticJsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
@@ -7,13 +7,13 @@ import { DEFAULT_NETWORK } from "@constants/index";
 import { IBlockchain } from "@models/blockchain";
 import network from "@services/common/network";
 
-type OnChainProviderType = {
+type Web3ContextDataType = {
   connect: () => Promise<Web3Provider>;
   disconnect: () => void;
   checkIsWrongNetwork: () => Promise<boolean>;
   provider: JsonRpcProvider;
   address: string;
-  connected: boolean;
+  isConnected: boolean;
   web3Modal: Web3Modal;
   chainID: number;
   web3?: any;
@@ -21,37 +21,37 @@ type OnChainProviderType = {
   hasCachedProvider: () => boolean;
 };
 
-export type Web3ContextDataType = {
-  OnChainProviderType: OnChainProviderType;
-} | null;
+type Web3ContextType = Web3ContextDataType | null;
 
-const Web3Context: Context<Web3ContextDataType> = React.createContext<Web3ContextDataType>(null);
 
-export const useWeb3Context = () => {
-  const web3Context = useContext(Web3Context);
+const Web3Context: Context<Web3ContextType> = createContext<Web3ContextType>(null);
+
+export const useWeb3Context = (): Web3ContextDataType => {
+  const web3Context: Web3ContextType = useContext(Web3Context);
+  
   if (!web3Context) {
-    throw new Error("useWeb3Context() can only be used inside of <Web3ContextProvider />, " + "please declare it at a higher level.");
+    throw new Error(
+      "useWeb3Context() can only be used inside of <Web3ContextProvider />, " + "please declare it at a higher level."
+    );
   }
-  const { OnChainProviderType } = web3Context;
-  return useMemo(() => {
-    return { ...OnChainProviderType };
+  
+  return useMemo((): Web3ContextDataType => {
+    return web3Context;
   }, [web3Context]);
 };
 
-export const useAddress = () => {
+export const useAddress = (): string => {
   const { address } = useWeb3Context();
   return address;
 };
 
-export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ children }) => {
-  const [connected, setConnected] = useState<boolean>(false);
+export const Web3ContextProvider: FC<{ children: ReactNode }> = ({ children }): ReactElement => {
+  const [isConnected, setConnected] = useState<boolean>(false);
   const [chainID, setChainID] = useState<string | undefined>(network().getCurrentChainId);
   const [providerChainID, setProviderChainID] = useState<string>(DEFAULT_NETWORK.chainId);
-  const [address, setAddress] = useState<string>("");
-  
+  const [address, setAddress] = useState<string>('');
   const [uri, setUri] = useState<string>(getMainnetURI());
   const [provider, setProvider] = useState<JsonRpcProvider>(new StaticJsonRpcProvider(uri));
-  
   const [web3Modal] = useState<Web3Modal>(
     new Web3Modal({
       cacheProvider: true,
@@ -103,7 +103,7 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
     setChainID(String(parseInt(String(hexadecimalChainId), 16)));
   };
   
-  const connect = useCallback(async (): Promise<Web3Provider> => {
+  const onConnect = useCallback(async (): Promise<Web3Provider> => {
     const rawProvider: any = await web3Modal.connect();
     
     _initListeners(rawProvider);
@@ -123,34 +123,37 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
     setConnected(true);
     
     return connectedProvider;
-  }, [provider, web3Modal, connected]);
+  }, [provider, web3Modal, isConnected]);
   
   const checkIsWrongNetwork = async () => await network().getIsWrongNetwork;
   
-  const disconnect = useCallback(() => {
+  const onDisconnect = useCallback((): void => {
     web3Modal.clearCachedProvider();
     setConnected(false);
     
-    setTimeout(() => {
+    setTimeout((): void => {
       window.location.reload();
     }, 1);
-  }, [provider, web3Modal, connected]);
-  
-  const OnChainProviderType = useMemo(
-    () => ({
-      connect,
-      disconnect,
-      hasCachedProvider,
+  }, [provider, web3Modal, isConnected]);
+
+  const contextValue = useMemo(
+    (): Web3ContextDataType => ({
       provider,
-      connected,
+      isConnected,
       address,
-      chainID,
+      chainID: Number(chainID),
       web3Modal,
-      providerChainID,
-      checkIsWrongNetwork
+      providerChainID: Number(providerChainID),
+      hasCachedProvider,
+      checkIsWrongNetwork,
+      connect: onConnect,
+      disconnect: onDisconnect,
     }),
-    [connect, disconnect, hasCachedProvider, provider, connected, address, chainID, web3Modal, providerChainID]
+    [
+      onConnect, onDisconnect, hasCachedProvider, provider, isConnected, address, chainID, web3Modal,
+      providerChainID
+    ]
   );
-  //@ts-ignore
-  return <Web3Context.Provider value={{ OnChainProviderType }}>{children}</Web3Context.Provider>;
+  
+  return <Web3Context.Provider value={contextValue}>{children}</Web3Context.Provider>;
 };

@@ -5,14 +5,13 @@ import { SUPPORTED_NETWORKS_CHAIN_IDS } from '@constants/index';
 import { IReduxState } from '@store/slices/state.interface';
 import { IPendingTxn } from '@store/slices/pending-txns-slice';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
-import './styles.scss';
 import cx from 'classnames';
 import network from '@services/common/network';
 
+import './styles.scss';
+
 export function ConnectMenu() {
-  const { connect, disconnect, connected, web3, chainID } = useWeb3Context();
-  const [isConnected, setConnected] = useState(connected);
+  const { connect, disconnect, isConnected, chainID } = useWeb3Context();
   
   const pendingTransactions = useSelector<IReduxState, IPendingTxn[]>((state) => {
     return state.pendingTransactions;
@@ -37,10 +36,6 @@ export function ConnectMenu() {
     btnClasses = 'error';
     clickFunc = () => network().getIsWrongNetwork;
   }
-  
-  useEffect((): void => {
-    setConnected(connected);
-  }, [web3, connected]);
   
   return (
     <div

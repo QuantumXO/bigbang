@@ -2,72 +2,94 @@
 
 .wrap.modal {
   .wrapper {
-    max-width: 883px;
+    max-width: 540px;
+    position: relative;
   }
-  
   .modal {
     &__header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      
       .title {
-        color: var(--modal_primary_color);
-        font: 700 24px/29px $basic_font_family;
+        color: $brand_color;
+        font-weight: 500;
+        font-size: 30px;
+        line-height: 34px;
       }
-      
-      .wrap--price {
-        margin-top: 3px;
-        color: var(--modal_secondary_color);
-        font: 400 24px/29px $basic_font_family;
+      .balance {
+        &__wrap {
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          &__inner {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
+            .label {
+              font-weight: 400;
+              font-size: 14px;
+              line-height: 170%;
+              color: #5C5A5A;
+            }
+            .value {
+              margin-left: 3px;
+              font-weight: 400;
+              font-size: 14px;
+              line-height: 170%;
+              color: $brand_color;
+            }
+          }
+          .price {
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 170%;
+            color: #5C5A5A;
+            opacity: 0.5;
+          }
+        }
+      }
+      .close__btn {
+        top: 34px;
+        right: 34px;
+        position: absolute;
         cursor: pointer;
+        path {
+          stroke: #5C5A5A !important;
+        }
       }
     }
-  
     &__container {
-      margin-top: 103px;
+      margin-top: 48px;
       width: 100%;
       display: flex;
       align-items: center;
       flex-direction: column;
-      
-      .balance {
-        width: 100%;
-        color: var(--modal_primary_color);
-        font: 400 24px/29px $basic_font_family;
-      }
-      
       .bonds {
         width: 100%;
         display: flex;
-        margin-top: 37px;
         align-items: center;
-        justify-content: space-between;
+        flex-direction: column;
+        align-items: center;
       }
-    
       .field {
         &__wrapper {
           display: inline-flex;
           align-items: center;
         }
-        
         &__input {
           width: 200px;
           padding-left: 5px;
           color: var(--modal_primary_color);
           font: 400 16px/20px $basic_font_family;
           border-bottom: 1px solid var(--modal_secondary_color);
-          
           &:hover,
           &:focus {
             border-bottom: 1px solid var(--modal_secondary_color);
           }
-          
           &::placeholder {
             color: var(--modal_secondary_color);
             font: 400 16px/20px $basic_font_family;
           }
-          
           &__wrapper {
             &::after,
             &::before {
@@ -75,47 +97,38 @@
             }
           }
         }
-        
         &__label {
           margin-right: 16px;
           color: var(--modal_primary_color);
           font: 400 24px/29px $basic_font_family;
         }
       }
-    
       .bonds--toggle {
-        margin: 0 10px;
-      }
-    
-      .action--btn {
-        width: 100%;
-        max-width: 308px;
-        display: flex;
-        margin-top: 116px;
-        padding: 14px 0;
-        border-radius: 8px;
-        align-items: center;
-        justify-content: center;
-        background: var(--secondary_color);
-        cursor: pointer;
-      
-        span {
-          text-align: center;
-          color: var(--modal_secondary_color);
-          font: 400 24px/29px $basic_font_family;
+        margin: 24px 0;
+        &__svg {
+          path {
+            stroke: $brand_color;
+          }
         }
       }
-    
       .modal__description {
         width: 100%;
-        max-width: 513px;
-        margin-top: 26px;
-      
-        p {
-          text-align: center;
-          color: var(--modal_secondary_color);
-          font: 400 16px/20px $basic_font_family;
-        }
+        max-width: 292px;
+        margin-top: 56px;
+        text-align: center;
+        font-weight: 400;
+        font-size: 10px;
+        line-height: 136%;
+        color: rgba(0, 0, 0, 0.4);
+      }
+      .action--btn {
+        width: 160px;
+        height: 40px;
+        display: inline-flex;
+        margin-top: 56px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
       }
     }
   }

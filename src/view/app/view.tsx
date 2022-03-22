@@ -17,8 +17,13 @@ import { Dispatch } from 'redux';
 
 export function App(): ReactElement {
   const dispatch: Dispatch<any> = useDispatch();
-  const { connect, provider, hasCachedProvider, chainID, connected } = useWeb3Context();
+  const { connect, provider, hasCachedProvider, chainID, isConnected } = useWeb3Context();
+  
+  console.log('useWeb3Context(): ', useWeb3Context());
+  
   const address = useAddress();
+  const { bonds } = useBonds();
+  const { tokens } = useTokens();
   let layout: ReactElement;
   
   const isAppLoading = useSelector<IReduxState, boolean>(state => state.app.loading);
@@ -26,9 +31,6 @@ export function App(): ReactElement {
   
   const [walletChecked, setWalletChecked] = useState(false);
   const [loading, setLoading] = useState(true);
-  
-  const { bonds } = useBonds();
-  const { tokens } = useTokens();
   
   useEffect((): void => {
     loadTokenPrices().then(() => setLoading(false));
@@ -41,20 +43,20 @@ export function App(): ReactElement {
       loadApp(loadProvider);
     }
 
-    if (whichDetails === 'account' && address && connected) {
+    if (whichDetails === 'account' && address && isConnected) {
       loadAccount(loadProvider);
       if (isAppLoaded) return;
 
       loadApp(loadProvider);
     }
 
-    if (whichDetails === 'userBonds' && address && connected) {
+    if (whichDetails === 'userBonds' && address && isConnected) {
       bonds.map(bond => {
         dispatch(calculateUserBondDetails({ address, bond, provider, networkID: chainID }));
       });
     }
 
-    if (whichDetails === 'userTokens' && address && connected) {
+    if (whichDetails === 'userTokens' && address && isConnected) {
       tokens.map(token => {
         dispatch(calculateUserTokenDetails({ address, token, provider, networkID: chainID }));
       });
@@ -71,14 +73,14 @@ export function App(): ReactElement {
         dispatch(calculateUserTokenDetails({ address: '', token, provider, networkID: chainID }));
       });
     },
-    [connected],
+    [isConnected],
   );
 
   const loadAccount = useCallback(
     loadProvider => {
       dispatch(loadAccountDetails({ networkID: chainID, address, provider: loadProvider }));
     },
-    [connected],
+    [isConnected],
   );
 
   useEffect(() => {
@@ -101,13 +103,13 @@ export function App(): ReactElement {
   }, [walletChecked]);
 
   useEffect(() => {
-    if (connected) {
+    if (isConnected) {
       loadDetails('app');
       loadDetails('account');
       loadDetails('userBonds');
       loadDetails('userTokens');
     }
-  }, [connected]);
+  }, [isConnected]);
 
   if (isAppLoading || loading) {
     layout = <Loading />;

@@ -1,8 +1,10 @@
-import React, { ReactElement, ReactNode, useState } from 'react';
+import React, { MouseEvent, ReactElement, ReactNode, useState } from 'react';
 import { Fade, Popper } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import cx from 'classnames';
+import { ReferenceObject } from 'popper.js';
 import WrapButton from './../wrap-button';
+import WrapModal from '@view/common/header/components/wrap-button/components/modal';
 
 import './styles.scss';
 
@@ -12,12 +14,20 @@ interface IToken {
 }
 
 export function TokenButton(): ReactElement {
-  const [anchorEl, setAnchorEl] = useState(null);
   const isEthereumAPIAvailable: boolean = !!window.ethereum;
+  
+  const [anchorEl, setAnchorEl] = useState<null | ReferenceObject | (() => ReferenceObject)>(null);
+  const [isOpenWrapModal, toggleWrapModal] = useState<boolean>(false);
+  
   const isOpen: boolean = Boolean(anchorEl);
   
-  const handleClick = (event: any): void => {
+  const handleClick = (event: MouseEvent<HTMLDivElement>): void => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+  
+  const onOpenWrapModal = (): void => {
+    toggleWrapModal(true);
+    setAnchorEl(null);
   };
   
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -51,8 +61,8 @@ export function TokenButton(): ReactElement {
   return (
     <div
       className={cx('header__side__btn', { active: isOpen })}
-      onMouseEnter={(e): void => handleClick(e)}
-      onMouseLeave={(e): void => handleClick(e)}
+      onMouseEnter={(e: MouseEvent<HTMLDivElement> ): void => handleClick(e)}
+      onMouseLeave={(e: MouseEvent<HTMLDivElement> ): void => handleClick(e)}
     >
       <div className="btn__label">{'xTOK'}</div>
       <Popper
@@ -67,11 +77,12 @@ export function TokenButton(): ReactElement {
               <Link to="/" className="tooltip--item">
                 <span>{'Buy on Lorem Ipsum'}</span>
               </Link>
-              <WrapButton />
+              <WrapButton openWrapModal={onOpenWrapModal}/>
             </div>
           </Fade>
         )}
       </Popper>
+      <WrapModal isOpen={isOpenWrapModal} closeWrapModal={() => toggleWrapModal(false)}/>
     </div>
   );
 }

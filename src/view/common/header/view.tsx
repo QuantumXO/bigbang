@@ -66,7 +66,7 @@ export function Header({ drawe }: IHeader): ReactElement {
             <ConnectButton />
             {!isVerySmallScreen && <NetworkButton />}
           </div>
-          {/*<span onClick={handleSidebarToggle} className="btn--toggle--sidebar" />*/}
+          {/* <span onClick={handleSidebarToggle} className="btn--toggle--sidebar" /> */}
         </Toolbar>
       </AppBar>
     </div>

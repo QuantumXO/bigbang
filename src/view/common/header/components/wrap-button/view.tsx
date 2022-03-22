@@ -1,21 +1,17 @@
-import React, { useState } from 'react';
-import WrapModal from './components/modal';
+import React, { ReactElement } from 'react';
 
 import './styles.scss';
 
-export function WrapButton() {
-  const [showWrap, setShowWrap] = useState(false);
-  
-  const handelOpenWrap = (): void => setShowWrap(true);
-  
-  const handelCloseWrap = (): void => setShowWrap(false);
-  
+interface IProps {
+  openWrapModal: () => void;
+}
+
+export function WrapButton({ openWrapModal }: IProps): ReactElement {
   return (
     <div>
-      <div className="btn--wrap" onClick={handelOpenWrap}>
+      <div onClick={openWrapModal} className="btn--wrap">
         <span className="btn--wrap__label">{'Wrap'}</span>
       </div>
-      <WrapModal open={showWrap} handleClose={handelCloseWrap} />
     </div>
   );
 }

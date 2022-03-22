@@ -1,11 +1,10 @@
-import { Modal, Paper, SvgIcon, IconButton, Input } from '@material-ui/core';
+import { Modal, Paper, SvgIcon, IconButton, Input, OutlinedInput, InputAdornment } from '@material-ui/core';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { ReactComponent as XIcon } from '@assets/images/icons/x.svg';
 import { ReactComponent as ArrowsIcon } from '@assets/images/icons/arrows.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 import { trim } from '@services/helpers';
-import { Skeleton } from '@material-ui/lab';
 import { calcWrapDetails, changeWrap, changeApproval, calcWrapPrice } from '@store/slices/wrap-slice';
 import { useWeb3Context } from '@services/hooks';
 import { warning } from '@store/slices/messages-slice';
@@ -13,24 +12,24 @@ import { messages } from '@constants/messages';
 import { IPendingTxn, isPendingTxn, txnButtonText } from '@store/slices/pending-txns-slice';
 
 import './styles.scss';
+import * as React from 'react';
 
 interface IAdvancedSettingsProps {
-  open: boolean;
-  handleClose: () => void;
+  isOpen: boolean;
+  closeWrapModal: () => void;
 }
 
-export function WrapModal({ open, handleClose }: IAdvancedSettingsProps): ReactElement {
+export function WrapModal({ isOpen, closeWrapModal }: IAdvancedSettingsProps): ReactElement {
   const dispatch = useDispatch();
   const { provider, address, chainID, checkIsWrongNetwork } = useWeb3Context();
-  const wrapBond: string = 'LIGHT'
-  const unwrapBond: string = 'wLIGHT'
+  const wrapBond: string = 'BANG'
+  const unwrapBond: string = 'dYEL'
   
   const [value, setValue] = useState('');
   const [isWrap, setIsWrap] = useState(true);
   const [isWrapPrice, setIsWrapPrice] = useState(true);
   
   const isAppLoading = useSelector<IReduxState, boolean>(state => state.app.loading);
-  
   const memoBalance = useSelector<IReduxState, string>(state => {
     return state.account.balances && state.account.balances.memo;
   });
@@ -50,6 +49,16 @@ export function WrapModal({ open, handleClose }: IAdvancedSettingsProps): ReactE
     return state.account.wrapping && state.account.wrapping.memo;
   });
   
+  useEffect((): void => {
+    dispatch(calcWrapDetails({ isWrap, provider, value, networkID: chainID }));
+  }, [value]);
+  
+  useEffect((): void => {
+    dispatch(calcWrapPrice({ isWrap: isWrapPrice, provider, networkID: chainID }));
+  }, [isWrapPrice]);
+  
+  const hasAllowance = useCallback((): boolean => memoAllowance > 0, [memoAllowance]);
+  
   const handleSwap = (): void => {
     setValue('');
     const value: boolean = !isWrap;
@@ -62,23 +71,13 @@ export function WrapModal({ open, handleClose }: IAdvancedSettingsProps): ReactE
     setValue(value);
   };
   
-  useEffect((): void => {
-    dispatch(calcWrapDetails({ isWrap, provider, value, networkID: chainID }));
-  }, [value]);
-  
-  useEffect((): void => {
-    dispatch(calcWrapPrice({ isWrap: isWrapPrice, provider, networkID: chainID }));
-  }, [isWrapPrice]);
-  
   const onClose = (): void => {
     setValue('');
     setIsWrap(true);
     setIsWrapPrice(true);
     dispatch(calcWrapDetails({ isWrap, provider, value: '', networkID: chainID }));
-    handleClose();
+    closeWrapModal();
   };
-  
-  const hasAllowance = useCallback((): boolean => memoAllowance > 0, [memoAllowance]);
   
   const trimmedMemoBalance: string = trim(Number(memoBalance), 6);
   const trimmedWmemoBalance: string = trim(Number(wmemoBalance), 6);
@@ -108,7 +107,7 @@ export function WrapModal({ open, handleClose }: IAdvancedSettingsProps): ReactE
         {hasAllowance()
           ? (
             <div
-              className="action--btn"
+              className="action--btn btn__primary--fulfilled"
               onClick={() => {
                 const inPending: boolean = isWrap
                   ? isPendingTxn(pendingTransactions, 'wrapping')
@@ -117,23 +116,21 @@ export function WrapModal({ open, handleClose }: IAdvancedSettingsProps): ReactE
                 handleOnWrap();
               }}
             >
-              <span>
-                {isWrap
-                  ? txnButtonText(pendingTransactions, 'wrapping', 'Wrap')
-                  : txnButtonText(pendingTransactions, 'unwrapping', 'Unwrap')
-                }
-              </span>
+              {isWrap
+                ? txnButtonText(pendingTransactions, 'wrapping', 'Wrap')
+                : txnButtonText(pendingTransactions, 'unwrapping', 'Unwrap')
+              }
             </div>
           )
           : (
             <div
-              className="action--btn"
+              className="action--btn btn__primary--fulfilled"
               onClick={(): void => {
                 if (isPendingTxn(pendingTransactions, 'approve_wrapping')) return;
                 onSeekApproval();
               }}
             >
-              <span>{txnButtonText(pendingTransactions, 'approve_wrapping', 'Approve')}</span>
+              {txnButtonText(pendingTransactions, 'approve_wrapping', 'Approve')}
             </div>
           )
         }
@@ -144,7 +141,7 @@ export function WrapModal({ open, handleClose }: IAdvancedSettingsProps): ReactE
   return (
     <Modal
       id="hades"
-      open={open}
+      open={isOpen}
       className="modal wrap"
       BackdropProps={{
         style: {
@@ -155,65 +152,76 @@ export function WrapModal({ open, handleClose }: IAdvancedSettingsProps): ReactE
     >
       <Paper className="wrapper">
         <div className="modal__header">
-          <div>
-            <h1 className="title">{'WRAP'}</h1>
-            <div className="wrap--price" onClick={() => setIsWrapPrice(!isWrapPrice)}>
+          <h1 className="title">{'WRAP'}</h1>
+          <div className="balance__wrap">
+            <div className="balance__wrap__inner">
+              <span className="label">{'Balance'}</span>
+              <span className="value">{getBalance()}</span>
+            </div>
+            <div className="price">
               1&nbsp;
               {isWrapPrice ? wrapBond : unwrapBond}&nbsp;
               =&nbsp;
               {`${trim(wrapPrice, 4)} ${isWrapPrice ? unwrapBond : wrapBond}`}
             </div>
           </div>
-          <IconButton onClick={onClose} className="close__btn">
-            <SvgIcon color="primary" component={XIcon} className="modal__close__btn" />
-          </IconButton>
+          <SvgIcon
+            color="primary"
+            component={XIcon}
+            fontSize="small"
+            className="close__btn"
+            onClick={onClose}
+          />
         </div>
         
         <div className="modal__container">
-          <div className='balance'>
-            {'Your Balance'}: {isAppLoading ? <Skeleton width="80px" /> : <>{getBalance()}</>}
-          </div>
           <div className="bonds">
-            <div className='field__wrapper'>
-              <span className='field__label'>{isWrapPrice ? wrapBond : unwrapBond}</span>
-              <Input
-                value={value}
+            <div className="field__wrapper">
+              <OutlinedInput
                 type="number"
-                placeholder="Amount"
-                className="field__input__wrapper"
-                onChange={handleValueChange}
-                inputProps={{
-                  className: "field__input"
+                labelWidth={0}
+                value={value}
+                placeholder={`${isWrapPrice ? wrapBond : unwrapBond} Amount`}
+                classes={{
+                  root: 'input__root',
+                  input: 'input',
                 }}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <div onClick={undefined} className="input__btn--max">{'Max'}</div>
+                  </InputAdornment>
+                }
+                onChange={handleValueChange}
               />
             </div>
+            
             <div className="bonds--toggle">
               <IconButton onClick={handleSwap}>
-                <SvgIcon color="primary" component={ArrowsIcon} fontSize="large" />
+                <SvgIcon color="primary" component={ArrowsIcon} fontSize="medium" className="bonds--toggle__svg" />
               </IconButton>
             </div>
-            <div className='field__wrapper'>
-              <span className='field__label'>{isWrapPrice ? unwrapBond : wrapBond}</span>
-              <Input
+  
+            <div className="field__wrapper">
+              <OutlinedInput
                 disabled
                 type="number"
+                labelWidth={0}
                 value={wrapValue}
-                placeholder="Amount"
-                className="field__input__wrapper"
-                inputProps={{
-                  className: "field__input"
+                placeholder={`${isWrapPrice ? unwrapBond : wrapBond} Amount`}
+                classes={{
+                  root: 'input__root',
+                  input: 'input',
                 }}
               />
             </div>
           </div>
-          {onRenderApproveBtn()}
           {!hasAllowance() && (
-            <div className="modal__description">
-              <p>Note: The "Approve" transaction is only needed when wrapping for the first time; subsequent wrapping
-                only requires you to perform the "Wrap" transaction.
-              </p>
-            </div>
+            <p className="modal__description">
+              Note: The "Approve" transaction is only needed when wrapping for the first time; subsequent wrapping
+              only requires you to perform the "Wrap" transaction.
+            </p>
           )}
+          {onRenderApproveBtn()}
         </div>
       </Paper>
     </Modal>

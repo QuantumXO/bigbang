@@ -1,92 +1,71 @@
 @import "./src/assets/styles/basic/variables";
 
-.bond.modal {
-  .mint__tab {
-    display: flex;
-    margin-top: 35px;
-    flex-direction: column;
-    
-    &__inner {
-      display: flex;
-      flex-wrap: wrap;
-      
-      .field__wrapper {
-        width: 100%;
-        display: flex;
-        align-items: stretch;
-        justify-content: space-between;
-      }
-      
-      .input {
-        padding-left: 40px;
-        
-        &__wrapper {
-          width: 100%;
-          height: 56px;
-          max-width: 464px;
-          padding-right: 40px;
-          outline: none;
-          border-radius: 8px;
-          border: 1px solid var(--card_bg_color);
-          background: var(--bg_color);
-          color: var(--card_primary_color);
-          font: 400 16px/20px $basic_font_family;
-        }
-        
-        &__btn {
-          cursor: pointer;
-          color: var(--text_color);
-          font: 700 16px/20px $basic_font_family;
-        }
-      }
-      
-      .action__btn {
-        width: 100%;
-        max-width: 308px;
-        display: inline-flex;
-        margin-left: 15px;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        background-color: var(--secondary_color);
-        color: var(--card_primary_color);
-        font: 400 24px/29px $basic_font_family;
-        cursor: pointer;
-        
-        &:hover {
-          background-color: var(--active_el_color);
-        }
-      }
-    }
-    
-    .description {
-      margin-top: 24px;
-      text-align: center;
-      color: var(--text_color);
-      font: 400 16px/20px $basic_font_family;
-    }
-    
-    .data {
-      margin-top: 31px;
-      
-      &__row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        
-        &:nth-child(n+2) {
-          margin-top: 20px;
-        }
-        
-        &__title {
-          color: var(--card_primary_color);
-          font: 400 16px/20px $basic_font_family;
-        }
-        
-        &__value {
-          margin-left: 15px;
-          color: var(--card_primary_color);
-          font: 400 16px/20px $basic_font_family;
+.bond.page {
+  .tab__content.mint {
+    .tab__inner {
+      .form--card {
+        &__inner {
+          .avax--checkbox__wrapper {
+            width: 100%;
+            display: block;
+            .root {
+              margin: 0;
+            }
+            .switch {
+              width: auto;
+              height: auto;
+              padding: 0;
+              &.checked {
+                & + .label {
+                  color: $brand_color;
+                }
+              }
+            }
+            .label {
+              margin-left: 10px;
+              font-weight: 400;
+              font-size: 12px;
+              line-height: 170%;
+              color: #808080;
+            }
+            .base {
+              top: 3px;
+              left: 4px;
+              padding: 0;
+            }
+            .thumb {
+              width: 14px;
+              height: 14px;
+              background: #AD00FE;
+            }
+            .track {
+              width: 42px;
+              height: 20px;
+              opacity: 1;
+              background: #F2F3F7;
+              box-shadow: inset -2px -2px 5px #FFFFFF, inset 2px 2px 10px rgba(201, 208, 225, 0.7);
+              border-radius: 20px;
+            }
+          }
+          .field__wrapper {
+            margin-top: 32px;
+          }
+          .description {
+            margin-top: 56px;
+            color: #808080;
+            font-weight: 400;
+            font-size: 10px;
+            line-height: 136%;
+            text-align: center;
+          }
+          .action__btn {
+            width: 160px;
+            height: 40px;
+            margin-top: 56px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+          }
         }
       }
     }

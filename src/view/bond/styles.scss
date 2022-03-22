@@ -5,34 +5,24 @@
   .bond {
     &__wrapper {
       width: 100%;
-      .user--data,
-      .form {
-        width: 100%;
-        max-width: 445px;
-      }
-    }
-    &__togglers {
-      display: flex;
-      margin-top: 101px;
-      align-items: center;
-      justify-content: center;
-      &__btn {
-        height: 56px;
-        display: inline-flex;
-        padding: 0 32px;
-        border-radius: 8px;
-        align-items: center;
-        justify-content: center;
-        color: var(--card_primary_color);
-        font: 400 24px/29px $basic_font_family;
-        cursor: pointer;
-        &:nth-child(n+2) {
-          margin-left: 24px;
+      .tab {
+        &__content {
+          margin-top: 30px;
         }
-        
-        &.active,
-        &:hover {
-          background-color: var(--secondary_color);
+        &__inner {
+          display: flex;
+          align-items: stretch;
+          justify-content: space-between;
+          .form--card {
+            width: 100%;
+            max-width: 445px;
+            &__inner {
+              display: flex;
+              padding: 47px 64px 42px;
+              flex-direction: column;
+              align-items: center;
+            }
+          }
         }
       }
     }

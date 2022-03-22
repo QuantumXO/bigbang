@@ -1,25 +1,30 @@
-import { useState, useEffect, useCallback, ReactElement } from 'react';
+import { useState, useEffect, useCallback, ReactElement, ChangeEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, OutlinedInput, InputAdornment, Slide, FormControl } from '@material-ui/core';
+import { OutlinedInput, InputAdornment, FormGroup, FormControlLabel, Switch } from '@material-ui/core';
 import { trim, prettifySeconds } from '@services/helpers';
 import { changeApproval, bondAsset, calcBondDetails } from '@store/slices/bond-slice';
 import { useWeb3Context } from '@services/hooks';
 import { IPendingTxn, isPendingTxn, txnButtonText } from '@store/slices/pending-txns-slice';
-import { Skeleton } from '@material-ui/lab';
 import { IReduxState } from '@store/slices/state.interface';
 import { IAllBondData } from '@services/hooks/bonds';
 import useDebounce from '@services/hooks/debounce';
 import { messages } from '@constants/messages';
 import { warning } from '@store/slices/messages-slice';
+import BondData from '@view/bond/components/bond-data';
+import Togglers from '@view/bond/components/togglers';
 
 import "./styles.scss";
+import { IBond } from '@models/bond';
+import * as React from 'react';
+import cx from 'classnames';
 
 interface IBondPurchaseProps {
   bond: IAllBondData;
   slippage: number;
+  handleChangeTab: () => void;
 }
 
-export function MintTab({ bond, slippage }: IBondPurchaseProps): ReactElement {
+export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps): ReactElement {
   const dispatch = useDispatch();
   const { provider, address, chainID, checkIsWrongNetwork } = useWeb3Context();
 
@@ -116,25 +121,25 @@ export function MintTab({ bond, slippage }: IBondPurchaseProps): ReactElement {
     if (hasAllowance() || useAvax) {
       layout = (
         <div
-          className="action__btn"
+          className="action__btn btn__primary--fulfilled"
           onClick={async () => {
             if (isPendingTxn(pendingTransactions, 'bond_' + bond.name)) return;
             await onBond();
           }}
         >
-          <p>{txnButtonText(pendingTransactions, 'bond_' + bond.name, 'Mint')}</p>
+          {txnButtonText(pendingTransactions, 'bond_' + bond.name, 'Mint')}
         </div>
       );
     } else {
       layout = (
         <div
-          className="action__btn"
+          className="action__btn btn__primary--fulfilled"
           onClick={async () => {
             if (isPendingTxn(pendingTransactions, 'approve_' + bond.name)) return;
             await onSeekApproval();
           }}
         >
-          <p>{txnButtonText(pendingTransactions, 'approve_' + bond.name, 'Mint')}</p>
+          {txnButtonText(pendingTransactions, 'approve_' + bond.name, 'Mint')}
         </div>
       );
     }
@@ -143,104 +148,107 @@ export function MintTab({ bond, slippage }: IBondPurchaseProps): ReactElement {
   };
   
   const onRenderBondData = (): ReactElement => {
-    return (
-      <Slide direction="left" in={true} mountOnEnter unmountOnExit {...{ timeout: 533 }}>
-        <Box className="data">
-          <div className="data__row">
-            <div className="data__row__title">Your Balance</div>
-            <div className="data__row__value">
-              {isBondLoading ? (
-                <Skeleton width="100px" />
-              ) : (
-                <>
-                  {trim(useAvax ? bond.avaxBalance : bond.balance, 4)} {displayUnits}
-                </>
-              )}
-            </div>
-          </div>
-      
-          <div className="data__row">
-            <div className="data__row__title">You Will Get</div>
-            <div className="data__row__value">
-              {isBondLoading
-                ? <Skeleton width="100px" />
-                : `${trim(bond.bondQuote, 4)} ${'tokenType'}`
-              }
-            </div>
-          </div>
-      
-          <div className="data__row">
-            <div className="data__row__title">Max You Can Buy</div>
-            <div className="data__row__value">
-              {isBondLoading
-                ? <Skeleton width="100px" />
-                : `${trim(bond.maxBondPrice, 4)} ${'tokenType'}`
-              }
-            </div>
-          </div>
-      
-          <div className="data__row">
-            <div className="data__row__title">ROI</div>
-            <div className="data__row__value">
-              {isBondLoading ? <Skeleton width="100px" /> : `${trim(bond.bondDiscount * 100, 2)}%`}
-            </div>
-          </div>
-      
-          <div className="data__row">
-            <div className="data__row__title">Vesting Term</div>
-            <div className="data__row__value">{isBondLoading ? <Skeleton width="100px" /> : vestingPeriod()}</div>
-          </div>
-      
-          <div className="data__row">
-            <div className="data__row__title">Minimum purchase</div>
-            <div className="data__row__value">{`0.01 ${'tokenType'}`}</div>
-          </div>
-        </Box>
-      </Slide>
-    );
+    const bondData: IBond.IUserData[] = [
+      {
+        id: 'yourBalance',
+        label: 'Your Balance',
+        value: `${trim(useAvax ? bond.avaxBalance : bond.balance, 4)} ${displayUnits}`
+      },
+      {
+        isDivided: true,
+        id: 'youWillGet',
+        label: 'You Will Get',
+        value: `${trim(bond.bondQuote, 4)} BIG`
+      },
+      {
+        isDivided: true,
+        id: 'maxYouCanBuy',
+        label: 'Max You Can Buy',
+        value: `${trim(bond.maxBondPrice, 4)} ${'BIG'}`
+      },
+      {
+        id: 'ROI',
+        label: 'ROI',
+        isDivided: true,
+        value: `${trim(bond.bondDiscount * 100, 2)}%`
+      },
+      {
+        id: 'vestingTerm',
+        label: 'Vesting Term',
+        value: vestingPeriod()
+      },
+      {
+        id: 'minimumPurchase',
+        label: 'Minimum purchase',
+        value: `0.01 ${'BIG'}`
+      },
+    ];
+    
+    return <BondData data={bondData} />;
   }
 
   return (
-    <div className="mint__tab">
-      <div className="mint__tab__inner">
-        {(bond.name === 'wavax') && (
-          <FormControl className="avax--checkbox__wrapper" variant="outlined" color="primary" fullWidth>
-            <div className="avax--checkbox">
-              <input type="checkbox" checked={useAvax} onClick={() => setUseAvax(!useAvax)} />
-              <p>Use AVAX</p>
+    <div className="tab__content mint">
+      <div className="tab__inner">
+        {onRenderBondData()}
+        
+        <div className="form--card card card--custom">
+          <Togglers handleChangeView={handleChangeTab} activeTabIndex={0} />
+          <div className="form--card__inner">
+            {(bond.name === 'wavax') && (
+              <FormGroup className="avax--checkbox__wrapper">
+                <FormControlLabel
+                  label="Use AVAX"
+                  classes={{
+                    label: 'label',
+                    root: 'root'
+                  }}
+                  control={(
+                    <Switch
+                      classes={{
+                        switchBase: 'base',
+                        thumb: 'thumb',
+                        input: 'input',
+                        track: 'track',
+                        root: cx('switch', { checked: useAvax }),
+                        checked: 'checked',
+                      }}
+                      onChange={(e: ChangeEvent<HTMLInputElement>, checked: boolean) => setUseAvax(checked)}
+                    />
+                  )}
+                />
+              </FormGroup>
+            )}
+            <div className="field__wrapper">
+              <OutlinedInput
+                type="number"
+                labelWidth={0}
+                value={quantity}
+                placeholder="Amount"
+                classes={{
+                  root: 'input__root',
+                  input: 'input',
+                }}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <div onClick={setMax} className="input__btn--max">{'Max'}</div>
+                  </InputAdornment>
+                }
+                onChange={e => setQuantity(e.target.value)}
+              />
             </div>
-          </FormControl>
-        )}
-        <div className='field__wrapper'>
-          <OutlinedInput
-            type="number"
-            labelWidth={0}
-            value={quantity}
-            placeholder="Amount"
-            inputProps={{
-              className: "input",
-            }}
-            className="input__wrapper"
-            endAdornment={
-              <InputAdornment position="end">
-                <div onClick={setMax} className="input__btn">
-                  <p>Max</p>
-                </div>
-              </InputAdornment>
-            }
-            onChange={e => setQuantity(e.target.value)}
-          />
-          {onRenderMintBtn()}
+  
+            {!hasAllowance() && !useAvax && (
+              <p className="description">
+                Note: The "Approve" transaction is only needed when minting for the first time; subsequent minting only&nbsp;
+                requires you to perform the "Mint" transaction.
+              </p>
+            )}
+  
+            {onRenderMintBtn()}
+          </div>
         </div>
-
-        {!hasAllowance() && !useAvax && (
-          <p className="description">
-            Note: The "Approve" transaction is only needed when minting for the first time; subsequent minting only&nbsp;
-            requires you to perform the "Mint" transaction.
-          </p>
-        )}
       </div>
-      {onRenderBondData()}
     </div>
   );
 }
