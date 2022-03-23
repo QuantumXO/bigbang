@@ -1,9 +1,6 @@
 import { IBlockchain } from '@models/blockchain';
 // import { CustomLPBond, LPBond } from "./lp-bond";
 import { CustomBond, StableBond } from "./stable-bond";
-
-
-
 // import MimIcon from "@assets/images/tokens/MIM.svg";
 import AvaxIcon from "@assets/images/tokens/AVAX.svg";
 // import MimTimeIcon from "@assets/images/tokens/TIME-MIM.svg";
@@ -15,7 +12,39 @@ import {
   // StableBondContract,
   StableReserveContract,
   WavaxBondContract
-} from "../../abi";
+} from "@services/abi";
+
+export const wavax: CustomBond = new CustomBond({
+  name: "wavax",
+  displayName: "wAVAX",
+  bondToken: "AVAX",
+  bondIconSvg: AvaxIcon,
+  bondContractABI: WavaxBondContract,
+  reserveContractAbi: StableReserveContract,
+  networkAddrs: {
+    [IBlockchain.NetworksEnum.AVAX]: {
+      bondAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318",
+      reserveAddress: "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+    },
+    [IBlockchain.NetworksEnum.FTM]: {
+      bondAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318",
+      reserveAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318"
+    },
+    [IBlockchain.NetworksEnum.BNB]: {
+      bondAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318",
+      reserveAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318"
+    },
+    [IBlockchain.NetworksEnum.MATIC]: {
+      bondAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318",
+      reserveAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318"
+    },
+    [IBlockchain.NetworksEnum.ETH]: {
+      bondAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318",
+      reserveAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318"
+    },
+  },
+  tokensInStrategy: "756916000000000000000000"
+});
 
 /*export const mim = new StableBond({
   name: "mim",
@@ -32,38 +61,6 @@ import {
   },
   tokensInStrategy: "60500000000000000000000000"
 });*/
-
-export const wavax = new CustomBond({
-  name: "wavax",
-  displayName: "wAVAX",
-  bondToken: "AVAX",
-  bondIconSvg: AvaxIcon,
-  bondContractABI: WavaxBondContract,
-  reserveContractAbi: StableReserveContract,
-  networkAddrs: {
-    [IBlockchain.NetworksEnum.AVAX]: {
-      bondAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318",
-      reserveAddress: "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
-    },
-    [IBlockchain.NetworksEnum.FTM]: {
-      bondAddress: "0x1111",
-      reserveAddress: "0x1111"
-    },
-    [IBlockchain.NetworksEnum.BNB]: {
-      bondAddress: "0x1111",
-      reserveAddress: "0x1111"
-    },
-    [IBlockchain.NetworksEnum.MATIC]: {
-      bondAddress: "0x1111",
-      reserveAddress: "0x1111"
-    },
-    [IBlockchain.NetworksEnum.ETH]: {
-      bondAddress: "0x1111",
-      reserveAddress: "0x1111"
-    },
-  },
-  tokensInStrategy: "756916000000000000000000"
-});
 
 /*export const mimTime = new LPBond({
   name: "mim_time_lp",
@@ -97,4 +94,5 @@ export const wavax = new CustomBond({
   lpUrl: "https://www.traderjoexyz.com/#/pool/AVAX/0xb54f16fB19478766A268F172C9480f8da1a7c9C3"
 });*/
 
-export default [wavax];
+
+export default <CustomBond[]>[wavax];

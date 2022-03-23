@@ -8,10 +8,8 @@ interface IProps {
 
 export function WrapButton({ openWrapModal }: IProps): ReactElement {
   return (
-    <div>
-      <div onClick={openWrapModal} className="btn--wrap">
-        <span className="btn--wrap__label">{'Wrap'}</span>
-      </div>
+    <div onClick={openWrapModal} className="btn--wrap">
+      <span className="btn--wrap__label">{'Wrap BANG'}</span>
     </div>
   );
 }

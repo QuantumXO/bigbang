@@ -137,7 +137,7 @@ export function Mints(): ReactElement {
         </div>
       </Zoom>
       
-      {isSmallScreen && (
+      {/* {isSmallScreen && (
         <div className="mints-view-card-container">
           <Grid container item spacing={2}>
             {bonds.map(bond => (
@@ -147,7 +147,7 @@ export function Mints(): ReactElement {
             ))}
           </Grid>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

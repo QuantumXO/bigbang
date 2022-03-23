@@ -1,6 +1,5 @@
 import { ContractInterface } from "ethers";
 import { Bond, BondOpts } from "./bond";
-import { BondType } from "./constants";
 import { IBlockchain } from "@models/blockchain";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getBondCalculator } from "../bond-calculator";
@@ -19,13 +18,13 @@ export class LPBond extends Bond {
   readonly displayUnits: string;
   
   constructor(lpBondOpts: LPBondOpts) {
-    super(BondType.LP, lpBondOpts);
+    super(IBlockchain.WTF_BondEnum.LP, lpBondOpts);
     
     this.lpUrl = lpBondOpts.lpUrl;
     this.reserveContractAbi = lpBondOpts.reserveContractAbi;
     this.displayUnits = "LP";
   }
-  
+
   async getTreasuryBalance(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) {
     const addresses = getAddresses(networkID);
     

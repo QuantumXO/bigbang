@@ -1,6 +1,6 @@
 import { Box } from '@material-ui/core';
 import { Bond } from '@services/helpers/bond/bond';
-import { CSSProperties } from 'react';
+import { CSSProperties, ReactElement } from 'react';
 
 interface IBondLogoProps {
   bond: Bond;
@@ -9,9 +9,10 @@ interface IBondLogoProps {
   styles?: CSSProperties;
 }
 
-function BondLogo({ bond: { isLP, bondIconSvg }, iconSize = 24, iconLPSize = 24 }: IBondLogoProps) {
+export function BondLogo(props: IBondLogoProps): ReactElement {
+  const { bond: { isLP, bondIconSvg }, iconSize = 24, iconLPSize = 24 } = props;
   let style = { height: iconSize, width: iconSize };
-  
+
   if (isLP) {
     style = { height: iconLPSize, width: iconLPSize * 2 };
   }
@@ -29,5 +30,3 @@ function BondLogo({ bond: { isLP, bondIconSvg }, iconSize = 24, iconLPSize = 24 
     </Box>
   )
 }
-
-export default BondLogo;

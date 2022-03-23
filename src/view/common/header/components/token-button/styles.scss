@@ -3,7 +3,6 @@
 .header__side__btn {
   display: inline-block;
   cursor: pointer;
-  
   .btn__label {
     width: 126px;
     height: 40px;
@@ -16,7 +15,6 @@
     justify-content: flex-start;
     border: 1px solid $brand_color;
     font: 400 14px/40px $basic_font_family;
-
     &::before {
       width: 20px;
       height: 20px;
@@ -29,84 +27,31 @@
     }
   }
 }
-
 .header__side__btn__popper {
   width: 100%;
   max-width: 350px;
   margin-top: 57px;
-  padding: 24px 28px;
-  overflow: hidden;
-  border-radius: 20px;
-  background: #F2F3F7;
-  box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, 0.7);
   z-index: 10;
-  
-  .tooltip {
-    display: flex;
-    flex-direction: column;
-    
-    .tooltip--item {
-      width: 100%;
-      height: 40px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid #E5E4E4;
-      text-decoration: none;
-      border-radius: 20px;
-      font: 400 14px/40px $basic_font_family;
-      cursor: pointer;
-      
-      &.token {
-        &:nth-child(n+3) {
-          margin-top: 16px;
-        }
-      }
-      
-      &:hover {
-        border-color: $brand_color;
-
-        span {
-          color: $brand_color;
-        }
-      }
-      
-      span {
-        text-align: center;
-        color: #5A5A5C;
-        font: 400 16px/20px $basic_font_family;
-      }
-    }
-    
-    .add--tokens {
-      display: flex;
-      flex-direction: column;
-
-      .add--tokens--title {
-        margin: 12px 0;
-        padding: 14px 0;
-        text-align: center;
-        position: relative;
-        color: var(--header_side_menu_color);
-        font: 400 16px/20px $basic_font_family;
-        
-        &::before,
-        &::after {
-          left: 0;
-          width: 100%;
-          height: 1px;
-          content: '';
-          position: absolute;
-          background-color: var(--header_side_menu_divider_color);
-        }
-  
-        &::before {
-          top: 0;
-        }
-        &::after {
-          bottom: 0;
-        }
-      }
+  .card.main {
+    width: 100%;
+    padding: 24px 28px;
+  }
+  .buy--link {
+    width: 100%;
+    height: 40px;
+    display: inline-flex;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    color: #5A5A5C;
+    border: 1px solid #e5e4e4;
+    border-radius: 20px;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+      color: $brand_color;
+      border-color: $brand_color;
     }
   }
 }

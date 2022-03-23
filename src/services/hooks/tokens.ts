@@ -5,12 +5,15 @@ import { IUserTokenDetails } from "@store/slices/account-slice";
 import { IReduxState } from "@store/slices/state.interface";
 
 // Smash all the interfaces together to get the BondData Type
-export interface IAllTokenData extends IToken, IUserTokenDetails {
+export interface IAllTokenData extends IToken, IUserTokenDetails { }
+export interface IUseTokensReturn {
+  tokens: IAllTokenData[];
+  loading: boolean;
 }
 
-const initialTokenArray = allTokens;
+const initialTokenArray: IToken[] = allTokens;
 
-function useTokens() {
+function useTokens(): IUseTokensReturn {
   const accountLoading = useSelector<IReduxState, boolean>(state => state.account.loading);
   const accountTokensState = useSelector<IReduxState, { [key: string]: IUserTokenDetails }>(state => state.account.tokens);
   //@ts-ignore

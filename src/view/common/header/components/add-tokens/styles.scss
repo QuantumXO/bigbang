@@ -1,0 +1,44 @@
+@import "./src/assets/styles/basic/variables";
+
+.add--tokens {
+  width: 100%;
+  margin-top: 16px;
+  overflow: hidden;
+  .header {
+    display: flex;
+    padding: 46px 0 37px;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    color: #5A5A5C;
+  }
+  .tabs {
+    display: flex;
+    align-items: stretch;
+    .tab {
+      width: calc(100% / 3);
+      height: 64px;
+      display: inline-flex;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 16px;
+      color: #AD00FE;
+      align-items: center;
+      justify-content: center;
+      border-top: 1px solid #FFFFFF;
+      background: #F2F3F7;
+      user-select: none;
+      cursor: pointer;
+      &:nth-child(n+2){
+        border-left: 1px solid #FFFFFF;
+      }
+      &:hover {
+        border-top-color: transparent;
+        box-shadow: inset -3px -3px 10px rgba(255, 255, 255, 0.4), inset 3px 3px 10px rgba(201, 208, 225, 0.4);
+      }
+    }
+  }
+}

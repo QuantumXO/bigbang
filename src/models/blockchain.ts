@@ -37,4 +37,41 @@ export namespace IBlockchain {
     rpcUrls?: string[];
   }
   export type NetworkType = keyof typeof NetworksEnum;
+  
+  export interface IBondAddresses {
+    reserveAddress: string;
+    bondAddress: string;
+  }
+  export enum WTF_BondEnum {
+    StableAsset,
+    LP,
+  }
+  export interface IBondMainnetAddresses {
+    MIM_ADDRESS: string;
+    STAKING_ADDRESS: string;
+    STAKING_HELPER_ADDRESS: string;
+    TREASURY_ADDRESS: string;
+    ///////////////////////////////
+    DAO_ADDRESS: string,
+    MEMO_ADDRESS: string,
+    TIME_ADDRESS: string,
+    TIME_BONDING_CALC_ADDRESS: string,
+    ZAPIN_ADDRESS: string,
+    WMEMO_ADDRESS: string
+  }
+  export interface INetworkAddresses {
+    [IBlockchain.NetworksEnum.AVAX]: IBlockchain.IBondAddresses;
+    [IBlockchain.NetworksEnum.ETH]: IBlockchain.IBondAddresses;
+    [IBlockchain.NetworksEnum.MATIC]: IBlockchain.IBondAddresses;
+    [IBlockchain.NetworksEnum.BNB]: IBlockchain.IBondAddresses;
+    [IBlockchain.NetworksEnum.FTM]: IBlockchain.IBondAddresses;
+  }
+  export type TokenType = 'BIG' | 'BANG' | 'xTOK';
+  export type TokenNameType = 'big' | 'bang' | 'xTOK';
+  export interface IToken {
+    id: TokenType;
+    name: TokenNameType;
+    decimals: number;
+    symbol: string;
+  }
 }

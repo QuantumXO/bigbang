@@ -1,5 +1,4 @@
 import React, { ReactElement, CSSProperties } from 'react';
-import { Link } from 'react-router-dom';
 import cx from 'classnames';
 
 import '@view/common/sidebar/components/socials/styles.scss';
@@ -14,9 +13,9 @@ interface ISocial {
 }
 
 const socials: ISocial[] = [
-  { id: 'tw', url: '/' },
-  { id: 'reddit', url: '/' },
-  { id: 'discord', url: '/' },
+  { id: 'telegram', url: 'https://t.me/yelfinance' },
+  { id: 'tw', url: 'https://twitter.com/yel_finance' },
+  { id: 'medium', url: 'https://yel-finance.medium.com' },
 ];
 
 export const Socials = ({ styles = {} }: IProps): ReactElement => {
@@ -26,9 +25,10 @@ export const Socials = ({ styles = {} }: IProps): ReactElement => {
       <div className="list">
         {socials.map(({ id, url }: ISocial): ReactElement => {
           return (
-            <Link
-              to={url}
+            <a
+              href={url}
               key={id}
+              target="_blank"
               className={cx('social', id )}
             />
           );

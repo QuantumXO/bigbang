@@ -1,4 +1,4 @@
-import { BigNumber, constants, ethers } from 'ethers';
+import { BigNumber, constants, ethers, Contract } from 'ethers';
 import { getMarketPrice, getTokenPrice, sleep } from '@services/helpers';
 import { calculateUserBondDetails, fetchAccountSuccess, getBalances } from './account-slice';
 import { getAddresses } from '../../constants';
@@ -58,9 +58,7 @@ export const changeApproval = createAsyncThunk(
     
     await sleep(2);
     
-    let allowance = '0';
-    
-    allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
+    const allowance: any = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
     
     return dispatch(
       fetchAccountSuccess({
@@ -101,14 +99,14 @@ export const calcBondDetails = createAsyncThunk(
       value = '0';
     }
     
-    const amountInWei = ethers.utils.parseEther(value);
+    const amountInWei: BigNumber = ethers.utils.parseEther(value);
     
-    let bondPrice = 0,
-      bondDiscount = 0,
-      valuation = 0,
-      bondQuote = 0;
+    let bondPrice: number = 0,
+      bondDiscount: number = 0,
+      valuation: number = 0,
+      bondQuote: number = 0;
     
-    const addresses = getAddresses(networkID);
+    const addresses: IBlockchain.IBondMainnetAddresses = getAddresses(networkID);
     
     const bondContract = bond.getContractForBond(networkID, provider);
     const bondCalcContract = getBondCalculator(networkID, provider);
@@ -208,55 +206,53 @@ interface IBondAsset {
   useAvax: boolean;
 }
 
-export const bondAsset = createAsyncThunk('bonding/bondAsset', async ({
-                                                                        value,
-                                                                        address,
-                                                                        bond,
-                                                                        networkID,
-                                                                        provider,
-                                                                        slippage,
-                                                                        useAvax
-                                                                      }: IBondAsset, { dispatch }) => {
-  const depositorAddress = address;
-  const acceptedSlippage = slippage / 100 || 0.005;
-  const valueInWei = ethers.utils.parseUnits(value, 'ether');
-  const signer = provider.getSigner();
-  const bondContract = bond.getContractForBond(networkID, signer);
-  
-  const calculatePremium = await bondContract.bondPrice();
-  const maxPremium = Math.round(calculatePremium * (1 + acceptedSlippage));
-  
-  let bondTx;
-  try {
-    const gasPrice = await getGasPrice(provider);
+export const bondAsset = createAsyncThunk(
+  'bonding/bondAsset',
+  async (
+    { value, address, bond, networkID, provider, slippage, useAvax }: IBondAsset,
+    { dispatch }
+  ) => {
+    const depositorAddress = address;
+    const acceptedSlippage = slippage / 100 || 0.005;
+    const valueInWei = ethers.utils.parseUnits(value, 'ether');
+    const signer = provider.getSigner();
+    const bondContract = bond.getContractForBond(networkID, signer);
     
-    if (useAvax) {
-      bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { value: valueInWei, gasPrice });
-    } else {
-      bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { gasPrice });
-    }
-    dispatch(
-      fetchPendingTxns({
-        txnHash: bondTx.hash,
-        text: 'Bonding ' + bond.displayName,
-        type: 'bond_' + bond.name
-      })
-    );
-    await bondTx.wait();
-    dispatch(success({ text: messages.tx_successfully_send }));
-    dispatch(info({ text: messages.your_balance_update_soon }));
-    await sleep(10);
-    await dispatch(calculateUserBondDetails({ address, bond, networkID, provider }));
-    dispatch(info({ text: messages.your_balance_updated }));
-    return;
-  } catch (err: any) {
-    return metamaskErrorWrap(err, dispatch);
-  } finally {
-    if (bondTx) {
-      dispatch(clearPendingTxn(bondTx.hash));
+    const calculatePremium = await bondContract.bondPrice();
+    const maxPremium = Math.round(calculatePremium * (1 + acceptedSlippage));
+    
+    let bondTx;
+    try {
+      const gasPrice = await getGasPrice(provider);
+      
+      if (useAvax) {
+        bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { value: valueInWei, gasPrice });
+      } else {
+        bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { gasPrice });
+      }
+      dispatch(
+        fetchPendingTxns({
+          txnHash: bondTx.hash,
+          text: 'Bonding ' + bond.displayName,
+          type: 'bond_' + bond.name
+        })
+      );
+      await bondTx.wait();
+      dispatch(success({ text: messages.tx_successfully_send }));
+      dispatch(info({ text: messages.your_balance_update_soon }));
+      await sleep(10);
+      await dispatch(calculateUserBondDetails({ address, bond, networkID, provider }));
+      dispatch(info({ text: messages.your_balance_updated }));
+      return;
+    } catch (err: any) {
+      return metamaskErrorWrap(err, dispatch);
+    } finally {
+      if (bondTx) {
+        dispatch(clearPendingTxn(bondTx.hash));
+      }
     }
   }
-});
+);
 
 interface IRedeemBond {
   address: string;
@@ -266,55 +262,52 @@ interface IRedeemBond {
   autostake: boolean;
 }
 
-export const redeemBond = createAsyncThunk('bonding/redeemBond', async ({
-                                                                          address,
-                                                                          bond,
-                                                                          networkID,
-                                                                          provider,
-                                                                          autostake
-                                                                        }: IRedeemBond, { dispatch }) => {
-  if (!provider) {
-    dispatch(warning({ text: messages.please_connect_wallet }));
-    return;
-  }
-  
-  const signer = provider.getSigner();
-  const bondContract = bond.getContractForBond(networkID, signer);
-  
-  let redeemTx;
-  try {
-    const gasPrice = await getGasPrice(provider);
+export const redeemBond = createAsyncThunk(
+  'bonding/redeemBond',
+  async ({ address, bond, networkID, provider, autostake }: IRedeemBond,
+  { dispatch }) => {
+    if (!provider) {
+      dispatch(warning({ text: messages.please_connect_wallet }));
+      return;
+    }
     
-    redeemTx = await bondContract.redeem(address, autostake === true, { gasPrice });
-    const pendingTxnType = 'redeem_bond_' + bond.name + (autostake === true ? '_autostake' : '');
-    dispatch(
-      fetchPendingTxns({
-        txnHash: redeemTx.hash,
-        text: 'Redeeming ' + bond.displayName,
-        type: pendingTxnType
-      })
-    );
-    await redeemTx.wait();
-    dispatch(success({ text: messages.tx_successfully_send }));
-    await sleep(0.01);
-    dispatch(info({ text: messages.your_balance_update_soon }));
-    await sleep(10);
-    await dispatch(calculateUserBondDetails({ address, bond, networkID, provider }));
-    await dispatch(getBalances({ address, networkID, provider }));
-    dispatch(info({ text: messages.your_balance_updated }));
-    return;
-  } catch (err: any) {
-    metamaskErrorWrap(err, dispatch);
-  } finally {
-    if (redeemTx) {
-      dispatch(clearPendingTxn(redeemTx.hash));
+    const signer = provider.getSigner();
+    const bondContract = bond.getContractForBond(networkID, signer);
+    
+    let redeemTx;
+    try {
+      const gasPrice = await getGasPrice(provider);
+      
+      redeemTx = await bondContract.redeem(address, autostake, { gasPrice });
+      const pendingTxnType = 'redeem_bond_' + bond.name + (autostake ? '_autostake' : '');
+      dispatch(
+        fetchPendingTxns({
+          txnHash: redeemTx.hash,
+          text: 'Redeeming ' + bond.displayName,
+          type: pendingTxnType
+        })
+      );
+      await redeemTx.wait();
+      dispatch(success({ text: messages.tx_successfully_send }));
+      await sleep(0.01);
+      dispatch(info({ text: messages.your_balance_update_soon }));
+      await sleep(10);
+      await dispatch(calculateUserBondDetails({ address, bond, networkID, provider }));
+      await dispatch(getBalances({ address, networkID, provider }));
+      dispatch(info({ text: messages.your_balance_updated }));
+      return;
+    } catch (err: any) {
+      metamaskErrorWrap(err, dispatch);
+    } finally {
+      if (redeemTx) {
+        dispatch(clearPendingTxn(redeemTx.hash));
+      }
     }
   }
-});
+);
 
 export interface IBondSlice {
   loading: boolean;
-  
   [key: string]: any;
 }
 
@@ -337,7 +330,7 @@ const bondingSlice = createSlice({
       state[action.payload.bond] = action.payload;
     }
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
     .addCase(calcBondDetails.pending, state => {
       state.loading = true;

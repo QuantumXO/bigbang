@@ -2,7 +2,7 @@ import React, { FC, ReactElement } from 'react';
 import { Drawer } from '@material-ui/core';
 import { Hidden, makeStyles } from '@material-ui/core';
 import { DRAWER_WIDTH } from '@constants/style';
-import Menu from '@view/common/sidebar/components/menu';
+import SidebarContent from '@view/common/sidebar/components/menu';
 import cx from 'classnames';
 
 export interface IProps {
@@ -58,7 +58,7 @@ const CommonSidebar = (): ReactElement => {
           paper: cx('sidebar__drawer__paper'),
         }}
       >
-        <Menu />
+        <SidebarContent />
       </Drawer>
     </Hidden>
   );
@@ -82,7 +82,7 @@ const MobileSidebar = ({ mobileOpen, handleDrawerToggle }: IProps): ReactElement
           keepMounted: true,
         }}
       >
-        <Menu />
+        <SidebarContent />
       </Drawer>
     </Hidden>
   );

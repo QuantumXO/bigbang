@@ -1,6 +1,5 @@
 import { BigNumber, ContractInterface } from "ethers";
 import { Bond, BondOpts } from "./bond";
-import { BondType } from "./constants";
 import { IBlockchain } from "@models/blockchain";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getAddresses } from "@constants/addresses";
@@ -17,7 +16,7 @@ export class StableBond extends Bond {
   readonly tokensInStrategy?: string;
   
   constructor(stableBondOpts: StableBondOpts) {
-    super(BondType.StableAsset, stableBondOpts);
+    super(IBlockchain.WTF_BondEnum.StableAsset, stableBondOpts);
     
     // For stable bonds the display units are the same as the actual token
     this.displayUnits = stableBondOpts.displayName;
@@ -51,9 +50,11 @@ export class CustomBond extends StableBond {
   constructor(customBondOpts: CustomBondOpts) {
     super(customBondOpts);
     
-    this.getTreasuryBalance = async (networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) => {
-      const tokenAmount = await super.getTreasuryBalance(networkID, provider);
-      const tokenPrice = this.getTokenPrice();
+    this.getTreasuryBalance = async (
+      networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider
+    ): Promise<number> => {
+      const tokenAmount: number = await super.getTreasuryBalance(networkID, provider);
+      const tokenPrice: number = this.getTokenPrice();
       
       return tokenAmount * tokenPrice;
     };

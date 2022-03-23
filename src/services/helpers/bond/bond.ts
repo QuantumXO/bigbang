@@ -1,5 +1,4 @@
-import { BondType, NetworkAddresses } from "./constants";
-import { IBlockchain } from "@models//blockchain";
+import { IBlockchain } from "@models/blockchain";
 import { Contract, ContractInterface } from "ethers";
 import { JsonRpcSigner, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getTokenPrice } from "../token-price";
@@ -9,17 +8,17 @@ export interface BondOpts {
   readonly displayName: string; // Displayname on UI
   readonly bondIconSvg: string; //  SVG path for icons
   readonly bondContractABI: ContractInterface; // ABI for contract
-  readonly networkAddrs: NetworkAddresses; // Mapping of network --> Addresses
+  readonly networkAddrs: IBlockchain.INetworkAddresses; // Mapping of network --> Addresses
   readonly bondToken: string; // Unused, but native token to buy the bond.
 }
 
 export abstract class Bond {
   public readonly name: string;
   public readonly displayName: string;
-  public readonly type: BondType;
+  public readonly type: IBlockchain.WTF_BondEnum;
   public readonly bondIconSvg: string;
   public readonly bondContractABI: ContractInterface; // Bond ABI
-  public readonly networkAddrs: NetworkAddresses;
+  public readonly networkAddrs: IBlockchain.INetworkAddresses;
   public readonly bondToken: string;
   public readonly lpUrl?: string;
   public readonly tokensInStrategy?: string;
@@ -36,7 +35,7 @@ export abstract class Bond {
   
   public abstract getTimeAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
   
-  constructor(type: BondType, bondOpts: BondOpts) {
+  constructor(type: IBlockchain.WTF_BondEnum, bondOpts: BondOpts) {
     this.name = bondOpts.name;
     this.displayName = bondOpts.displayName;
     this.type = type;
@@ -46,20 +45,26 @@ export abstract class Bond {
     this.bondToken = bondOpts.bondToken;
   }
   
-  public getAddressForBond(networkID: IBlockchain.NetworksEnum) {
+  public getAddressForBond(networkID: IBlockchain.NetworksEnum): string {
     return this.networkAddrs[networkID].bondAddress;
   }
   
-  public getContractForBond(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider | JsonRpcSigner) {
+  public getContractForBond(
+    networkID: IBlockchain.NetworksEnum,
+    provider: StaticJsonRpcProvider | JsonRpcSigner
+  ): Contract {
     const bondAddress = this.getAddressForBond(networkID);
     return new Contract(bondAddress, this.bondContractABI, provider);
   }
   
-  public getAddressForReserve(networkID: IBlockchain.NetworksEnum) {
+  public getAddressForReserve(networkID: IBlockchain.NetworksEnum): string {
     return this.networkAddrs[networkID].reserveAddress;
   }
   
-  public getContractForReserve(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider | JsonRpcSigner) {
+  public getContractForReserve(
+    networkID: IBlockchain.NetworksEnum,
+    provider: StaticJsonRpcProvider | JsonRpcSigner
+  ): Contract {
     const reserveAddress = this.getAddressForReserve(networkID);
     return new Contract(reserveAddress, this.reserveContractAbi, provider);
   }

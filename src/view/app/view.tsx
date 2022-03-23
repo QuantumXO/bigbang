@@ -14,20 +14,19 @@ import SnackMessage from '@view/common/messages/snackbar';
 import { SnackbarProvider } from 'notistack';
 import Router from '@view/router';
 import { Dispatch } from 'redux';
+import { JsonRpcProvider } from '@ethersproject/providers';
 
 export function App(): ReactElement {
   const dispatch: Dispatch<any> = useDispatch();
   const { connect, provider, hasCachedProvider, chainID, isConnected } = useWeb3Context();
   
-  console.log('useWeb3Context(): ', useWeb3Context());
+  const isAppLoading = useSelector<IReduxState, boolean>(state => state.app.loading);
+  const isAppLoaded = useSelector<IReduxState, boolean>(state => !Boolean(state.app.marketPrice));
   
-  const address = useAddress();
+  const address: string = useAddress();
   const { bonds } = useBonds();
   const { tokens } = useTokens();
   let layout: ReactElement;
-  
-  const isAppLoading = useSelector<IReduxState, boolean>(state => state.app.loading);
-  const isAppLoaded = useSelector<IReduxState, boolean>(state => !Boolean(state.app.marketPrice));
   
   const [walletChecked, setWalletChecked] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -36,8 +35,8 @@ export function App(): ReactElement {
     loadTokenPrices().then(() => setLoading(false));
   }, []);
 
-  async function loadDetails(whichDetails: string) {
-    const loadProvider = provider;
+  async function loadDetails(whichDetails: string): Promise<void> {
+    const loadProvider: JsonRpcProvider = provider;
 
     if (whichDetails === 'app') {
       loadApp(loadProvider);
@@ -85,15 +84,13 @@ export function App(): ReactElement {
 
   useEffect(() => {
     if (hasCachedProvider()) {
-      connect().then(() => {
-        setWalletChecked(true);
-      });
+      connect().then(() => setWalletChecked(true));
     } else {
       setWalletChecked(true);
     }
   }, []);
 
-  useEffect(() => {
+  useEffect((): void => {
     if (walletChecked) {
       loadDetails('app');
       loadDetails('account');
@@ -102,7 +99,7 @@ export function App(): ReactElement {
     }
   }, [walletChecked]);
 
-  useEffect(() => {
+  useEffect((): void => {
     if (isConnected) {
       loadDetails('app');
       loadDetails('account');
@@ -113,8 +110,7 @@ export function App(): ReactElement {
 
   if (isAppLoading || loading) {
     layout = <Loading />;
-  }
-  else {
+  } else {
     layout = (
       <SnackbarProvider
         maxSnack={4}

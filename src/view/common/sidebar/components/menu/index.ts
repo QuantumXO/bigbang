@@ -1,3 +1,3 @@
-import { SidebarMenu } from './view';
+import { SidebarContent } from './view';
 
-export default SidebarMenu;
+export default SidebarContent;

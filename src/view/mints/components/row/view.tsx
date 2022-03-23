@@ -1,5 +1,5 @@
 import { priceUnits, trim } from '@services/helpers';
-import BondLogo from '@view/common/BondLogo';
+import BondLogo from '@view/common/bond-logo';
 import { TableRow, TableCell, Link } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import { Skeleton } from '@material-ui/lab';

@@ -5,6 +5,7 @@ import cx from 'classnames';
 import { ReferenceObject } from 'popper.js';
 import WrapButton from './../wrap-button';
 import WrapModal from '@view/common/header/components/wrap-button/components/modal';
+import AddTokens from '@view/common/header/components/add-tokens';
 
 import './styles.scss';
 
@@ -73,12 +74,13 @@ export function TokenButton(): ReactElement {
       >
         {({ TransitionProps }): ReactElement => (
           <Fade {...TransitionProps} timeout={200}>
-            <div className="tooltip">
-              <Link to="/" className="tooltip--item">
-                <span>{'Buy on Lorem Ipsum'}</span>
-              </Link>
-              <WrapButton openWrapModal={onOpenWrapModal}/>
-            </div>
+            <>
+              <div className="card main card--custom">
+                <Link to="/" className="buy--link">{'Buy on Lorem Ipsum'} </Link>
+                <WrapButton openWrapModal={onOpenWrapModal}/>
+              </div>
+              <AddTokens />
+            </>
           </Fade>
         )}
       </Popper>

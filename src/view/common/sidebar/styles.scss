@@ -7,11 +7,9 @@
   padding-bottom: 47px;
   overflow-y: auto;
   flex-direction: column;
-
   &__drawer__paper {
     box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, .7) !important;
   }
-
   &--logo {
     width: 55px;
     height: 23px;
@@ -22,7 +20,6 @@
     font: 500 20px/23px $basic_font_family;
     z-index: 9;
   }
-
   &--header {
     display: flex;
     margin: 37px 0 0 28px;
@@ -30,7 +27,6 @@
     flex-direction: column;
     justify-content: center;
     text-decoration: none;
-
     .wallet--link {
       margin-top: 10px;
       text-decoration: none;
@@ -40,7 +36,6 @@
       }
     }
   }
-
   &__menu {
     flex: 1;
     display: flex;
@@ -48,100 +43,74 @@
     margin-left: 24px;
     align-items: flex-start;
     flex-direction: column;
-
     .menu__item {
       &:nth-child(n+2) {
         margin-top: 32px;
       }
-
       &__link {
         align-items: center;
         display: inline-flex;
         text-decoration: none;
-
         &:hover,
         &.active {
           &::before {
             background-color: $brand_color;
           }
-
           .menu__item__label {
             color: $brand_color;
           }
         }
-
         &::before {
           width: 27px;
           height: 27px;
           content: '';
-          mask-size: contain;
+          mask-size: initial;
           mask-repeat: no-repeat;
           mask-position: 50%;
           background-color: #5A5A5C;
         }
-
         &.dashboard {
           &::before {
             mask-image: url(../../../assets/images/common/sidebar/dashboard-icon.svg);
           }
         }
-
         &.stake {
           &::before {
             mask-image: url(../../../assets/images/common/sidebar/stake-icon.svg);
           }
         }
-
         &.mints {
           &::before {
             mask-image: url(../../../assets/images/common/sidebar/mint-icon.svg);
           }
         }
-
-        &.calculator {
-          &::before {
-            mask-image: url(../../../assets/images/common/sidebar/calculator-icon.svg);
-          }
-        }
-
-        &.fund {
-          &::before {
-            mask-image: url(../../../assets/images/common/sidebar/fund-icon.svg);
-          }
-        }
-
         &.docs {
           &::before {
             mask-image: url(../../../assets/images/common/sidebar/docs-icon.svg);
           }
         }
       }
-
       &__label {
         margin-left: 15px;
         color: #5A5A5C;
         text-transform: capitalize;
         font: 400 14px/16px $basic_font_family;
       }
-
       &__with__submenu {
         .submenu {
           display: flex;
           margin-top: 32px;
           margin-left: 49px;
           flex-direction: column;
-
           &__item__link {
             text-transform: uppercase;
             text-decoration: none;
             color: #808080;
             font: 400 12px/14px $basic_font_family;
-
             &:hover,
             &.active {
               color: $brand_color;
             }
-
             &:nth-child(n+2) {
               margin-top: 19px;
             }

@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { Contract, ethers } from 'ethers';
 import { getAddresses } from "../../constants";
 import { MemoTokenContract, MimTokenContract, TimeTokenContract, wMemoTokenContract } from "../../services/abi";
 import { setAll } from '@services/helpers';
@@ -26,19 +26,15 @@ interface IAccountBalances {
 
 export const getBalances = createAsyncThunk(
   "account/getBalances",
-  async ({
-    address,
-    networkID,
-    provider
-  }: IGetBalances): Promise<IAccountBalances> => {
-    const addresses = getAddresses(networkID);
+  async ({ address, networkID, provider }: IGetBalances): Promise<IAccountBalances> => {
+    const addresses: IBlockchain.IBondMainnetAddresses = getAddresses(networkID);
     
-    const memoContract = new ethers.Contract(addresses.MEMO_ADDRESS, MemoTokenContract, provider);
-    const memoBalance = await memoContract.balanceOf(address);
-    const timeContract = new ethers.Contract(addresses.TIME_ADDRESS, TimeTokenContract, provider);
-    const timeBalance = await timeContract.balanceOf(address);
-    const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
-    const wmemoBalance = await wmemoContract.balanceOf(address);
+    const memoContract: Contract = new ethers.Contract(addresses.MEMO_ADDRESS, MemoTokenContract, provider);
+    const memoBalance: any = await memoContract.balanceOf(address);
+    const timeContract: Contract = new ethers.Contract(addresses.TIME_ADDRESS, TimeTokenContract, provider);
+    const timeBalance: any = await timeContract.balanceOf(address);
+    const wmemoContract: Contract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
+    const wmemoBalance: any = await wmemoContract.balanceOf(address);
     
     return {
       balances: {
@@ -70,58 +66,55 @@ interface IUserAccountDetails {
   };
 }
 
-export const loadAccountDetails = createAsyncThunk("account/loadAccountDetails", async ({
-                                                                                          networkID,
-                                                                                          provider,
-                                                                                          address
-                                                                                        }: ILoadAccountDetails): Promise<IUserAccountDetails> => {
-  let timeBalance = 0;
-  let memoBalance = 0;
+export const loadAccountDetails = createAsyncThunk(
+  "account/loadAccountDetails",
+  async ({ networkID, provider, address }: ILoadAccountDetails): Promise<IUserAccountDetails> => {
+    let timeBalance = 0;
+    let memoBalance = 0;
+    let wmemoBalance = 0;
+    let memoWmemoAllowance = 0;
+    let stakeAllowance = 0;
+    let unstakeAllowance = 0;
   
-  let wmemoBalance = 0;
-  let memoWmemoAllowance = 0;
+    const addresses = getAddresses(networkID);
   
-  let stakeAllowance = 0;
-  let unstakeAllowance = 0;
-  
-  const addresses = getAddresses(networkID);
-  
-  if (addresses.TIME_ADDRESS) {
-    const timeContract = new ethers.Contract(addresses.TIME_ADDRESS, TimeTokenContract, provider);
-    timeBalance = await timeContract.balanceOf(address);
-    stakeAllowance = await timeContract.allowance(address, addresses.STAKING_HELPER_ADDRESS);
-  }
-  
-  if (addresses.MEMO_ADDRESS) {
-    const memoContract = new ethers.Contract(addresses.MEMO_ADDRESS, MemoTokenContract, provider);
-    memoBalance = await memoContract.balanceOf(address);
-    unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS);
+    if (addresses.TIME_ADDRESS) {
+      const timeContract = new ethers.Contract(addresses.TIME_ADDRESS, TimeTokenContract, provider);
+      timeBalance = await timeContract.balanceOf(address);
+      stakeAllowance = await timeContract.allowance(address, addresses.STAKING_HELPER_ADDRESS);
+    }
     
+    if (addresses.MEMO_ADDRESS) {
+      const memoContract = new ethers.Contract(addresses.MEMO_ADDRESS, MemoTokenContract, provider);
+      memoBalance = await memoContract.balanceOf(address);
+      unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS);
+      
+      if (addresses.WMEMO_ADDRESS) {
+        memoWmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
+      }
+    }
+  
     if (addresses.WMEMO_ADDRESS) {
-      memoWmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
+      const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
+      wmemoBalance = await wmemoContract.balanceOf(address);
     }
-  }
   
-  if (addresses.WMEMO_ADDRESS) {
-    const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
-    wmemoBalance = await wmemoContract.balanceOf(address);
+    return {
+      balances: {
+        memo: ethers.utils.formatUnits(memoBalance, "gwei"),
+        time: ethers.utils.formatUnits(timeBalance, "gwei"),
+        wmemo: ethers.utils.formatEther(wmemoBalance)
+      },
+      staking: {
+        time: Number(stakeAllowance),
+        memo: Number(unstakeAllowance)
+      },
+      wrapping: {
+        memo: Number(memoWmemoAllowance)
+      }
+    };
   }
-  
-  return {
-    balances: {
-      memo: ethers.utils.formatUnits(memoBalance, "gwei"),
-      time: ethers.utils.formatUnits(timeBalance, "gwei"),
-      wmemo: ethers.utils.formatEther(wmemoBalance)
-    },
-    staking: {
-      time: Number(stakeAllowance),
-      memo: Number(unstakeAllowance)
-    },
-    wrapping: {
-      memo: Number(memoWmemoAllowance)
-    }
-  };
-});
+);
 
 interface ICalcUserBondDetails {
   address: string;
@@ -323,12 +316,15 @@ const accountSlice = createSlice({
       .addCase(calculateUserBondDetails.pending, (state, action) => {
         state.loading = true;
       })
-      .addCase(calculateUserBondDetails.fulfilled, (state, action) => {
-        if (!action.payload) return;
-        const bond = action.payload.bond;
-        state.bonds[bond] = action.payload;
-        state.loading = false;
-      })
+      .addCase(
+        calculateUserBondDetails.fulfilled,
+      (state, action): void | undefined => {
+          if (!action.payload) return;
+          const bond = action.payload.bond;
+          state.bonds[bond] = action.payload;
+          state.loading = false;
+        }
+      )
       .addCase(calculateUserBondDetails.rejected, (state, { error }) => {
         state.loading = false;
         console.log(error);

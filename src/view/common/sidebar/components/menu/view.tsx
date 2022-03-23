@@ -1,6 +1,6 @@
 import React, { ReactElement, Fragment } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { shorten } from '@services/helpers';
+import { shorten, trim } from '@services/helpers';
 import { useAddress } from '@services/hooks';
 import cx from 'classnames';
 import linkUrl from '@services/common/get-link-url';
@@ -16,8 +16,8 @@ interface IMenuItem {
   label: string;
 }
 
-export const SidebarMenu = (): ReactElement => {
-  const address = useAddress();
+export const SidebarContent = (): ReactElement => {
+  const address: string = useAddress();
   const { bonds } = useBonds();
   
   const menu: IMenuItem[] = [
@@ -50,7 +50,7 @@ export const SidebarMenu = (): ReactElement => {
                 >
                   <span className="menu__item__label">{label}</span>
                 </NavLink>
-                <div className='submenu'>
+                <div className="submenu">
                   {bonds.map(({ displayName, bond, name, bondDiscount }: IAllBondData): ReactElement => {
                     return (
                       <NavLink
@@ -58,12 +58,16 @@ export const SidebarMenu = (): ReactElement => {
                         to={`${linkUrl().get.mints()}/${name}`}
                         className={cx('submenu__item__link', id)}
                       >
-                        <>
-                          {!bondDiscount
-                            ? <Skeleton variant="text" width={"150px"} />
-                            : displayName
-                          }
-                        </>
+                        {!bondDiscount
+                          ? <Skeleton variant="text" width={150} />
+                          : (
+                            <div className="bond">
+                              {displayName}
+                              <span className="bond-pair-roi">
+                                {bondDiscount && trim(bondDiscount * 100, 2)}%
+                              </span>
+                            </div>
+                          )}
                       </NavLink>
                     );
                   })}

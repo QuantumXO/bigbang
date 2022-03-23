@@ -1,19 +1,22 @@
 import TimeImg from "@assets/images/tokens/TIME.svg";
-import MemoImg from "@assets/images/tokens/MEMO.png";
+import { IBlockchain } from '@models/blockchain';
 
 function toUrl(tokenPath: string): string {
-  const host = window.location.origin;
+  const host: string = window.location.origin;
   return `${host}/${tokenPath}`;
 }
 
-export function getTokenUrl(name: string) {
-  if (name === "time") {
-    return toUrl(TimeImg);
+export function getTokenUrl(id: IBlockchain.TokenType): string {
+  switch (id) {
+    case 'BANG': {
+      return toUrl(TimeImg);
+    }
+    case 'BIG': {
+      return toUrl(TimeImg);
+    }
+    case 'xTOK': {
+      return toUrl(TimeImg);
+    }
+    default: throw Error(`Token url doesn't support: ${id as string}`);
   }
-  
-  if (name === "memo") {
-    return toUrl(MemoImg);
-  }
-  
-  throw Error(`Token url doesn't support: ${name}`);
 }

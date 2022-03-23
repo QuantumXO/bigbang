@@ -392,7 +392,7 @@ const yak: IToken = {
   decimals: 18
 };
 
-export default [
+export default <IToken[]>[
   avax,
   aave,
   apeX,
