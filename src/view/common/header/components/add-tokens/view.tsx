@@ -13,8 +13,6 @@ import "./styles.scss";
 const addTokenToWallet = (tokenId: IBlockchain.TokenType, tokenAddress: string) => async () => {
   const tokenImage: string = getTokenUrl(tokenId);
   
-  console.log('addTokenToWallet()');
-  
   if (network().getIsEthereumAPIAvailable) {
     try {
       await window.ethereum.request({
@@ -49,12 +47,9 @@ export const AddTokens = (): ReactElement => {
     <div className="add--tokens card card--custom">
       <div className="header">{'ADD TOKEN TO WALLET'}</div>
       <div className="tabs">
-        <div className="tab" onClick={() => {
-          console.log('click');
-          addTokenToWallet('BIG', TIME_ADDRESS);
-        }}>{'BIG'}</div>
-        <div className="tab" onClick={() => addTokenToWallet('BANG', TIME_ADDRESS)}>{'BANG'}</div>
-        <div className="tab" onClick={() => addTokenToWallet('xTOK', TIME_ADDRESS)}>{'xTOK'}</div>
+        <div className="tab" onClick={addTokenToWallet('BIG', TIME_ADDRESS)}>{'BIG'}</div>
+        <div className="tab" onClick={addTokenToWallet('BANG', TIME_ADDRESS)}>{'BANG'}</div>
+        <div className="tab" onClick={addTokenToWallet('xTOK', TIME_ADDRESS)}>{'xTOK'}</div>
       </div>
     </div>
   );

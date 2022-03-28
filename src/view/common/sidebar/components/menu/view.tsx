@@ -1,4 +1,4 @@
-import React, { ReactElement, Fragment } from 'react';
+import  React, { ReactElement, Fragment, useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { shorten, trim } from '@services/helpers';
 import { useAddress } from '@services/hooks';
@@ -16,16 +16,19 @@ interface IMenuItem {
   label: string;
 }
 
+const fdfsdfd: numer = '';
+
 export const SidebarContent = (): ReactElement => {
   const address: string = useAddress();
   const { bonds } = useBonds();
-  
   const menu: IMenuItem[] = [
     { id: 'dashboard', url: '/', label: 'dashboard' },
     { id: 'stake', url: linkUrl().get.stake(), label: 'stake' },
     { id: 'mints', url: linkUrl().get.mints(), label: 'mint' },
     { id: 'docs', url: linkUrl().get.docs(), label: 'docs' },
   ];
+  
+  const [isHiddenMints, handleHiddenMints] = useState<boolean>(false);
   
   const onRenderMenu = (): ReactElement => {
     return (
@@ -50,7 +53,13 @@ export const SidebarContent = (): ReactElement => {
                 >
                   <span className="menu__item__label">{label}</span>
                 </NavLink>
-                <div className="submenu">
+                <span
+                  onClick={() => handleHiddenMints(!isHiddenMints)}
+                  className={cx('mint--discounts__toggler', { hidden: isHiddenMints })}
+                >
+                  {'Mint discounts'}
+                </span>
+                <div className={cx('submenu', { hidden: isHiddenMints })}>
                   {bonds.map(({ displayName, bond, name, bondDiscount }: IAllBondData): ReactElement => {
                     return (
                       <NavLink
@@ -91,13 +100,13 @@ export const SidebarContent = (): ReactElement => {
       <div className="sidebar--header">
         <Link to="/" className="sidebar--logo">{'Logo'}</Link>
         {address && (
-          <Link
-            to={`https://cchain.explorer.avax.network/address/${address}`}
-            className="wallet--link"
+          <a
             target="_blank"
+            className="wallet--link"
+            href={`https://cchain.explorer.avax.network/address/${address}`}
           >
-            <span>{shorten(address)}</span>
-          </Link>
+            {shorten(address)}
+          </a>
         )}
       </div>
       {onRenderMenu()}

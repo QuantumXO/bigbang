@@ -29,11 +29,9 @@
     text-decoration: none;
     .wallet--link {
       margin-top: 10px;
+      color: #333333;
+      font: 400 12px/14px $basic_font_family;
       text-decoration: none;
-      span {
-        color: #333333;
-        font: 400 12px/14px $basic_font_family;
-      }
     }
   }
   &__menu {
@@ -97,11 +95,48 @@
         font: 400 14px/16px $basic_font_family;
       }
       &__with__submenu {
+        display: flex;
+        flex-direction: column;
+        .mint--discounts__toggler {
+          width: 210px;
+          height: 40px;
+          display: inline-flex;
+          margin-top: 32px;
+          padding-left: 36px;
+          padding-right: 15px;
+          font-weight: 400;
+          font-size: 14px;
+          color: #5A5A5C;
+          cursor: pointer;
+          align-items: center;
+          border: 1px solid #DEDEDE;
+          justify-content: space-between;
+          border-radius: 20px;
+          &::after {
+            width: 22px;
+            height: 16px;
+            margin-top: 2px;
+            content: '';
+            background-color: #5A5A5C;
+            transition: transform .15s ease-in-out;
+            mask: url(../../../assets/images/common/header/network-arrow.svg) 50% no-repeat;
+            mask-size: 100%;
+          }
+          &.hidden {
+            &::after {
+              transform: rotate(180deg);
+            }
+          }
+        }
         .submenu {
           display: flex;
           margin-top: 32px;
           margin-left: 49px;
+          overflow: hidden;
           flex-direction: column;
+          &.hidden {
+            display: none;
+          }
           &__item__link {
             text-transform: uppercase;
             text-decoration: none;
