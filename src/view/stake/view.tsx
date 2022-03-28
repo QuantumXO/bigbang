@@ -138,7 +138,7 @@ export function Stake(): ReactElement {
     
     if (!!address) {
       layout = (
-        <Grid item xs={6} className='stake__user__data card additional__card'>
+        <Grid item xs={6} className='stake__user__data card card--custom additional__card'>
           <div className='row'>
             <div className='row__label'>{'Your Balance'}</div>
             <div className='row__value'>
@@ -286,7 +286,7 @@ export function Stake(): ReactElement {
   
     if (!!address) {
       layout = (
-        <div className="stake__form__wrap card additional__card">
+        <div className="stake__form__wrap card card--custom additional__card">
           <div className="stake__actions">
             <div
               onClick={changeView(0)}
