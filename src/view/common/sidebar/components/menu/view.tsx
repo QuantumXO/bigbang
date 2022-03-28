@@ -16,8 +16,6 @@ interface IMenuItem {
   label: string;
 }
 
-const fdfsdfd: numer = '';
-
 export const SidebarContent = (): ReactElement => {
   const address: string = useAddress();
   const { bonds } = useBonds();
