@@ -1,6 +1,6 @@
 import { priceUnits, trim } from '@services/helpers';
-import BondLogo from '@view/common/bond-logo';
-import { Paper, Slide, Link } from '@material-ui/core';
+import BondLogo from '@view/mints/components/bond-logo';
+import { Slide, Link } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import { Skeleton } from '@material-ui/lab';
 import { IAllBondData } from '@services/hooks/bonds';
@@ -13,18 +13,17 @@ interface IBondProps {
 
 export function BondDataCard({ bond }: IBondProps) {
   const isBondLoading = !bond.bondPrice ?? true;
-
   return (
     <Slide direction="up" in={true}>
-      <Paper className="bond-data-card">
-        <div className="bond-pair">
-          <BondLogo bond={bond} />
-          <div className="bond-name">
-            <p className="bond-name-title">{bond.displayName}</p>
+      <div className="card bond__card">
+        <div className="name">
+          <BondLogo bond={bond} iconSize={36} />
+          <div className="inner">
+            <p className="label">{bond.displayName}</p>
             {bond.isLP && (
               <div>
                 <Link href={bond.lpUrl} target="_blank">
-                  <p className="bond-name-title">View Contract</p>
+                  <p className="contract--link">View Contract</p>
                 </Link>
               </div>
             )}
@@ -65,7 +64,7 @@ export function BondDataCard({ bond }: IBondProps) {
             <p>Mint {bond.displayName}</p>
           </div>
         </Link>
-      </Paper>
+      </div>
     </Slide>
   );
 }

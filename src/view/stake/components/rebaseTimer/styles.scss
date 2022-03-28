@@ -2,7 +2,12 @@
 
 .rebase--timer {
   &__progress {
-    margin-top: 54px;
+    @include desktop {
+      margin-top: 54px;
+    }
+    @include noDesktop {
+      margin-top: 28px;
+    }
     .progress {
       &__rebasing {
         color: $brand_color;

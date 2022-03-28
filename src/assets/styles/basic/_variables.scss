@@ -2,3 +2,28 @@
 $basic_font_family: Ubuntu, Montserrat, SemiBold, Verdana;
 $content_max_width: 1045px;
 $brand_color: #AD00FE;
+$mobile: 360px;
+$tablet: 769px;
+$desktop: 1025px;
+$mobile-media: media (min-width: $mobile) and (max-);
+
+@mixin desktop() {
+  @media (min-width: $desktop) {
+    @content;
+  }
+}
+@mixin noDesktop() {
+  @media (min-width: $mobile) and (max-width: $desktop - 1) {
+    @content;
+  }
+}
+@mixin tablet() {
+  @media (min-width: $tablet) and (max-width: $desktop - 1) {
+    @content;
+  }
+}
+@mixin mobile() {
+  @media (min-width: $mobile) and (max-width: $tablet - 1) {
+    @content;
+  }
+}

@@ -1,11 +1,16 @@
 @import "./src/assets/styles/basic/variables";
 
 .header__network__btn {
-  min-width: 150px;
-  display: inline-flex;
-  margin-left: 15px;
-  align-items: center;
-  justify-content: flex-end;
+  @include desktop {
+    min-width: 150px;
+    display: inline-flex;
+    margin-left: 15px;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  @include noDesktop {
+    display: none;
+  }
   .btn__label {
     height: 22px;
     display: inline-flex;

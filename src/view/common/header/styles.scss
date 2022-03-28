@@ -2,24 +2,26 @@
 
 .header {
   max-width: #{$content_max_width};
-  
   .toolbar {
     width: 100%;
     margin: auto;
     padding: 0 8px;
     align-items: center;
-
     .btn--toggle--sidebar {
-      width: 24px;
-      height: 24px;
-      display: inline-block;
-      margin-left: 34px;
-      margin-right: 28px;
-      background: red 50% no-repeat;
-      background-size: contain;
-      cursor: pointer;
+      @include desktop {
+        display: none;
+      }
+      @include noDesktop {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        display: inline-block;
+        border-radius: 50%;
+        background: $brand_color url(./../../../assets/images/common/header/toggle-sideber-btn.svg) 50% no-repeat;
+        background-size: 70%;
+        cursor: pointer;
+      }
     }
-    
     &__btn {
       display: flex;
       padding: 9px 20px;
@@ -29,25 +31,20 @@
       box-shadow: 0 0 10px rgba(44, 39, 109, 0.1);
       cursor: pointer;
     }
-    
     .toolbar-btns-wrap {
       flex: 1;
       display: flex;
       align-items: center;
-      
-      @media (min-width: 960px) {
-        justify-content: flex-end;
-      }
+      justify-content: flex-end;
     }
   }
-}
-
-@media screen and (min-width: 960px) {
-  .header {
-    .toolbar {
-      .btn--toggle--sidebar {
-        display: none;
-      }
+  &__appbar {
+    width: 100%;
+    @include desktop {
+      padding: 40px 0 20px 0;
+    }
+    @include noDesktop {
+      padding: 20px 0 10px 0;
     }
   }
 }

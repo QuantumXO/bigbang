@@ -347,7 +347,7 @@ export function Stake(): ReactElement {
       <Zoom in={true}>
         <div>
           <Grid container spacing={0} justifyContent="space-between" className="header__cards__grid">
-            <Grid item lg={6} md={6} sm={6} xs={12} className="card welcome">
+            <Grid item lg={6} md={6} sm={6} xs={12} className="card stake__card welcome">
               <p className="card__title">{'Stake'}</p>
               <p className="card__value">
                 {'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet' +
@@ -356,7 +356,7 @@ export function Stake(): ReactElement {
             </Grid>
             <RebaseTimer />
           </Grid>
-          <div className='stake__container'>
+          <div className="stake__container">
             <div className="stake__container__main card">
               <Grid
                 container

@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import { AppBar, Toolbar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ConnectButton from './components/connect-button';
 import NetworkButton from './components/network-button';
 import cx from 'classnames';
@@ -24,10 +23,6 @@ const useStyles = makeStyles(theme => ({
     marginLeft: DRAWER_WIDTH,
   },
   appBar: {
-    [theme.breakpoints.up('sm'  )]: {
-      width: '100%',
-      padding: '40px 0 20px 0',
-    },
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
     background: 'transparent',
@@ -43,10 +38,8 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export function Header({ drawe }: IHeader): ReactElement {
+export function Header({ drawe, handleSidebarToggle }: IHeader): ReactElement {
   const classes = useStyles();
-  const isVerySmallScreen: boolean = useMediaQuery('(max-width: 400px)');
-
   return (
     <div
       className={cx(
@@ -61,12 +54,12 @@ export function Header({ drawe }: IHeader): ReactElement {
         className={cx(classes.appBar, 'header__appbar')}
       >
         <Toolbar disableGutters className="toolbar">
+          <span onClick={handleSidebarToggle} className="btn--toggle--sidebar" />
           <div className="toolbar-btns-wrap">
-            {!isVerySmallScreen && <TokenButton />}
+            <TokenButton />
             <ConnectButton />
-            {!isVerySmallScreen && <NetworkButton />}
+            <NetworkButton />
           </div>
-          {/* <span onClick={handleSidebarToggle} className="btn--toggle--sidebar" /> */}
         </Toolbar>
       </AppBar>
     </div>

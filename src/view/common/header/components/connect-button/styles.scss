@@ -5,12 +5,14 @@
   height: 40px;
   display: inline-flex;
   border-radius: 20px;
-  margin-left: 30px;
   border: 1px solid transparent;
   align-items: center;
   justify-content: center;
   background-color: $brand_color;
   cursor: pointer;
+  @include desktop {
+    margin-left: 30px;
+  }
   &.error {
     color: rgb(255, 67, 67);
     background-color: rgb(255, 67, 67);
@@ -21,18 +23,15 @@
     &.active {
       border-color: $brand_color;
       background-color: transparent;
-
       span {
         color: $brand_color;
       }
     }
   }
-  
   &__progress {
     margin-left: 10px;
     margin-top: 4px;
   }
-  
   span {
     display: inline-block;
     color: #ffffff;

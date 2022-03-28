@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/bigbang/static/css/main.55c6b385.chunk.css",
-    "main.js": "/bigbang/static/js/main.2565b1c3.chunk.js",
+    "main.js": "/bigbang/static/js/main.a68d4cdf.chunk.js",
     "runtime-main.js": "/bigbang/static/js/runtime-main.d383285f.js",
     "static/js/2.c2ee45e6.chunk.js": "/bigbang/static/js/2.c2ee45e6.chunk.js",
     "index.html": "/bigbang/index.html",
@@ -51,6 +51,6 @@
     "static/js/runtime-main.d383285f.js",
     "static/js/2.c2ee45e6.chunk.js",
     "static/css/main.55c6b385.chunk.css",
-    "static/js/main.2565b1c3.chunk.js"
+    "static/js/main.a68d4cdf.chunk.js"
   ]
 }

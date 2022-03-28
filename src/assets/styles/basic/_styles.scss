@@ -29,39 +29,69 @@ body {
   background: #F2F3F7;
   box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, 0.7);
   &.welcome {
-    padding: 48px 56px 34px !important;
+    @include desktop {
+      padding: 48px 56px 34px !important;
+    }
+    @include noDesktop {
+      padding: 24px 24px !important;
+    }
     .card__title {
       color: $brand_color;
       font: 500 30px/34px $basic_font_family;
     }
     .card__value {
-      margin-top: 51px;
       color: #808080;
       font: 400 12px/1.7 $basic_font_family;
+      @include desktop {
+        margin-top: 51px;
+      }
+      @include noDesktop {
+        margin-top: 28px;
+      }
     }
   }
   &.big {
-    padding: 48px 56px 40px !important;
+    @include desktop {
+      padding: 48px 56px 40px !important;
+    }
+    @include noDesktop {
+      padding: 24px 24px !important;
+    }
     .card__title {
       color: #808080;
       font: 500 20px/1.1 $basic_font_family;
     }
     .card__value {
-      margin-top: 33px;
       color: $brand_color;
       font: 500 30px/1.1 $basic_font_family;
+      @include desktop {
+        margin-top: 33px;
+      }
+      @include noDesktop {
+        margin-top: 28px;
+      }
     }
   }
   &:not(.welcome):not(.big):not(.card--custom) {
-    padding: 38px 15px !important;
+    @include desktop {
+      padding: 38px 15px !important;
+    }
+    @include noDesktop {
+      padding: 15px 24px !important;
+    }
     .card__title {
       color: #808080;
       font: 500 16px/1.1 $basic_font_family;
     }
     .card__value {
-      margin-top: 25px;
       color: $brand_color;
       font: 500 25px/1.1 $basic_font_family;
+      @include desktop {
+        margin-top: 25px;
+      }
+      @include noDesktop {
+        margin-top: 10px;
+      }
     }
   }
 }

@@ -1,7 +1,16 @@
 @import "./src/assets/styles/basic/variables";
 
 .mints.page {
-  .mints {
-
+  .bond__card {
+    .name {
+      display: flex;
+      align-items: center;
+      .inner {
+        margin-left: 10px;
+      }
+    }
+    &:nth-child(n+2) {
+      margin-top: 10px;
+    }
   }
 }

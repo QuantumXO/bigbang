@@ -6,6 +6,7 @@ import { ReferenceObject } from 'popper.js';
 import WrapButton from './../wrap-button';
 import WrapModal from '@view/common/header/components/wrap-button/components/modal';
 import AddTokens from '@view/common/header/components/add-tokens';
+import network from '@services/common/network';
 
 import './styles.scss';
 
@@ -15,8 +16,6 @@ interface IToken {
 }
 
 export function TokenButton(): ReactElement {
-  const isEthereumAPIAvailable: boolean = !!window.ethereum;
-  
   const [anchorEl, setAnchorEl] = useState<null | ReferenceObject | (() => ReferenceObject)>(null);
   const [isOpenWrapModal, toggleWrapModal] = useState<boolean>(false);
   
@@ -35,7 +34,7 @@ export function TokenButton(): ReactElement {
   const onRenderSideTokens = (): ReactNode => {
     let layout: ReactNode;
     
-    if (isEthereumAPIAvailable) {
+    if (network().getIsEthereumAPIAvailable) {
       const tokens: IToken[] = [];
       
       layout = (
@@ -61,7 +60,7 @@ export function TokenButton(): ReactElement {
   
   return (
     <div
-      className={cx('header__side__btn', { active: isOpen })}
+      className={cx('header__token__btn', { active: isOpen })}
       onMouseEnter={(e: MouseEvent<HTMLDivElement> ): void => handleClick(e)}
       onMouseLeave={(e: MouseEvent<HTMLDivElement> ): void => handleClick(e)}
     >

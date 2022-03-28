@@ -1,8 +1,13 @@
 @import "./src/assets/styles/basic/variables";
 
-.header__side__btn {
-  display: inline-block;
-  cursor: pointer;
+.header__token__btn {
+  @include desktop {
+    display: inline-block;
+    cursor: pointer;
+  }
+  @include noDesktop {
+    display: none;
+  }
   .btn__label {
     width: 126px;
     height: 40px;

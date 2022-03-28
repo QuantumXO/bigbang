@@ -4,36 +4,34 @@
   height: 100vh;
   width: 100vw;
   display: flex;
+  padding-bottom: 24px;
   overflow: auto;
   position: relative;
   flex-direction: column;
   background-repeat: no-repeat;
   background-color: var(--bg_color);
-  
   &.theme--dark {
     background-position: 100% 0;
     background-size: contain;
     background-image: var(--bg_img_path);
   }
-  
   &.theme--light {
     background-image: var(--bg_img_path);
     background-position: 398px 0;
     background-size: calc(100% - 398px);
   }
-  
-  &__inner {
-    max-width: 1432px;
-    margin-right: 70px;
-  }
-  
   &__content {
     max-width: #{$content_max_width};
-    padding: 84px 0 50px 125px;
     position: relative;
     background-repeat: no-repeat;
+    @include desktop {
+      padding: 84px 0 50px 125px;
+    }
+    @include noDesktop {
+      width: 100%;
+      padding: 0 10px;
+    }
   }
-  
   &--bg {
     top: 0;
     width: auto;
@@ -41,11 +39,9 @@
     object-fit: contain;
     background-color: var(--bg_color);
     z-index: 1;
-    
     &.dark {
       right: 0;
     }
-    
     &.light {
       width: 100%;
       left: 0;

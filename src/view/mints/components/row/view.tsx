@@ -1,11 +1,11 @@
 import { priceUnits, trim } from '@services/helpers';
-import BondLogo from '@view/common/bond-logo';
 import { TableRow, TableCell, Link } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import { Skeleton } from '@material-ui/lab';
 import { IAllBondData } from '@services/hooks/bonds';
 import getLinkUrl from '@services/common/get-link-url';
 import { ReactElement } from 'react';
+import BondLogo from '@view/mints/components/bond-logo';
 
 import './styles.scss';
 
@@ -14,7 +14,7 @@ interface IBondProps {
 }
 
 export function BondTableRow({ bond }: IBondProps): ReactElement {
-  const isBondLoading: boolean = !bond.bondPrice ?? true;
+  // const isBondLoading: boolean = !bond.bondPrice ?? true;
 
   return (
     <TableRow className="bond">

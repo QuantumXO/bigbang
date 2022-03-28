@@ -8,11 +8,16 @@
     .dashboard__card {
       &__wrapper {
         max-width: 445px;
-        margin-bottom: 30px;
         overflow: hidden;
         border-radius: 20px;
         background: #F2F3F7;
         box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, 0.7);
+        @include desktop {
+          margin-bottom: 30px;
+        }
+        @include noDesktop {
+          margin-bottom: 10px;
+        }
         &.welcome {
           .dashboard__card__inner {
             .card {
@@ -21,9 +26,14 @@
                 font: 500 30px/34px $basic_font_family;
               }
               &__value {
-                margin-top: 51px;
                 color: #808080;
                 font: 400 12px/1.7 $basic_font_family;
+                @include desktop {
+                  margin-top: 51px;
+                }
+                @include noDesktop {
+                  margin-top: 28px;
+                }
               }
             }
           }
@@ -38,9 +48,14 @@
                 font: 500 20px/1.1 $basic_font_family;
               }
               &__value {
-                margin-top: 33px;
                 color: $brand_color;
                 font: 500 30px/1.1 $basic_font_family;
+                @include desktop {
+                  margin-top: 33px;
+                }
+                @include noDesktop {
+                  margin-top: 12px;
+                }
               }
             }
           }
@@ -59,24 +74,37 @@
                 margin-top: 25px;
                 color: $brand_color;
                 font: 500 25px/1.1 $basic_font_family;
+                @include desktop {
+                  margin-top: 25px;
+                }
+                @include noDesktop {
+                  margin-top: 10px;
+                }
               }
             }
           }
         }
 
         &:nth-child(even) {
-          margin-left: 15px;
+          @include desktop {
+            margin-left: 15px;
+          }
         }
       }
 
       &__inner {
         height: 100%;
         display: flex;
-        padding: 38px 53px;
         position: relative;
         justify-content: center;
         flex-direction: column;
         z-index: 2;
+        @include desktop {
+          padding: 38px 53px;
+        }
+        @include noDesktop {
+          padding: 24px 24px;
+        }
       }
     }
   }

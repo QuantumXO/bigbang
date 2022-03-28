@@ -13,13 +13,23 @@
       .card {
         width: 100%;
         max-width: 445px;
-        margin-bottom: 30px;
+        @include desktop {
+          margin-bottom: 30px;
+        }
+        @include noDesktop {
+          margin-bottom: 10px;
+        }
         &__inner {
           width: 100%;
         }
         &.card--custom {
           &.info {
-            padding: 49px 75px 41px;
+            @include desktop {
+              padding: 49px 75px 41px;
+            }
+            @include noDesktop {
+              padding: 15px 24px;
+            }
             .card {
               &__inner {
                 display: flex;
@@ -44,10 +54,15 @@
               }
               &__text {
                 width: 100%;
-                margin-top: 58px;
                 text-align: center;
                 color: #808080;
                 font: 400 12px/1.7 $basic_font_family;
+                @include desktop {
+                  margin-top: 58px;
+                }
+                @include noDesktop {
+                  margin-top: 24px;
+                }
               }
             }
           }

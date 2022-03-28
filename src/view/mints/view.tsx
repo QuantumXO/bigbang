@@ -13,7 +13,7 @@ import './styles.scss';
 
 export function Mints(): ReactElement {
   const { bonds } = useBonds();
-  const isSmallScreen: boolean = useMediaQuery('(max-width: 733px)'); // change to breakpoint query
+  const isSmallScreen: boolean = useMediaQuery('(max-width: 1024px)'); // change to breakpoint query
   
   const isAppLoading: boolean = useSelector<IReduxState, boolean>(state => state.app.loading);
   const marketPrice: number = useSelector<IReduxState, number>(state => {
@@ -127,6 +127,24 @@ export function Mints(): ReactElement {
     return layout;
   }
   
+  const onRenderBondsCards = (): ReactElement | null => {
+    let layout: ReactElement | null = null;
+  
+    if (isSmallScreen) {
+      layout = (
+        <Grid container item spacing={2}>
+          {bonds.map((bond) => (
+            <Grid item xs={12} key={bond.name}>
+              <BondDataCard key={bond.name} bond={bond} />
+            </Grid>
+          ))}
+        </Grid>
+      );
+    }
+    
+    return layout;
+  }
+  
   return (
     <div className="mints page">
       <Zoom in={true}>
@@ -134,20 +152,10 @@ export function Mints(): ReactElement {
           {onRenderMainCards()}
   
           {onRenderBondsTable()}
+          
+          {onRenderBondsCards()}
         </div>
       </Zoom>
-      
-      {/* {isSmallScreen && (
-        <div className="mints-view-card-container">
-          <Grid container item spacing={2}>
-            {bonds.map(bond => (
-              <Grid item xs={12} key={bond.name}>
-                <BondDataCard key={bond.name} bond={bond} />
-              </Grid>
-            ))}
-          </Grid>
-        </div>
-      )} */}
     </div>
   );
 }
