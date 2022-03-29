@@ -7,12 +7,12 @@
   .dashboard--cards {
     .dashboard__card {
       &__wrapper {
-        max-width: 445px;
         overflow: hidden;
         border-radius: 20px;
         background: #F2F3F7;
         box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, 0.7);
         @include desktop {
+          max-width: 445px;
           margin-bottom: 30px;
         }
         @include noDesktop {

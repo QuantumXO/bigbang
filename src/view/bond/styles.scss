@@ -7,20 +7,37 @@
       width: 100%;
       .tab {
         &__content {
-          margin-top: 30px;
+          @include desktop {
+            margin-top: 30px;
+          }
+          @include noDesktop {
+            margin-top: 10px;
+          }
         }
         &__inner {
           display: flex;
-          align-items: stretch;
-          justify-content: space-between;
+          @include desktop {
+            align-items: stretch;
+            justify-content: space-between;
+          }
+          @include noDesktop {
+            flex-direction: column-reverse;
+          }
           .form--card {
             width: 100%;
-            max-width: 445px;
+            @include desktop {
+              max-width: 445px;
+            }
             &__inner {
               display: flex;
-              padding: 47px 64px 42px;
               flex-direction: column;
               align-items: center;
+              @include desktop {
+                padding: 47px 64px 42px;
+              }
+              @include noDesktop {
+                padding: 24px;
+              }
             }
           }
         }

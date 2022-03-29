@@ -2,9 +2,9 @@ import React, { ReactElement } from 'react';
 import { IBond } from '@models/bond';
 import { Slide, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
+import cx from 'classnames';
 
 import './styles.scss';
-import cx from 'classnames';
 
 interface IProps {
   data?: IBond.IUserData[];

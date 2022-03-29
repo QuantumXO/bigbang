@@ -4,7 +4,9 @@
   width: 100%;
   .header__cards__grid {
     .card {
-      max-width: 445px;
+      @include desktop {
+        max-width: 445px;
+      }
       &.welcome {
         @include noDesktop {
           margin-bottom: 10px;
@@ -74,7 +76,12 @@
         flex-direction: column-reverse;
       }
       .additional__card {
-        max-width: 444px;
+        @include desktop {
+          max-width: 444px;
+        }
+        @include noDesktop {
+          max-width: 100%;
+        }
         &:first-child {
           @include noDesktop {
             margin-top: 10px;
@@ -149,7 +156,7 @@
         padding: 91px 54px 25px;
       }
       @include noDesktop {
-        padding: 15px 24px;
+        padding: 24px 24px;
       }
       .row {
         width: 100%;

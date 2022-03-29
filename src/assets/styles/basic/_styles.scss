@@ -4,26 +4,6 @@ body {
   font-family: $basic_font_family;
   background-color: #F3F3F8;
 }
-
-#hades {
-  display: flex;
-  position: absolute;
-  align-items: center;
-  justify-content: center;
-  background: rgba(242, 243, 247, 0.6);
-  @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
-    //backdrop-filter: blur(13px);
-  }
-  .wrapper {
-    width: 100%;
-    display: flex;
-    padding: 64px 95px 40px;
-    background: #F2F3F7;
-    flex-direction: column;
-    box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, 0.7);
-    border-radius: 20px;
-  }
-}
 .card {
   border-radius: 20px;
   background: #F2F3F7;

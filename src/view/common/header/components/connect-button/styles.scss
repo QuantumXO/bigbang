@@ -13,6 +13,9 @@
   @include desktop {
     margin-left: 30px;
   }
+  @include noDesktop {
+    margin-left: 10px;
+  }
   &.error {
     color: rgb(255, 67, 67);
     background-color: rgb(255, 67, 67);

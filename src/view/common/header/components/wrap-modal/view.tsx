@@ -10,16 +10,16 @@ import { useWeb3Context } from '@services/hooks';
 import { warning } from '@store/slices/messages-slice';
 import { messages } from '@constants/messages';
 import { IPendingTxn, isPendingTxn, txnButtonText } from '@store/slices/pending-txns-slice';
+import React from 'react';
 
 import './styles.scss';
-import * as React from 'react';
 
-interface IAdvancedSettingsProps {
+interface IProps {
   isOpen: boolean;
   closeWrapModal: () => void;
 }
 
-export function WrapModal({ isOpen, closeWrapModal }: IAdvancedSettingsProps): ReactElement {
+export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
   const dispatch = useDispatch();
   const { provider, address, chainID, checkIsWrongNetwork } = useWeb3Context();
   const wrapBond: string = 'BANG'

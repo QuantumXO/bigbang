@@ -48,23 +48,38 @@
             }
           }
           .field__wrapper {
-            margin-top: 32px;
+            @include desktop {
+              margin-top: 32px;
+            }
+            @include noDesktop {
+              margin-top: 24px;
+            }
           }
           .description {
-            margin-top: 56px;
             color: #808080;
             font-weight: 400;
             font-size: 10px;
             line-height: 136%;
             text-align: center;
+            @include desktop {
+              margin-top: 56px;
+            }
+            @include noDesktop {
+              margin-top: 24px;
+            }
           }
           .action__btn {
             width: 160px;
             height: 40px;
-            margin-top: 56px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            @include desktop {
+              margin-top: 56px;
+            }
+            @include noDesktop {
+              margin-top: 36px;
+            }
           }
         }
       }

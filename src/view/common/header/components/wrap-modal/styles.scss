@@ -1,15 +1,38 @@
-@import "./src/assets/styles/basic/variables";
+@import "../../../../../assets/styles/basic/variables";
 
 .wrap.modal {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  background: rgba(242, 243, 247, 0.6);
   .wrapper {
-    max-width: 540px;
+    width: 100%;
+    display: flex;
     position: relative;
+    background: #F2F3F7;
+    flex-direction: column;
+    box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, 0.7);
+    border-radius: 20px;
+    @include desktop {
+      max-width: 540px;
+      padding: 64px 95px 40px;
+    }
+    @include noDesktop {
+      padding: 24px;
+    }
   }
   .modal {
     &__header {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      @include desktop {
+        align-items: center;
+        justify-content: space-between;
+      }
+      @include noDesktop {
+        align-items: flex-start;
+        flex-direction: column;
+      }
       .title {
         color: $brand_color;
         font-weight: 500;
@@ -19,8 +42,13 @@
       .balance {
         &__wrap {
           display: flex;
-          align-items: center;
           flex-direction: column;
+          @include desktop {
+            align-items: center;
+          }
+          @include noDesktop {
+            margin-top: 5px;
+          }
           &__inner {
             display: inline-flex;
             align-items: center;
@@ -59,52 +87,35 @@
       }
     }
     &__container {
-      margin-top: 48px;
       width: 100%;
       display: flex;
       align-items: center;
       flex-direction: column;
+      @include desktop {
+        margin-top: 48px;
+      }
+      @include noDesktop {
+        margin-top: 15px;
+      }
       .bonds {
         width: 100%;
         display: flex;
         align-items: center;
         flex-direction: column;
-        align-items: center;
       }
       .field {
         &__wrapper {
           display: inline-flex;
           align-items: center;
         }
-        &__input {
-          width: 200px;
-          padding-left: 5px;
-          color: var(--modal_primary_color);
-          font: 400 16px/20px $basic_font_family;
-          border-bottom: 1px solid var(--modal_secondary_color);
-          &:hover,
-          &:focus {
-            border-bottom: 1px solid var(--modal_secondary_color);
-          }
-          &::placeholder {
-            color: var(--modal_secondary_color);
-            font: 400 16px/20px $basic_font_family;
-          }
-          &__wrapper {
-            &::after,
-            &::before {
-              content: none;
-            }
-          }
-        }
-        &__label {
-          margin-right: 16px;
-          color: var(--modal_primary_color);
-          font: 400 24px/29px $basic_font_family;
-        }
       }
       .bonds--toggle {
-        margin: 24px 0;
+        @include desktop {
+          margin: 24px 0;
+        }
+        @include noDesktop {
+          margin: 15px 0;
+        }
         &__svg {
           path {
             stroke: $brand_color;
@@ -113,22 +124,32 @@
       }
       .modal__description {
         width: 100%;
-        max-width: 292px;
-        margin-top: 56px;
         text-align: center;
         font-weight: 400;
         font-size: 10px;
         line-height: 136%;
         color: rgba(0, 0, 0, 0.4);
+        @include desktop {
+          max-width: 292px;
+          margin-top: 56px;
+        }
+        @include noDesktop {
+          margin-top: 24px;
+        }
       }
       .action--btn {
         width: 160px;
         height: 40px;
         display: inline-flex;
-        margin-top: 56px;
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        @include desktop {
+          margin-top: 56px;
+        }
+        @include noDesktop {
+          margin-top: 36px;
+        }
       }
     }
   }

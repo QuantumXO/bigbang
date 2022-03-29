@@ -4,6 +4,8 @@ import { Slide, Link } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import { Skeleton } from '@material-ui/lab';
 import { IAllBondData } from '@services/hooks/bonds';
+import linkUrl from '@services/common/get-link-url';
+import { ReactElement } from 'react';
 
 import './styles.scss';
 
@@ -11,59 +13,74 @@ interface IBondProps {
   bond: IAllBondData;
 }
 
-export function BondDataCard({ bond }: IBondProps) {
+export function BondDataCard({ bond }: IBondProps): ReactElement {
+  const mintsUrl: string = linkUrl().get.mints();
   const isBondLoading = !bond.bondPrice ?? true;
+  
   return (
     <Slide direction="up" in={true}>
       <div className="card bond__card">
         <div className="name">
           <BondLogo bond={bond} iconSize={36} />
           <div className="inner">
-            <p className="label">{bond.displayName}</p>
+            <span className="label">{bond.displayName}</span>
             {bond.isLP && (
-              <div>
-                <Link href={bond.lpUrl} target="_blank">
-                  <p className="contract--link">View Contract</p>
-                </Link>
-              </div>
+              <Link
+                href={bond.lpUrl}
+                target="_blank"
+                className="contract--link"
+              >
+                View Contract
+              </Link>
             )}
+            <Link
+              href={bond.lpUrl}
+              target="_blank"
+              className="contract--link"
+            >
+              View Contract
+            </Link>
           </div>
         </div>
-
-        <div className="data-row">
-          <p className="bond-name-title">Price</p>
-          <p className="bond-price bond-name-title">
-            <>
-              {priceUnits(bond)} {isBondLoading ? <Skeleton width="50px" /> : trim(bond.bondPrice, 2)}
-            </>
-          </p>
-        </div>
-
-        <div className="data-row">
-          <p className="bond-name-title">ROI</p>
-          <p className="bond-name-title">{isBondLoading ? <Skeleton width="50px" /> : `${trim(bond.bondDiscount * 100, 2)}%`}</p>
-        </div>
-
-        <div className="data-row">
-          <p className="bond-name-title">Purchased</p>
-          <p className="bond-name-title">
-            {isBondLoading ? (
-              <Skeleton width="80px" />
-            ) : (
-              new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                maximumFractionDigits: 0,
-                minimumFractionDigits: 0,
-              }).format(bond.purchased)
-            )}
-          </p>
-        </div>
-        <Link component={NavLink} to={`/mints/${bond.name}`}>
-          <div className="bond-table-btn">
-            <p>Mint {bond.displayName}</p>
+        <div className="data">
+          <div className="data__row">
+            <span className="data__row__label">Price</span>
+            <div className="data__row__value">
+              {isBondLoading
+                ? <Skeleton width="50px" />
+                : `${priceUnits(bond)} ${trim(bond.bondPrice, 2)}`
+              }
+            </div>
           </div>
-        </Link>
+          <div className="data__row">
+            <span className="data__row__label">ROI</span>
+            <div className="data__row__value">
+              {isBondLoading ? <Skeleton width="50px" /> : `${trim(bond.bondDiscount * 100, 2)}%`}
+            </div>
+          </div>
+          <div className="data__row">
+            <span className="data__row__label">Purchased</span>
+            <div className="data__row__value">
+              {isBondLoading
+                ? <Skeleton width="80px" />
+                : (
+                  new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    maximumFractionDigits: 0,
+                    minimumFractionDigits: 0,
+                  }).format(bond.purchased)
+                )
+              }
+            </div>
+          </div>
+        </div>
+        <NavLink
+          to={`${mintsUrl}/${bond.name}`}
+          className="mint__link btn__primary--fulfilled"
+        >
+          Mint {bond.displayName}
+        </NavLink>
       </div>
     </Slide>
   );

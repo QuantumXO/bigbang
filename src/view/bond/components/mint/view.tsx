@@ -12,11 +12,11 @@ import { messages } from '@constants/messages';
 import { warning } from '@store/slices/messages-slice';
 import BondData from '@view/bond/components/bond-data';
 import Togglers from '@view/bond/components/togglers';
-
-import "./styles.scss";
 import { IBond } from '@models/bond';
 import * as React from 'react';
 import cx from 'classnames';
+
+import "./styles.scss";
 
 interface IBondPurchaseProps {
   bond: IAllBondData;

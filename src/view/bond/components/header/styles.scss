@@ -4,13 +4,25 @@
   .bond {
     &__header {
       display: flex;
-      padding: 39px 54px;
       align-items: center;
       justify-content: space-between;
+      @include desktop {
+        padding: 39px 54px;
+      }
+      @include noDesktop {
+        padding: 24px 24px;
+      }
     }
     &__name {
       color: $brand_color;
-      font: 500 30px/34px $basic_font_family;
+      font-weight: 500;
+      line-height: 34px;
+      @include desktop {
+        font-size: 30px;
+      }
+      @include noDesktop {
+        font-size: 24px;
+      }
     }
   }
   .back__link {
@@ -21,6 +33,9 @@
     background: url(../../../../assets/images/bond/arrow-right.svg) 50% no-repeat;
     &:hover {
       opacity: .7;
+    }
+    @include noDesktop {
+      background-size: 85%;
     }
   }
 }

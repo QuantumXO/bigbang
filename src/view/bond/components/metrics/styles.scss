@@ -2,23 +2,41 @@
 
 .bond.page {
   .metrics {
-    margin-top: 30px;
+    @include desktop {
+      margin-top: 30px;
+      padding: 25px;
+    }
+    @include noDesktop {
+      margin-top: 10px;
+      padding: 24px;
+      flex-direction: column;
+    }
     &__card {
       flex: 1;
-      max-width: 202px;
       display: inline-flex;
-      padding: 25px;
-      border-radius: 16px;
-      background-color: var(--bg_color);
+      @include desktop {
+        max-width: 202px;
+      }
       &:nth-child(n+2) {
-        margin-left: 10px;
+        @include desktop {
+          margin-left: 10px;
+        }
+        @include noDesktop {
+          margin-top: 10px;
+        }
       }
       &__inner {
         width: 100%;
         display: flex;
-        align-items: center;
-        flex-direction: column;
-        justify-content: center;
+        @include desktop {
+          align-items: center;
+          flex-direction: column;
+          justify-content: center;
+        }
+        @include noDesktop {
+          align-items: center;
+          justify-content: space-between;
+        }
       }
       &__title {
         color: #808080;
@@ -27,11 +45,13 @@
         line-height: 110%;
       }
       &__value {
-        margin-top: 27px;
         color: $brand_color;
         font-weight: 500;
         font-size: 25px;
         line-height: 110%;
+        @include desktop {
+          margin-top: 27px;
+        }
       }
     }
   }

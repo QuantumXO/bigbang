@@ -1,13 +1,8 @@
 @import "./src/assets/styles/basic/variables";
 
 .header__token__btn {
-  @include desktop {
-    display: inline-block;
-    cursor: pointer;
-  }
-  @include noDesktop {
-    display: none;
-  }
+  display: inline-block;
+  cursor: pointer;
   .btn__label {
     width: 126px;
     height: 40px;

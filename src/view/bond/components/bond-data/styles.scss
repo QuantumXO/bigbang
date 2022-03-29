@@ -3,9 +3,15 @@
 .bond.page {
   .bond--data {
     width: 100%;
-    max-width: 445px;
     min-height: 1px;
-    padding: 89px 61px 88px;
+    @include desktop {
+      max-width: 445px;
+      padding: 89px 61px 88px;
+    }
+    @include noDesktop {
+      margin-top: 10px;
+      padding: 24px;
+    }
     .data {
       &__row {
         display: flex;

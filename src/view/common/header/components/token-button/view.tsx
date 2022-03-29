@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import cx from 'classnames';
 import { ReferenceObject } from 'popper.js';
 import WrapButton from './../wrap-button';
-import WrapModal from '@view/common/header/components/wrap-button/components/modal';
+import WrapModal from '@view/common/header/components/wrap-modal';
 import AddTokens from '@view/common/header/components/add-tokens';
 import network from '@services/common/network';
 

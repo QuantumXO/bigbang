@@ -2,15 +2,53 @@
 
 .mints.page {
   .bond__card {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    &:nth-child(n+2) {
+      margin-top: 10px;
+    }
     .name {
+      width: 100%;
       display: flex;
       align-items: center;
       .inner {
+        display: inline-flex;
         margin-left: 10px;
+        flex-direction: column;
+        align-items: flex-start;
+        .contract--link {
+          margin-top: 3px;
+          color: #5A5A5C;
+          text-decoration: none;
+          font: 400 16px/16px $basic_font_family;
+        }
       }
     }
-    &:nth-child(n+2) {
-      margin-top: 10px;
+    .data {
+      width: 100%;
+      margin-top: 15px;
+      &__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        &:nth-child(n+2) {
+          margin-top: 15px;
+        }
+        &__label {
+          opacity: 0.7;
+          color: #797A7C;
+        }
+      }
+    }
+    .mint__link {
+      width: 128px;
+      height: 40px;
+      display: inline-flex;
+      margin: 24px auto 0;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
     }
   }
 }

@@ -17,7 +17,6 @@ export function Bond({ bond }: IBondProps): ReactElement {
 
   const onRenderTabContent = (): ReactNode => {
     let layout: ReactNode = null;
-    
     switch (viewTab) {
       case 0: layout = <MintTab bond={bond} slippage={0.5} handleChangeTab={() => setViewTab(1)}/>; break;
       case 1: layout = <RedeemTab bond={bond} handleChangeTab={() => setViewTab(0)} />; break;
@@ -25,7 +24,6 @@ export function Bond({ bond }: IBondProps): ReactElement {
     
     return layout;
   };
-  
   
   return (
     <div className="bond page">

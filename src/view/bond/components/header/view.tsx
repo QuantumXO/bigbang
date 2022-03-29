@@ -11,7 +11,6 @@ interface IBondHeaderProps {
 
 export function Header({ bond }: IBondHeaderProps): ReactElement {
   const mintsUrl: string = linkUrl().get.mints();
-
   return (
     <div className="bond__header card card--custom">
       <div className="bond__name">
