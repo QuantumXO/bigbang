@@ -1,11 +1,11 @@
 {
   "files": {
-    "main.css": "/bigbang/static/css/main.55c6b385.chunk.css",
-    "main.js": "/bigbang/static/js/main.a68d4cdf.chunk.js",
+    "main.css": "/bigbang/static/css/main.ec3e4993.chunk.css",
+    "main.js": "/bigbang/static/js/main.15b3cadb.chunk.js",
     "runtime-main.js": "/bigbang/static/js/runtime-main.d383285f.js",
-    "static/js/2.c2ee45e6.chunk.js": "/bigbang/static/js/2.c2ee45e6.chunk.js",
+    "static/js/2.46965706.chunk.js": "/bigbang/static/js/2.46965706.chunk.js",
     "index.html": "/bigbang/index.html",
-    "static/js/2.c2ee45e6.chunk.js.LICENSE.txt": "/bigbang/static/js/2.c2ee45e6.chunk.js.LICENSE.txt",
+    "static/js/2.46965706.chunk.js.LICENSE.txt": "/bigbang/static/js/2.46965706.chunk.js.LICENSE.txt",
     "static/media/AAVE.e.b747f0c6.png": "/bigbang/static/media/AAVE.e.b747f0c6.png",
     "static/media/APEIN.d569384f.png": "/bigbang/static/media/APEIN.d569384f.png",
     "static/media/AVAX.bf288bae.svg": "/bigbang/static/media/AVAX.bf288bae.svg",
@@ -49,8 +49,8 @@
   },
   "entrypoints": [
     "static/js/runtime-main.d383285f.js",
-    "static/js/2.c2ee45e6.chunk.js",
-    "static/css/main.55c6b385.chunk.css",
-    "static/js/main.a68d4cdf.chunk.js"
+    "static/js/2.46965706.chunk.js",
+    "static/css/main.ec3e4993.chunk.css",
+    "static/js/main.15b3cadb.chunk.js"
   ]
 }
