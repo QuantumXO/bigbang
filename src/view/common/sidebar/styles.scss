@@ -11,13 +11,15 @@
     box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, .7) !important;
   }
   &--logo {
-    width: 55px;
-    height: 23px;
+    width: 150px;
+    height: 50px;
     display: inline-block;
     text-decoration: none;
     color: $brand_color;
     text-transform: uppercase;
     font: 500 20px/23px $basic_font_family;
+    background: url(../../../assets/images/common/sidebar/logo.svg) 50% no-repeat;
+    background-size: contain;
     z-index: 9;
   }
   &--header {

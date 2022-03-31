@@ -96,7 +96,7 @@ export const SidebarContent = (): ReactElement => {
   return (
     <div className="sidebar">
       <div className="sidebar--header">
-        <Link to="/" className="sidebar--logo">{'Logo'}</Link>
+        <Link to="/" className="sidebar--logo" />
         {address && (
           <a
             target="_blank"
