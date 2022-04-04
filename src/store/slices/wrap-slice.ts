@@ -1,16 +1,16 @@
 import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
-import { messages } from "../../constants/messages";
-import { getAddresses } from "../../constants";
+import { messages } from "@constants/messages";
+import { getBondAddresses } from "../../constants";
 import { IBlockchain } from "@models/blockchain";
-import { setAll, sleep } from "../../services/helpers";
+import { setAll, sleep } from "@services/helpers";
 import { info, success, warning } from "./messages-slice";
 import { RootState } from "../store";
 import { ethers } from "ethers";
-import { metamaskErrorWrap } from "../../services/helpers/metamask-error-wrap";
-import { wMemoTokenContract } from "../../services/abi";
+import { metamaskErrorWrap } from "@services/helpers/metamask-error-wrap";
+import { dYelTokenContract } from "../../services/abi";
 import { clearPendingTxn, fetchPendingTxns, getWrappingTypeText } from "./pending-txns-slice";
-import { getGasPrice } from "../../services/helpers/get-gas-price";
+import { getGasPrice } from "@services/helpers/get-gas-price";
 import { fetchAccountSuccess, getBalances } from "./account-slice";
 
 export interface IChangeApproval {
@@ -19,52 +19,51 @@ export interface IChangeApproval {
   address: string;
 }
 
-export const changeApproval = createAsyncThunk("wrapping/changeApproval", async ({
-                                                                                   provider,
-                                                                                   address,
-                                                                                   networkID
-                                                                                 }: IChangeApproval, { dispatch }) => {
-  if (!provider) {
-    dispatch(warning({ text: messages.please_connect_wallet }));
-    return;
-  }
-  
-  const addresses = getAddresses(networkID);
-  const signer = provider.getSigner();
-  const memoContract = new ethers.Contract(addresses.MEMO_ADDRESS, wMemoTokenContract, signer);
-  
-  let approveTx;
-  try {
-    const gasPrice = await getGasPrice(provider);
-    
-    approveTx = await memoContract.approve(addresses.WMEMO_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
-    
-    const text = "Approve Wrapping";
-    const pendingTxnType = "approve_wrapping";
-    
-    dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }));
-    await approveTx.wait();
-    dispatch(success({ text: messages.tx_successfully_send }));
-  } catch (err: any) {
-    return metamaskErrorWrap(err, dispatch);
-  } finally {
-    if (approveTx) {
-      dispatch(clearPendingTxn(approveTx.hash));
+export const changeApproval = createAsyncThunk(
+  "wrapping/changeApproval",
+  async ({ provider, address, networkID}: IChangeApproval, { dispatch }) => {
+    if (!provider) {
+      dispatch(warning({ text: messages.please_connect_wallet }));
+      return;
     }
-  }
-  
-  await sleep(2);
-  
-  const wmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
-  
-  return dispatch(
-    fetchAccountSuccess({
-      wrapping: {
-        wmemo: Number(wmemoAllowance)
+    
+    const addresses = getBondAddresses(networkID);
+    const signer = provider.getSigner();
+    const memoContract = new ethers.Contract(addresses.BANG_ADDRESS, dYelTokenContract, signer);
+    
+    let approveTx;
+    try {
+      const gasPrice = await getGasPrice(provider);
+      
+      approveTx = await memoContract.approve(addresses.DYEL_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
+      
+      const text = "Approve Wrapping";
+      const pendingTxnType = "approve_wrapping";
+      
+      dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }));
+      await approveTx.wait();
+      dispatch(success({ text: messages.tx_successfully_send }));
+    } catch (err: any) {
+      return metamaskErrorWrap(err, dispatch);
+    } finally {
+      if (approveTx) {
+        dispatch(clearPendingTxn(approveTx.hash));
       }
-    })
-  );
-});
+    }
+    
+    await sleep(2);
+    
+    const wmemoAllowance = await memoContract.allowance(address, addresses.DYEL_ADDRESS);
+  
+    return dispatch(
+      fetchAccountSuccess({
+        wrapping: {
+          wmemo: Number(wmemoAllowance)
+        }
+      })
+    );
+  }
+);
 
 export interface IChangeWrap {
   isWrap: boolean;
@@ -86,10 +85,10 @@ export const changeWrap = createAsyncThunk("wrapping/changeWrap", async ({
     return;
   }
   
-  const addresses = getAddresses(networkID);
+  const addresses = getBondAddresses(networkID);
   const signer = provider.getSigner();
   const amountInWei = isWrap ? ethers.utils.parseUnits(value, "gwei") : ethers.utils.parseEther(value);
-  const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, signer);
+  const wmemoContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, signer);
   
   let wrapTx;
   
@@ -129,13 +128,13 @@ export interface IWrapDetails {
 }
 
 const calcWrapValue = async ({ isWrap, value, provider, networkID }: IWrapDetails): Promise<number> => {
-  const addresses = getAddresses(networkID);
+  const addresses = getBondAddresses(networkID);
   
   const amountInWei = isWrap ? ethers.utils.parseUnits(value, "gwei") : ethers.utils.parseEther(value);
   
   let wrapValue = 0;
   
-  const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
+  const wmemoContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, provider);
   
   if (isWrap) {
     const wmemoValue = await wmemoContract.MEMOTowMEMO(amountInWei);

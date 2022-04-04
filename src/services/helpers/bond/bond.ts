@@ -8,7 +8,7 @@ export interface BondOpts {
   readonly displayName: string; // Displayname on UI
   readonly bondIconSvg: string; //  SVG path for icons
   readonly bondContractABI: ContractInterface; // ABI for contract
-  readonly networkAddrs: IBlockchain.INetworkAddresses; // Mapping of network --> Addresses
+  readonly networkAddresses: IBlockchain.INetworkAddresses; // Mapping of network --> Addresses
   readonly bondToken: string; // Unused, but native token to buy the bond.
 }
 
@@ -18,7 +18,7 @@ export abstract class Bond {
   public readonly type: IBlockchain.WTF_BondEnum;
   public readonly bondIconSvg: string;
   public readonly bondContractABI: ContractInterface; // Bond ABI
-  public readonly networkAddrs: IBlockchain.INetworkAddresses;
+  public readonly networkAddresses: IBlockchain.INetworkAddresses;
   public readonly bondToken: string;
   public readonly lpUrl?: string;
   public readonly tokensInStrategy?: string;
@@ -41,12 +41,12 @@ export abstract class Bond {
     this.type = type;
     this.bondIconSvg = bondOpts.bondIconSvg;
     this.bondContractABI = bondOpts.bondContractABI;
-    this.networkAddrs = bondOpts.networkAddrs;
+    this.networkAddresses = bondOpts.networkAddresses;
     this.bondToken = bondOpts.bondToken;
   }
   
   public getAddressForBond(networkID: IBlockchain.NetworksEnum): string {
-    return this.networkAddrs[networkID].bondAddress;
+    return this.networkAddresses[networkID].bondAddress;
   }
   
   public getContractForBond(
@@ -58,7 +58,7 @@ export abstract class Bond {
   }
   
   public getAddressForReserve(networkID: IBlockchain.NetworksEnum): string {
-    return this.networkAddrs[networkID].reserveAddress;
+    return this.networkAddresses[networkID].reserveAddress;
   }
   
   public getContractForReserve(

@@ -1,5 +1,5 @@
 import { IBlockchain } from '@models/blockchain';
-// import { CustomLPBond, LPBond } from "./lp-bond";
+import { CustomLPBond, LPBond } from "./lp-bond";
 import { CustomBond, StableBond } from "./stable-bond";
 // import MimIcon from "@assets/images/tokens/MIM.svg";
 import AvaxIcon from "@assets/images/tokens/AVAX.svg";
@@ -14,18 +14,16 @@ import {
   WavaxBondContract
 } from "@services/abi";
 
-export const wavax: CustomBond = new CustomBond({
+// export const ftm: StableBond = new StableBond({});
+
+/* export const wavax: CustomBond = new CustomBond({
   name: "wavax",
   displayName: "wAVAX",
   bondToken: "AVAX",
   bondIconSvg: AvaxIcon,
   bondContractABI: WavaxBondContract,
   reserveContractAbi: StableReserveContract,
-  networkAddrs: {
-    [IBlockchain.NetworksEnum.AVAX]: {
-      bondAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318",
-      reserveAddress: "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
-    },
+  networkAddresses: {
     [IBlockchain.NetworksEnum.FTM]: {
       bondAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318",
       reserveAddress: "0xE02B1AA2c4BE73093BE79d763fdFFC0E3cf67318"
@@ -44,7 +42,7 @@ export const wavax: CustomBond = new CustomBond({
     },
   },
   tokensInStrategy: "756916000000000000000000"
-});
+}); */
 
 /*export const mim = new StableBond({
   name: "mim",
@@ -53,7 +51,7 @@ export const wavax: CustomBond = new CustomBond({
   bondIconSvg: MimIcon,
   bondContractABI: StableBondContract,
   reserveContractAbi: StableReserveContract,
-  networkAddrs: {
+  networkAddresses: {
     [Networks.AVAX]: {
       bondAddress: "0x694738E0A438d90487b4a549b201142c1a97B556",
       reserveAddress: "0x130966628846BFd36ff31a822705796e8cb8C18D"
@@ -69,7 +67,7 @@ export const wavax: CustomBond = new CustomBond({
   bondIconSvg: MimTimeIcon,
   bondContractABI: LpBondContract,
   reserveContractAbi: LpReserveContract,
-  networkAddrs: {
+  networkAddresses: {
     [Networks.AVAX]: {
       bondAddress: "0xA184AE1A71EcAD20E822cB965b99c287590c4FFe",
       reserveAddress: "0x113f413371fc4cc4c9d6416cf1de9dfd7bf747df"
@@ -85,7 +83,7 @@ export const wavax: CustomBond = new CustomBond({
   bondIconSvg: AvaxTimeIcon,
   bondContractABI: LpBondContract,
   reserveContractAbi: LpReserveContract,
-  networkAddrs: {
+  networkAddresses: {
     [Networks.AVAX]: {
       bondAddress: "0xc26850686ce755FFb8690EA156E5A6cf03DcBDE1",
       reserveAddress: "0xf64e1c5B6E17031f5504481Ac8145F4c3eab4917"
@@ -95,4 +93,4 @@ export const wavax: CustomBond = new CustomBond({
 });*/
 
 
-export default <CustomBond[]>[wavax];
+export default <(StableBond | LPBond)[]>[];

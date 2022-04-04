@@ -36,17 +36,17 @@ export function Stake(): ReactElement {
   const fiveDayRate: number = useSelector<IReduxState, number>(state => {
     return state.app.fiveDayRate;
   });
-  const timeBalance: string = useSelector<IReduxState, string>(state => {
-    return state.account.balances && state.account.balances.time;
+  const bigBalance: string = useSelector<IReduxState, string>(state => {
+    return state.account.balances && state.account.balances.big;
   });
-  const memoBalance: string = useSelector<IReduxState, string>(state => {
-    return state.account.balances && state.account.balances.memo;
+  const bangBalance: string = useSelector<IReduxState, string>(state => {
+    return state.account.balances && state.account.balances.bang;
   });
   const stakeAllowance: number = useSelector<IReduxState, number>(state => {
-    return state.account.staking && state.account.staking.time;
+    return state.account.staking && state.account.staking.big;
   });
   const unstakeAllowance: number = useSelector<IReduxState, number>(state => {
-    return state.account.staking && state.account.staking.memo;
+    return state.account.staking && state.account.staking.bang;
   });
   const stakingRebase: number = useSelector<IReduxState, number>(state => {
     return state.app.stakingRebase;
@@ -61,7 +61,7 @@ export function Stake(): ReactElement {
     return state.pendingTransactions;
   });
   
-  const trimmedMemoBalance: string = trim(Number(memoBalance), 6);
+  const trimmedMemoBalance: string = trim(Number(bangBalance), 6);
   const trimmedStakingAPY: string = trim(stakingAPY * 100, 1);
   const stakingRebasePercentage: string = trim(stakingRebase * 100, 4);
   const nextRewardValue: string = trim((
@@ -71,13 +71,13 @@ export function Stake(): ReactElement {
   
   const setMax = (): void => {
     if (view === 0) {
-      setQuantity(timeBalance);
+      setQuantity(bigBalance);
     } else {
-      setQuantity(memoBalance);
+      setQuantity(bangBalance);
     }
   };
   
-  const onSeekApproval = async (token: string): Promise<void> => {
+  const onSeekApproval = async (token: 'big' | 'bang'): Promise<void> => {
     if (await checkIsWrongNetwork()) return;
     
     await dispatch(changeApproval({ address, token, provider, networkID: chainID }));
@@ -94,9 +94,9 @@ export function Stake(): ReactElement {
   };
   
   const hasAllowance = useCallback(
-    (token): boolean | 0 => {
-      if (token === 'time') return stakeAllowance > 0;
-      if (token === 'memo') return unstakeAllowance > 0;
+    (token: 'big' | 'bang'): boolean | 0 => {
+      if (token === 'big') return stakeAllowance > 0;
+      if (token === 'bang') return unstakeAllowance > 0;
       return 0;
     },
     [stakeAllowance],
@@ -108,7 +108,7 @@ export function Stake(): ReactElement {
   };
   
   const onHandleStakeSlider = (value: number | number[]): void => {
-    const maxValue: number = (view === 0) ? Number(timeBalance) : Number(memoBalance);
+    const maxValue: number = (view === 0) ? Number(bigBalance) : Number(bangBalance);
     const newValue: number = (value as number) * maxValue / 100;
     
     setQuantity((String(newValue)));
@@ -144,7 +144,7 @@ export function Stake(): ReactElement {
             <div className='row__value'>
               {isAppLoading
                 ? <Skeleton width="80px" />
-                : <>{`${trim(Number(timeBalance), 4)} Token`}</>
+                : <>{`${trim(Number(bigBalance), 4)} Token`}</>
               }
             </div>
           </div>
@@ -196,7 +196,7 @@ export function Stake(): ReactElement {
       <div className="field__action">
         {view === 0 && (
           <>
-            {address && hasAllowance('time')
+            {address && hasAllowance('big')
               ? (
                 <div
                   className="field__action__btn btn__primary--fulfilled"
@@ -213,7 +213,7 @@ export function Stake(): ReactElement {
                   className="field__action__btn btn__primary--fulfilled"
                   onClick={() => {
                     if (isPendingTxn(pendingTransactions, 'approve_staking')) return;
-                    onSeekApproval('time');
+                    onSeekApproval('big');
                   }}
                 >
                   <span>{txnButtonText(pendingTransactions, 'approve_staking', 'Approve')}</span>
@@ -224,7 +224,7 @@ export function Stake(): ReactElement {
         )}
         {view === 1 && (
           <>
-            {address && hasAllowance('memo')
+            {address && hasAllowance('bang')
               ? (
                 <div
                   className="field__action__btn btn__primary--fulfilled"
@@ -241,7 +241,7 @@ export function Stake(): ReactElement {
                   className="field__action__btn btn__primary--fulfilled"
                   onClick={() => {
                     if (isPendingTxn(pendingTransactions, 'approve_unstaking')) return;
-                    onSeekApproval('memo');
+                    onSeekApproval('bang');
                   }}
                 >
                   <span>{txnButtonText(pendingTransactions, 'approve_unstaking', 'Approve')}</span>
@@ -255,7 +255,7 @@ export function Stake(): ReactElement {
   };
   
   const onRenderStakeFormSlider = (): ReactElement => {
-    const maxValue: number = (view === 0) ? Number(timeBalance) : Number(memoBalance);
+    const maxValue: number = (view === 0) ? Number(bigBalance) : Number(bangBalance);
     const value: number = (quantity as unknown as number || 0) * 100 / maxValue;
     
     return (
@@ -324,7 +324,7 @@ export function Stake(): ReactElement {
               />
               {onRenderStakeFormSlider()}
               {address
-                && ((!hasAllowance('time') && view === 0) || (!hasAllowance('memo') && view === 1))
+                && ((!hasAllowance('big') && view === 0) || (!hasAllowance('bang') && view === 1))
                 && (
                   <p className='stake__form__description'>
                     Note: The "Approve" transaction is only needed when staking/unstaking for the first time;

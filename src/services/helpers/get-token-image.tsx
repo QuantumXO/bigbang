@@ -14,7 +14,7 @@ export function getTokenUrl(id: IBlockchain.TokenType): string {
     case 'BIG': {
       return toUrl(TimeImg);
     }
-    case 'xTOK': {
+    case 'dYEL': {
       return toUrl(TimeImg);
     }
     default: throw Error(`Token url doesn't support: ${id as string}`);

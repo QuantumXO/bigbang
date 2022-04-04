@@ -1,7 +1,7 @@
 import { BigNumber, constants, ethers, Contract } from 'ethers';
 import { getMarketPrice, getTokenPrice, sleep } from '@services/helpers';
 import { calculateUserBondDetails, fetchAccountSuccess, getBalances } from './account-slice';
-import { getAddresses } from '../../constants';
+import { getBondAddresses } from '../../constants';
 import { clearPendingTxn, fetchPendingTxns } from './pending-txns-slice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
@@ -106,7 +106,7 @@ export const calcBondDetails = createAsyncThunk(
       valuation: number = 0,
       bondQuote: number = 0;
     
-    const addresses: IBlockchain.IBondMainnetAddresses = getAddresses(networkID);
+    const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
     
     const bondContract = bond.getContractForBond(networkID, provider);
     const bondCalcContract = getBondCalculator(networkID, provider);

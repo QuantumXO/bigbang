@@ -1,14 +1,13 @@
 import React, { ReactElement } from 'react';
 import { IBlockchain } from '@models/blockchain';
 import { getTokenUrl } from '@services/helpers'
-import { useSelector } from "react-redux";
-import { getAddresses } from "@constants/addresses";
+import { getBondAddresses } from "@constants/addresses";
 import { DEFAULT_NETWORK } from "@constants/blockchain";
-import { IReduxState } from "@store/slices/state.interface";
 import { TOKEN_DECIMALS } from '@constants/blockchain';
 import network from '@services/common/network';
 
 import "./styles.scss";
+import { useWeb3Context } from '@services/hooks';
 
 const addTokenToWallet = (tokenId: IBlockchain.TokenType, tokenAddress: string) => async () => {
   const tokenImage: string = getTokenUrl(tokenId);
@@ -33,23 +32,21 @@ const addTokenToWallet = (tokenId: IBlockchain.TokenType, tokenAddress: string) 
   }
 };
 
-
 export const AddTokens = (): ReactElement => {
-  const networkID = useSelector<IReduxState, number>(state => {
-    return (state.app && state.app.networkID) || Number(DEFAULT_NETWORK.chainId);
-  });
+  const { chainID } = useWeb3Context();
+  const networkID: number = Number(chainID || DEFAULT_NETWORK.chainId);
   
-  const addresses: IBlockchain.IBondMainnetAddresses = getAddresses(networkID);
+  const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
   
-  const TIME_ADDRESS: string = addresses.TIME_ADDRESS;
+  const { BIG_ADDRESS, BANG_ADDRESS, DYEL_ADDRESS } = addresses;
   
   return (
     <div className="add--tokens card card--custom">
       <div className="header">{'ADD TOKEN TO WALLET'}</div>
       <div className="tabs">
-        <div className="tab" onClick={addTokenToWallet('BIG', TIME_ADDRESS)}>{'BIG'}</div>
-        <div className="tab" onClick={addTokenToWallet('BANG', TIME_ADDRESS)}>{'BANG'}</div>
-        <div className="tab" onClick={addTokenToWallet('xTOK', TIME_ADDRESS)}>{'xTOK'}</div>
+        <div className="tab" onClick={addTokenToWallet('BIG', BIG_ADDRESS)}>{'BIG'}</div>
+        <div className="tab" onClick={addTokenToWallet('BANG', BANG_ADDRESS)}>{'BANG'}</div>
+        <div className="tab" onClick={addTokenToWallet('dYEL', DYEL_ADDRESS)}>{'dYEL'}</div>
       </div>
     </div>
   );

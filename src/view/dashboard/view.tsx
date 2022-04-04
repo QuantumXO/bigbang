@@ -5,9 +5,9 @@ import { trim } from '@services/helpers';
 import { Skeleton } from '@material-ui/lab';
 import { IReduxState } from '@store/slices/state.interface';
 import { IAppSlice } from '@store/slices/app-slice';
+import cx from 'classnames';
 
 import './styles.scss';
-import cx from 'classnames';
 
 interface ICard {
   id: string;
@@ -48,16 +48,17 @@ export function Dashboard(): ReactElement {
         title: 'Treasury Balance',
         children: (
           <>
-            {isAppLoading ? (
-              <Skeleton width="250px" />
-            ) : (
-              new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                maximumFractionDigits: 0,
-                minimumFractionDigits: 0,
-              }).format(app.treasuryBalance)
-            )}
+            {isAppLoading
+              ? <Skeleton width="250px" />
+              : (
+                new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                  maximumFractionDigits: 0,
+                  minimumFractionDigits: 0,
+                }).format(app.treasuryBalance)
+              )
+            }
           </>
         )
       })}
@@ -71,8 +72,8 @@ export function Dashboard(): ReactElement {
         )
       })}
       {getDashboardCard({
-        id: 'xTOKPrice',
-        title: 'xTOK Price',
+        id: 'dYELPrice',
+        title: 'dYEL Price',
         children: (
           <>
             {isAppLoading ? <Skeleton width="100px" /> : `$${trim(app.marketPrice, 2)}`}

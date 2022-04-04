@@ -2,7 +2,7 @@ import { BigNumber, ContractInterface } from "ethers";
 import { Bond, BondOpts } from "./bond";
 import { IBlockchain } from "@models/blockchain";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
-import { getAddresses } from "@constants/addresses";
+import { getBondAddresses } from "@constants/addresses";
 
 export interface StableBondOpts extends BondOpts {
   readonly reserveContractAbi: ContractInterface;
@@ -25,7 +25,7 @@ export class StableBond extends Bond {
   }
   
   public async getTreasuryBalance(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) {
-    const addresses = getAddresses(networkID);
+    const addresses = getBondAddresses(networkID);
     const token = this.getContractForReserve(networkID, provider);
     let tokenAmount = await token.balanceOf(addresses.TREASURY_ADDRESS);
     if (this.tokensInStrategy) {
@@ -51,7 +51,8 @@ export class CustomBond extends StableBond {
     super(customBondOpts);
     
     this.getTreasuryBalance = async (
-      networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider
+      networkID: IBlockchain.NetworksEnum,
+      provider: StaticJsonRpcProvider
     ): Promise<number> => {
       const tokenAmount: number = await super.getTreasuryBalance(networkID, provider);
       const tokenPrice: number = this.getTokenPrice();

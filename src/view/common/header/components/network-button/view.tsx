@@ -1,6 +1,6 @@
 import React, { ReactElement, useState, MouseEvent } from 'react';
 import cx from 'classnames';
-import { NETWORKS } from '@constants/blockchain';
+import { ACTIVE_NETWORKS } from '@constants/blockchain';
 import { IBlockchain } from '@models/blockchain';
 import { Fade, Popper } from '@material-ui/core';
 import network from '@services/common/network';
@@ -11,7 +11,7 @@ import './styles.scss';
 
 export const NetworkButton = (): ReactElement => {
   const { chainID } = useWeb3Context();
-  const filteredNetworks: IBlockchain.INetwork[] = NETWORKS
+  const filteredNetworks: IBlockchain.INetwork[] = ACTIVE_NETWORKS
     .filter(({ chainId: networkChainId }: IBlockchain.INetwork) => networkChainId !== String(chainID));
   
   const [anchorEl, setAnchorEl] = useState<any>(null);
@@ -25,7 +25,7 @@ export const NetworkButton = (): ReactElement => {
   const onHandleNetwork = async (
     { target: { id } }: MouseEvent<HTMLDivElement> & { target: { id: string } }
   ): Promise<void> => {
-    const newNetwork: IBlockchain.INetwork | undefined = NETWORKS
+    const newNetwork: IBlockchain.INetwork | undefined = ACTIVE_NETWORKS
       .find(({ id: networkId }: IBlockchain.INetwork) => networkId === String(id));
   
     if (newNetwork) {
@@ -34,7 +34,7 @@ export const NetworkButton = (): ReactElement => {
   };
   
   const onRenderBtnLabel = (): ReactElement => {
-    const currentNetwork: IBlockchain.INetwork | undefined = NETWORKS
+    const currentNetwork: IBlockchain.INetwork | undefined = ACTIVE_NETWORKS
     .find(({ chainId: networkChainId }: IBlockchain.INetwork) => networkChainId === String(chainID));
     let btnLabel: string = 'Network';
     let btnClasses: string = '';

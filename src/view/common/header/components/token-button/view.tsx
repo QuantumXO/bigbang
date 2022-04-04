@@ -30,41 +30,13 @@ export function TokenButton(): ReactElement {
     setAnchorEl(null);
   };
   
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onRenderSideTokens = (): ReactNode => {
-    let layout: ReactNode;
-    
-    if (network().getIsEthereumAPIAvailable) {
-      const tokens: IToken[] = [];
-      
-      layout = (
-        <div className="add--tokens">
-          <div className="add--tokens--title">{'Add token to wallet'}</div>
-          {tokens.map(({ id, label }: IToken): ReactElement => {
-            return (
-              <div
-                key={id}
-                className="tooltip--item token"
-                onClick={undefined}
-              >
-                <span>{label}</span>
-              </div>
-            );
-          })}
-        </div>
-      );
-    }
-
-    return layout;
-  };
-  
   return (
     <div
       className={cx('header__token__btn', { active: isOpen })}
       onMouseEnter={(e: MouseEvent<HTMLDivElement> ): void => handleClick(e)}
       onMouseLeave={(e: MouseEvent<HTMLDivElement> ): void => handleClick(e)}
     >
-      <div className="btn__label">{'xTOK'}</div>
+      <div className="btn__label">{'dYEL'}</div>
       <Popper
         transition
         open={isOpen}

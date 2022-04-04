@@ -30,11 +30,11 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
   const [isWrapPrice, setIsWrapPrice] = useState(true);
   
   const isAppLoading = useSelector<IReduxState, boolean>(state => state.app.loading);
-  const memoBalance = useSelector<IReduxState, string>(state => {
-    return state.account.balances && state.account.balances.memo;
+  const bangBalance = useSelector<IReduxState, string>(state => {
+    return state.account.balances && state.account.balances.bang;
   });
-  const wmemoBalance = useSelector<IReduxState, string>(state => {
-    return state.account.balances && state.account.balances.wmemo;
+  const dYelBalance = useSelector<IReduxState, string>(state => {
+    return state.account.balances && state.account.balances.dYel;
   });
   const wrapValue = useSelector<IReduxState, string>(state => {
     return state.wrapping && state.wrapping.wrapValue;
@@ -45,8 +45,8 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
   const pendingTransactions: IPendingTxn[] = useSelector<IReduxState, IPendingTxn[]>(state => {
     return state.pendingTransactions;
   });
-  const memoAllowance: number = useSelector<IReduxState, number>(state => {
-    return state.account.wrapping && state.account.wrapping.memo;
+  const bangAllowance: number = useSelector<IReduxState, number>(state => {
+    return state.account.wrapping && state.account.wrapping.bang;
   });
   
   useEffect((): void => {
@@ -57,7 +57,7 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
     dispatch(calcWrapPrice({ isWrap: isWrapPrice, provider, networkID: chainID }));
   }, [isWrapPrice]);
   
-  const hasAllowance = useCallback((): boolean => memoAllowance > 0, [memoAllowance]);
+  const hasAllowance = useCallback((): boolean => bangAllowance > 0, [bangAllowance]);
   
   const handleSwap = (): void => {
     setValue('');
@@ -79,10 +79,10 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
     closeWrapModal();
   };
   
-  const trimmedMemoBalance: string = trim(Number(memoBalance), 6);
-  const trimmedWmemoBalance: string = trim(Number(wmemoBalance), 6);
+  const trimmedBangBalance: string = trim(Number(bangBalance), 6);
+  const trimmedDYelBalance: string = trim(Number(dYelBalance), 6);
   
-  const getBalance = (): string => isWrap ? `${trimmedMemoBalance} ${wrapBond}` : `${trimmedWmemoBalance} ${unwrapBond}`;
+  const getBalance = (): string => isWrap ? `${trimmedBangBalance} ${wrapBond}` : `${trimmedDYelBalance} ${unwrapBond}`;
   
   const handleOnWrap = async () => {
     if (await checkIsWrongNetwork()) return;

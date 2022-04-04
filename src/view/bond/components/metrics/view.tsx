@@ -39,7 +39,7 @@ export function Metrics(): ReactElement {
   
       <Grid item className="metrics__card" md={3}>
         <div className="metrics__card__inner">
-          <div className="metrics__card__title">{`xTOK`}</div>
+          <div className="metrics__card__title">{`dYEL`}</div>
           <div className="metrics__card__value">
             {tokenPrice
               ? <>{`$${tokenPrice}`}</>

@@ -11,17 +11,19 @@ export namespace IBlockchain {
     name: string;
     chainId: string;
     hexadecimalChainId: string;
+    icon?: string;
+    chainName?: string;
+    iconUrls?: string[];
+    isDisabled?: boolean;
     chainNetwork?: 'mainnet';
     blockExplorerUrls?: string[];
-    chainName?: string;
-    icon?: string;
-    iconUrls?: string[];
     nativeCurrency?: {
       name: string;
       symbol: string;
       decimals: number;
     };
     rpcUrls?: string[];
+    bondAddresses: IBondMainnetAddresses,
   }
   export interface IAddEthereumChainParameter {
     chainId: string;
@@ -47,27 +49,36 @@ export namespace IBlockchain {
     LP,
   }
   export interface IBondMainnetAddresses {
-    MIM_ADDRESS: string;
+    BIG_ADDRESS: string;
+    BANG_ADDRESS: string;
+    DYEL_ADDRESS: string;
     STAKING_ADDRESS: string;
     STAKING_HELPER_ADDRESS: string;
     TREASURY_ADDRESS: string;
-    ///////////////////////////////
-    DAO_ADDRESS: string,
-    MEMO_ADDRESS: string,
-    TIME_ADDRESS: string,
-    TIME_BONDING_CALC_ADDRESS: string,
-    ZAPIN_ADDRESS: string,
-    WMEMO_ADDRESS: string
+    BONDING_CALC_ADDRESS: string; // zero or custom
+    DISTRIBUTOR_ADDRESS: string;
+    STAKING_WARMUP_ADDRESS: string;
+    ZAPIN_ADDRESS: string;
+  }
+  export interface IFTMMainnetBondAddresses extends IBondMainnetAddresses {
+    FTM_ADDRESS: string;
+    USDC_ADDRESS: string;
+    SCREAM_FTM_ADDRESS: string;
+    GEIST_FTM_ADDRESS: string;
+    TSHARE_FTM_ADDRESS: string;
+    MULTI_FTM_ADDRESS: string;
+    BOO_FTM_ADDRESS: string;
+    BIG_FTM_ADDRESS: string;
+    YEL_dYEL_ADDRESS: string;
   }
   export interface INetworkAddresses {
-    [IBlockchain.NetworksEnum.AVAX]: IBlockchain.IBondAddresses;
     [IBlockchain.NetworksEnum.ETH]: IBlockchain.IBondAddresses;
     [IBlockchain.NetworksEnum.MATIC]: IBlockchain.IBondAddresses;
     [IBlockchain.NetworksEnum.BNB]: IBlockchain.IBondAddresses;
     [IBlockchain.NetworksEnum.FTM]: IBlockchain.IBondAddresses;
   }
-  export type TokenType = 'BIG' | 'BANG' | 'xTOK';
-  export type TokenNameType = 'big' | 'bang' | 'xTOK';
+  export type TokenType = 'BIG' | 'BANG' | 'dYEL';
+  export type TokenNameType = 'big' | 'bang' | 'dYEL';
   export interface IToken {
     id: TokenType;
     name: TokenNameType;

@@ -9,7 +9,7 @@
         },
         {
           "internalType": "address",
-          "name": "_Time",
+          "name": "_Big",
           "type": "address"
         }
       ],
@@ -17,11 +17,30 @@
       "type": "constructor"
     },
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "LogStake",
+      "type": "event"
+    },
+    {
       "inputs": [],
-      "name": "Time",
+      "name": "BigToken",
       "outputs": [
         {
-          "internalType": "address",
+          "internalType": "contract IERC20",
           "name": "",
           "type": "address"
         }
@@ -52,7 +71,7 @@
       "name": "staking",
       "outputs": [
         {
-          "internalType": "address",
+          "internalType": "contract IStaking",
           "name": "",
           "type": "address"
         }

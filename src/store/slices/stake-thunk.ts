@@ -1,16 +1,16 @@
 import { ethers } from "ethers";
-import { getAddresses } from "../../constants";
-import { MemoTokenContract, StakingContract, StakingHelperContract, TimeTokenContract } from "../../services/abi";
+import { getBondAddresses } from "@constants/index";
+import { BangTokenContract, StakingContract, StakingHelperContract, BigTokenContract } from "@services/abi";
 import { clearPendingTxn, fetchPendingTxns, getStakingTypeText } from "./pending-txns-slice";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchAccountSuccess, getBalances } from "./account-slice";
 import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { IBlockchain } from "@models/blockchain";
-import { info, success, warning } from "../../store/slices/messages-slice";
-import { messages } from "../../constants/messages";
-import { getGasPrice } from "../../services/helpers/get-gas-price";
-import { metamaskErrorWrap } from "../../services/helpers/metamask-error-wrap";
-import { sleep } from "../../services/helpers";
+import { info, success, warning } from "@store/slices/messages-slice";
+import { messages } from "@constants/messages";
+import { getGasPrice } from "@services/helpers/get-gas-price";
+import { metamaskErrorWrap } from "@services/helpers/metamask-error-wrap";
+import { sleep } from "@services/helpers";
 
 interface IChangeApproval {
   token: string;
@@ -19,62 +19,60 @@ interface IChangeApproval {
   networkID: IBlockchain.NetworksEnum;
 }
 
-export const changeApproval = createAsyncThunk("stake/changeApproval", async ({
-                                                                                token,
-                                                                                provider,
-                                                                                address,
-                                                                                networkID
-                                                                              }: IChangeApproval, { dispatch }) => {
-  if (!provider) {
-    dispatch(warning({ text: messages.please_connect_wallet }));
-    return;
-  }
-  const addresses = getAddresses(networkID);
-  
-  const signer = provider.getSigner();
-  const timeContract = new ethers.Contract(addresses.TIME_ADDRESS, TimeTokenContract, signer);
-  const memoContract = new ethers.Contract(addresses.MEMO_ADDRESS, MemoTokenContract, signer);
-  
-  let approveTx;
-  try {
-    const gasPrice = await getGasPrice(provider);
-    
-    if (token === "time") {
-      approveTx = await timeContract.approve(addresses.STAKING_HELPER_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
+export const changeApproval = createAsyncThunk(
+  "stake/changeApproval",
+  async ({ token, provider, address, networkID }: IChangeApproval, { dispatch }) => {
+    if (!provider) {
+      dispatch(warning({ text: messages.please_connect_wallet }));
+      return;
     }
+    const addresses = getBondAddresses(networkID);
     
-    if (token === "memo") {
-      approveTx = await memoContract.approve(addresses.STAKING_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
-    }
+    const signer = provider.getSigner();
+    const timeContract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, signer);
+    const memoContract = new ethers.Contract(addresses.BANG_ADDRESS, BangTokenContract, signer);
     
-    const text = "Approve " + (token === "time" ? "Staking" : "Unstaking");
-    const pendingTxnType = token === "time" ? "approve_staking" : "approve_unstaking";
-    
-    dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }));
-    await approveTx.wait();
-    dispatch(success({ text: messages.tx_successfully_send }));
-  } catch (err: any) {
-    return metamaskErrorWrap(err, dispatch);
-  } finally {
-    if (approveTx) {
-      dispatch(clearPendingTxn(approveTx.hash));
-    }
-  }
-  
-  await sleep(2);
-  
-  const stakeAllowance = await timeContract.allowance(address, addresses.STAKING_HELPER_ADDRESS);
-  const unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS);
-  
-  return dispatch(
-    fetchAccountSuccess({
-      staking: {
-        timeStake: Number(stakeAllowance),
-        memoUnstake: Number(unstakeAllowance)
+    let approveTx;
+    try {
+      const gasPrice = await getGasPrice(provider);
+      
+      if (token === "big") {
+        approveTx = await timeContract.approve(addresses.STAKING_HELPER_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
       }
-    })
-  );
-});
+      
+      if (token === "bang") {
+        approveTx = await memoContract.approve(addresses.STAKING_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
+      }
+      
+      const text = "Approve " + (token === "big" ? "Staking" : "Unstaking");
+      const pendingTxnType = token === "big" ? "approve_staking" : "approve_unstaking";
+      
+      dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }));
+      await approveTx.wait();
+      dispatch(success({ text: messages.tx_successfully_send }));
+    } catch (err: any) {
+      return metamaskErrorWrap(err, dispatch);
+    } finally {
+      if (approveTx) {
+        dispatch(clearPendingTxn(approveTx.hash));
+      }
+    }
+  
+    await sleep(2);
+    
+    const stakeAllowance = await timeContract.allowance(address, addresses.STAKING_HELPER_ADDRESS);
+    const unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS);
+    
+    return dispatch(
+      fetchAccountSuccess({
+        staking: {
+          timeStake: Number(stakeAllowance),
+          memoUnstake: Number(unstakeAllowance)
+        }
+      })
+    );
+  }
+);
 
 interface IChangeStake {
   action: string;
@@ -95,7 +93,7 @@ export const changeStake = createAsyncThunk("stake/changeStake", async ({
     dispatch(warning({ text: messages.please_connect_wallet }));
     return;
   }
-  const addresses = getAddresses(networkID);
+  const addresses = getBondAddresses(networkID);
   const signer = provider.getSigner();
   const staking = new ethers.Contract(addresses.STAKING_ADDRESS, StakingContract, signer);
   const stakingHelper = new ethers.Contract(addresses.STAKING_HELPER_ADDRESS, StakingHelperContract, signer);

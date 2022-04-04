@@ -1,6 +1,6 @@
 import { Contract, ethers } from 'ethers';
-import { getAddresses } from "../../constants";
-import { MemoTokenContract, MimTokenContract, TimeTokenContract, wMemoTokenContract } from "../../services/abi";
+import { getBondAddresses } from "@constants/index";
+import { BangTokenContract, BigTokenContract, dYelTokenContract, TokenContract } from "@services/abi";
 import { setAll } from '@services/helpers';
 
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
@@ -15,114 +15,38 @@ interface IGetBalances {
   networkID: IBlockchain.NetworksEnum;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
 }
-
 interface IAccountBalances {
   balances: {
-    memo: string;
-    time: string;
-    wmemo: string;
+    bang: string;
+    big: string;
+    dYel: string;
   };
 }
-
-export const getBalances = createAsyncThunk(
-  "account/getBalances",
-  async ({ address, networkID, provider }: IGetBalances): Promise<IAccountBalances> => {
-    const addresses: IBlockchain.IBondMainnetAddresses = getAddresses(networkID);
-    
-    const memoContract: Contract = new ethers.Contract(addresses.MEMO_ADDRESS, MemoTokenContract, provider);
-    const memoBalance: any = await memoContract.balanceOf(address);
-    const timeContract: Contract = new ethers.Contract(addresses.TIME_ADDRESS, TimeTokenContract, provider);
-    const timeBalance: any = await timeContract.balanceOf(address);
-    const wmemoContract: Contract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
-    const wmemoBalance: any = await wmemoContract.balanceOf(address);
-    
-    return {
-      balances: {
-        memo: ethers.utils.formatUnits(memoBalance, "gwei"),
-        time: ethers.utils.formatUnits(timeBalance, "gwei"),
-        wmemo: ethers.utils.formatEther(wmemoBalance)
-      }
-    };
-});
-
 interface ILoadAccountDetails {
   address: string;
   networkID: IBlockchain.NetworksEnum;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
 }
-
 interface IUserAccountDetails {
   balances: {
-    time: string;
-    memo: string;
-    wmemo: string;
+    bang: string;
+    big: string;
+    dYel: string;
   };
   staking: {
-    time: number;
-    memo: number;
+    big: number;
+    bang: number;
   };
   wrapping: {
-    memo: number;
+    bang: number;
   };
 }
-
-export const loadAccountDetails = createAsyncThunk(
-  "account/loadAccountDetails",
-  async ({ networkID, provider, address }: ILoadAccountDetails): Promise<IUserAccountDetails> => {
-    let timeBalance = 0;
-    let memoBalance = 0;
-    let wmemoBalance = 0;
-    let memoWmemoAllowance = 0;
-    let stakeAllowance = 0;
-    let unstakeAllowance = 0;
-  
-    const addresses = getAddresses(networkID);
-  
-    if (addresses.TIME_ADDRESS) {
-      const timeContract = new ethers.Contract(addresses.TIME_ADDRESS, TimeTokenContract, provider);
-      timeBalance = await timeContract.balanceOf(address);
-      stakeAllowance = await timeContract.allowance(address, addresses.STAKING_HELPER_ADDRESS);
-    }
-    
-    if (addresses.MEMO_ADDRESS) {
-      const memoContract = new ethers.Contract(addresses.MEMO_ADDRESS, MemoTokenContract, provider);
-      memoBalance = await memoContract.balanceOf(address);
-      unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS);
-      
-      if (addresses.WMEMO_ADDRESS) {
-        memoWmemoAllowance = await memoContract.allowance(address, addresses.WMEMO_ADDRESS);
-      }
-    }
-  
-    if (addresses.WMEMO_ADDRESS) {
-      const wmemoContract = new ethers.Contract(addresses.WMEMO_ADDRESS, wMemoTokenContract, provider);
-      wmemoBalance = await wmemoContract.balanceOf(address);
-    }
-  
-    return {
-      balances: {
-        memo: ethers.utils.formatUnits(memoBalance, "gwei"),
-        time: ethers.utils.formatUnits(timeBalance, "gwei"),
-        wmemo: ethers.utils.formatEther(wmemoBalance)
-      },
-      staking: {
-        time: Number(stakeAllowance),
-        memo: Number(unstakeAllowance)
-      },
-      wrapping: {
-        memo: Number(memoWmemoAllowance)
-      }
-    };
-  }
-);
-
 interface ICalcUserBondDetails {
   address: string;
   bond: Bond;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   networkID: IBlockchain.NetworksEnum;
 }
-
 export interface IUserBondDetails {
   allowance: number;
   balance: number;
@@ -131,6 +55,106 @@ export interface IUserBondDetails {
   bondMaturationBlock: number;
   pendingPayout: number; //Payout formatted in gwei.
 }
+interface ICalcUserTokenDetails {
+  address: string;
+  token: IToken;
+  provider: StaticJsonRpcProvider | JsonRpcProvider;
+  networkID: IBlockchain.NetworksEnum;
+}
+export interface IUserTokenDetails {
+  allowance: number;
+  balance: number;
+  isAvax?: boolean;
+}
+export interface IAccountSlice {
+  bonds: { [key: string]: IUserBondDetails };
+  balances: {
+    bang: string;
+    big: string;
+    dYel: string;
+  };
+  loading: boolean;
+  staking: {
+    big: number;
+    bang: number;
+  };
+  wrapping: {
+    bang: number;
+  };
+  tokens: { [key: string]: IUserTokenDetails };
+}
+
+export const getBalances = createAsyncThunk(
+  "account/getBalances",
+  async ({ address, networkID, provider }: IGetBalances): Promise<IAccountBalances> => {
+    const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
+    
+    const bigContract: Contract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, provider);
+    const bigBalance: any = await bigContract.balanceOf(address);
+    const bangContract: Contract = new ethers.Contract(addresses.BANG_ADDRESS, BangTokenContract, provider);
+    const bangBalance: any = await bangContract.balanceOf(address);
+    const dYelContract: Contract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, provider);
+    const dYelBalance: any = await dYelContract.balanceOf(address);
+    
+    return {
+      balances: {
+        big: ethers.utils.formatUnits(bigBalance, "gwei"),
+        bang: ethers.utils.formatUnits(bangBalance, "gwei"),
+        dYel: ethers.utils.formatEther(dYelBalance)
+      }
+    };
+});
+
+export const loadAccountDetails = createAsyncThunk(
+  "account/loadAccountDetails",
+  async ({ networkID, provider, address }: ILoadAccountDetails): Promise<IUserAccountDetails> => {
+    let bigBalance: number = 0;
+    let bangBalance: number = 0;
+    let dYelBalance: number = 0;
+    
+    let bangDYelAllowance: number = 0;
+    let stakeAllowance: number = 0;
+    let unstakeAllowance: number = 0;
+  
+    const addresses = getBondAddresses(networkID);
+  
+    if (addresses.BIG_ADDRESS) {
+      const bigContract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, provider);
+      bigBalance = await bigContract.balanceOf(address);
+      stakeAllowance = await bigContract.allowance(address, addresses.STAKING_HELPER_ADDRESS);
+    }
+    
+    if (addresses.BANG_ADDRESS) {
+      const bangContract = new ethers.Contract(addresses.BANG_ADDRESS, BangTokenContract, provider);
+      bangBalance = await bangContract.balanceOf(address);
+      unstakeAllowance = await bangContract.allowance(address, addresses.STAKING_ADDRESS);
+      
+      if (addresses.DYEL_ADDRESS) {
+        bangDYelAllowance = await bangContract.allowance(address, addresses.DYEL_ADDRESS);
+      }
+    }
+  
+    if (addresses.DYEL_ADDRESS) {
+      const dYelContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, provider);
+      dYelBalance = await dYelContract.balanceOf(address);
+    }
+  
+    return {
+      balances: {
+        bang: ethers.utils.formatUnits(bangBalance, "gwei"),
+        big: ethers.utils.formatUnits(bigBalance, "gwei"),
+        dYel: ethers.utils.formatEther(dYelBalance)
+      },
+      staking: {
+        big: Number(stakeAllowance),
+        bang: Number(unstakeAllowance)
+      },
+      wrapping: {
+        bang: Number(bangDYelAllowance)
+      }
+    };
+  }
+);
 
 export const calculateUserBondDetails = createAsyncThunk(
   "account/calculateUserBondDetails",
@@ -141,8 +165,8 @@ export const calculateUserBondDetails = createAsyncThunk(
     provider
   }: ICalcUserBondDetails) => {
     if (!address) {
-      return new Promise<any>(resevle => {
-        resevle({
+      return new Promise<any>(resolve => {
+        resolve({
           bond: "",
           displayName: "",
           bondIconSvg: "",
@@ -157,8 +181,8 @@ export const calculateUserBondDetails = createAsyncThunk(
       });
     }
     
-    const bondContract = bond.getContractForBond(networkID, provider);
-    const reserveContract = bond.getContractForReserve(networkID, provider);
+    const bondContract: Contract = bond.getContractForBond(networkID, provider);
+    const reserveContract: Contract = bond.getContractForReserve(networkID, provider);
     
     const bondDetails = await bondContract.bondInfo(address);
     const interestDue = bondDetails.payout / Math.pow(10, 9);
@@ -175,7 +199,7 @@ export const calculateUserBondDetails = createAsyncThunk(
     const avaxVal = ethers.utils.formatEther(avaxBalance);
     
     const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, "gwei");
-    
+  
     return {
       bond: bond.name,
       displayName: bond.displayName,
@@ -191,93 +215,65 @@ export const calculateUserBondDetails = createAsyncThunk(
   }
 );
 
-interface ICalcUserTokenDetails {
-  address: string;
-  token: IToken;
-  provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
-}
-
-export interface IUserTokenDetails {
-  allowance: number;
-  balance: number;
-  isAvax?: boolean;
-}
-
-export const calculateUserTokenDetails = createAsyncThunk("account/calculateUserTokenDetails", async ({
-                                                                                                        address,
-                                                                                                        token,
-                                                                                                        networkID,
-                                                                                                        provider
-                                                                                                      }: ICalcUserTokenDetails) => {
-  if (!address) {
-    return new Promise<any>(resevle => {
-      resevle({
-        token: "",
-        address: "",
-        img: "",
-        allowance: 0,
-        balance: 0
+export const calculateUserTokenDetails = createAsyncThunk(
+  "account/calculateUserTokenDetails",
+  async ({
+    address,
+    token,
+    networkID,
+    provider
+  }: ICalcUserTokenDetails) => {
+    if (!address) {
+      return new Promise<any>(resevle => {
+        resevle({
+          token: "",
+          address: "",
+          img: "",
+          allowance: 0,
+          balance: 0
+        });
       });
-    });
-  }
+    }
   
-  if (token.isAvax) {
-    const avaxBalance = await provider.getSigner().getBalance();
-    const avaxVal = ethers.utils.formatEther(avaxBalance);
+    if (token.isAvax) {
+      const avaxBalance = await provider.getSigner().getBalance();
+      const avaxVal = ethers.utils.formatEther(avaxBalance);
+      
+      return {
+        token: token.name,
+        tokenIcon: token.img,
+        balance: Number(avaxVal),
+        isAvax: true
+      };
+    }
+  
+    const addresses = getBondAddresses(networkID);
+    
+    const tokenContract = new ethers.Contract(token.address, TokenContract, provider);
+    
+    let balance = "0";
+    
+    const allowance = await tokenContract.allowance(address, addresses.ZAPIN_ADDRESS);
+    balance = await tokenContract.balanceOf(address);
+    
+    const balanceVal = Number(balance) / Math.pow(10, token.decimals);
     
     return {
       token: token.name,
-      tokenIcon: token.img,
-      balance: Number(avaxVal),
-      isAvax: true
+      address: token.address,
+      img: token.img,
+      allowance: Number(allowance),
+      balance: Number(balanceVal)
     };
   }
-  
-  const addresses = getAddresses(networkID);
-  
-  const tokenContract = new ethers.Contract(token.address, MimTokenContract, provider);
-  
-  let balance = "0";
-  
-  const allowance = await tokenContract.allowance(address, addresses.ZAPIN_ADDRESS);
-  balance = await tokenContract.balanceOf(address);
-  
-  const balanceVal = Number(balance) / Math.pow(10, token.decimals);
-  
-  return {
-    token: token.name,
-    address: token.address,
-    img: token.img,
-    allowance: Number(allowance),
-    balance: Number(balanceVal)
-  };
-});
-
-export interface IAccountSlice {
-  bonds: { [key: string]: IUserBondDetails };
-  balances: {
-    memo: string;
-    time: string;
-    wmemo: string;
-  };
-  loading: boolean;
-  staking: {
-    time: number;
-    memo: number;
-  };
-  wrapping: {
-    memo: number;
-  };
-  tokens: { [key: string]: IUserTokenDetails };
-}
+);
 
 const initialState: IAccountSlice = {
   loading: true,
   bonds: {},
-  balances: { memo: "", time: "", wmemo: "" },
-  staking: { time: 0, memo: 0 },
-  wrapping: { memo: 0 },
+  balances: { bang: "", big: "", dYel: "" },
+  staking: { big: 0, bang: 0 },
+  wrapping: { bang: 0 },
   tokens: {}
 };
 

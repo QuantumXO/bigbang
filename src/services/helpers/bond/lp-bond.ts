@@ -1,9 +1,9 @@
-import { ContractInterface } from "ethers";
+import { ContractInterface, Contract } from "ethers";
 import { Bond, BondOpts } from "./bond";
 import { IBlockchain } from "@models/blockchain";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getBondCalculator } from "../bond-calculator";
-import { getAddresses } from "@constants/addresses";
+import { getBondAddresses } from "@constants/addresses";
 
 // Keep all LP specific fields/logic within the LPBond class
 export interface LPBondOpts extends BondOpts {
@@ -26,7 +26,7 @@ export class LPBond extends Bond {
   }
 
   async getTreasuryBalance(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) {
-    const addresses = getAddresses(networkID);
+    const addresses = getBondAddresses(networkID);
     
     const token = this.getContractForReserve(networkID, provider);
     const tokenAddress = this.getAddressForReserve(networkID);
@@ -48,15 +48,23 @@ export class LPBond extends Bond {
   }
   
   private async getReserves(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider, isToken: boolean): Promise<number> {
-    const addresses = getAddresses(networkID);
+    const addresses = getBondAddresses(networkID);
+    const token: Contract = this.getContractForReserve(networkID, provider);
     
-    const token = this.getContractForReserve(networkID, provider);
-    
-    let [reserve0, reserve1] = await token.getReserves();
+    const [reserve0, reserve1] = await token.getReserves();
     const token1: string = await token.token1();
-    const isTime = token1.toLowerCase() === addresses.TIME_ADDRESS.toLowerCase();
+    const isBig: boolean = token1.toLowerCase() === addresses.BIG_ADDRESS.toLowerCase();
     
-    return isToken ? this.toTokenDecimal(false, isTime ? reserve0 : reserve1) : this.toTokenDecimal(true, isTime ? reserve1 : reserve0);
+    let result: number;
+    
+    if (isToken) {
+      result = this.toTokenDecimal(false, isBig ? reserve0 : reserve1)
+    } else {
+      result = this.toTokenDecimal(true, isBig ? reserve1 : reserve0)
+    }
+    
+    
+    return result;
   }
   
   private toTokenDecimal(isTime: boolean, reserve: number) {

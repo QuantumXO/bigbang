@@ -74,7 +74,7 @@ export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement
         isDivided: true,
         id: 'claimableRewards',
         label: 'Claimable Rewards',
-        value: `${trim(bond.pendingPayout, 4)} ${'xTOK'}`,
+        value: `${trim(bond.pendingPayout, 4)} ${'dYEL'}`,
       },
       {
         isDivided: true,
