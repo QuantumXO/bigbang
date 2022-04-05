@@ -1,4 +1,6 @@
-import TimeImg from "@assets/images/tokens/TIME.svg";
+import BangImg from "@assets/images/common/tokens/bang.svg";
+import BigImg from "@assets/images/common/tokens/big.svg";
+import dYelImg from "@assets/images/common/tokens/dyel.svg";
 import { IBlockchain } from '@models/blockchain';
 
 function toUrl(tokenPath: string): string {
@@ -9,13 +11,13 @@ function toUrl(tokenPath: string): string {
 export function getTokenUrl(id: IBlockchain.TokenType): string {
   switch (id) {
     case 'BANG': {
-      return toUrl(TimeImg);
+      return toUrl(BangImg);
     }
     case 'BIG': {
-      return toUrl(TimeImg);
+      return toUrl(BigImg);
     }
     case 'dYEL': {
-      return toUrl(TimeImg);
+      return toUrl(dYelImg);
     }
     default: throw Error(`Token url doesn't support: ${id as string}`);
   }

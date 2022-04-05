@@ -1,10 +1,11 @@
 import { ethers } from "ethers";
-import { LpReserveContract } from "../abi";
-// import { mimTime } from "./bond";
-import { IBlockchain } from "@models//blockchain";
+// import { LpReserveContract } from "../abi";
+// import { ftm } from "./bond";
+// import { IBlockchain } from "@models//blockchain";
 
+// #TODO check method
 export async function getMarketPrice(
-  networkID: IBlockchain.NetworksEnum,
+  networkID: number,
   provider: ethers.Signer | ethers.providers.Provider
 ): Promise<number> {
   // const mimTimeAddress = mimTime.getAddressForReserve(networkID);

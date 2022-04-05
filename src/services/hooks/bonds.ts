@@ -14,7 +14,7 @@ export interface IUseBondsReturn {
   loading: boolean;
 }
 
-const initialBondArray: CustomBond[] = allBonds;
+const initialBondArray: IAllBondData[] = allBonds;
 
 // Slaps together bond data within the account & bonding states
 function useBonds(): IUseBondsReturn {

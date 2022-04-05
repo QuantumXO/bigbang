@@ -1,4 +1,4 @@
-import { IBlockchain } from "@models/blockchain";
+import { IBlockchain } from '@models/blockchain';
 import { Contract, ContractInterface } from "ethers";
 import { JsonRpcSigner, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getTokenPrice } from "../token-price";
@@ -9,7 +9,7 @@ export interface BondOpts {
   readonly bondIconSvg: string; //  SVG path for icons
   readonly bondContractABI: ContractInterface; // ABI for contract
   readonly networkAddresses: IBlockchain.INetworkAddresses; // Mapping of network --> Addresses
-  readonly bondToken: string; // Unused, but native token to buy the bond.
+  readonly bondToken: IBlockchain.WTF_TokenType; // Unused, but native token to buy the bond.
 }
 
 export abstract class Bond {
@@ -19,7 +19,7 @@ export abstract class Bond {
   public readonly bondIconSvg: string;
   public readonly bondContractABI: ContractInterface; // Bond ABI
   public readonly networkAddresses: IBlockchain.INetworkAddresses;
-  public readonly bondToken: string;
+  public readonly bondToken: IBlockchain.WTF_TokenType;
   public readonly lpUrl?: string;
   public readonly tokensInStrategy?: string;
   
@@ -50,14 +50,14 @@ export abstract class Bond {
   }
   
   public getContractForBond(
-    networkID: IBlockchain.NetworksEnum,
+    networkID: number,
     provider: StaticJsonRpcProvider | JsonRpcSigner
   ): Contract {
     const bondAddress = this.getAddressForBond(networkID);
     return new Contract(bondAddress, this.bondContractABI, provider);
   }
   
-  public getAddressForReserve(networkID: IBlockchain.NetworksEnum): string {
+  public getAddressForReserve(networkID: number): string {
     return this.networkAddresses[networkID].reserveAddress;
   }
   

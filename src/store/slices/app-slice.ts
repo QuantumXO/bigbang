@@ -35,7 +35,7 @@ export interface IAppSlice {
 export const loadAppDetails = createAsyncThunk(
   "app/loadAppDetails",
   async ({ networkID, provider }: ILoadAppDetails): Promise<Omit<IAppSlice, 'loading' | 'networkID'>> => {
-    const mimPrice = getTokenPrice("MIM");
+    const stableTokenPrice = getTokenPrice("USDC");
     const addresses = getBondAddresses(networkID);
     
     const stakingContract = new ethers.Contract(addresses.STAKING_ADDRESS, StakingContract, provider);
@@ -44,7 +44,7 @@ export const loadAppDetails = createAsyncThunk(
     const bangContract = new ethers.Contract(addresses.BANG_ADDRESS, BangTokenContract, provider);
     const bigContract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, provider);
     
-    const marketPrice = ((await getMarketPrice(networkID, provider)) / Math.pow(10, 9)) * mimPrice;
+    const marketPrice = ((await getMarketPrice(networkID, provider)) / Math.pow(10, 9)) * stableTokenPrice;
     
     const totalSupply = (await bigContract.totalSupply()) / Math.pow(10, 9);
     const circSupply = (await bangContract.circulatingSupply()) / Math.pow(10, 9);

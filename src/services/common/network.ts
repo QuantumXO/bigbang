@@ -1,6 +1,6 @@
 import { IBlockchain } from '@models/blockchain';
 import { messages } from '@constants/messages';
-import { NETWORKS, SUPPORTED_NETWORKS_CHAIN_IDS } from '@constants/blockchain';
+import { SUPPORTED_NETWORKS_CHAIN_IDS, ACTIVE_NETWORKS } from '@constants/blockchain';
 
 interface INetworkArgs {
   newNetworkId?: IBlockchain.NetworkType
@@ -66,7 +66,7 @@ export class Network {
   }
   
   switchChainRequest = (): any => {
-    const newNetwork: IBlockchain.INetwork  | undefined = NETWORKS
+    const newNetwork: IBlockchain.INetwork  | undefined = ACTIVE_NETWORKS
       .find(({ id }: IBlockchain.INetwork) => id === this.newNetworkId);
     
     if (newNetwork) {
@@ -82,7 +82,7 @@ export class Network {
   };
   
   addChainRequest = (): any => {
-    const newNetwork: IBlockchain.INetwork  | undefined = NETWORKS
+    const newNetwork: IBlockchain.INetwork  | undefined = ACTIVE_NETWORKS
       .find(({ id }: IBlockchain.INetwork) => id === this.newNetworkId);
     
     if (newNetwork) {
@@ -103,6 +103,20 @@ export class Network {
       //
     }
   };
+  
+  get getCurrentNetwork(): IBlockchain.INetwork | undefined {
+    return ACTIVE_NETWORKS.find(({ id }: IBlockchain.INetwork) => id === this.newNetworkId);
+  }
+  
+  get getStableTokenForCurrentNetwork(): IBlockchain.StableTokenType {
+    const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
+    
+    if (currentNetwork) {
+      return currentNetwork.stableTokenType;
+    } else {
+      throw new Error('Can\'t get current network');
+    }
+  }
 }
 
 const network = (args?: INetworkArgs) => new Network(args);

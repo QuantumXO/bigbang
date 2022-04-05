@@ -1,27 +1,26 @@
 import { Color } from "@material-ui/lab/Alert";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type Message = IMessage & {
-  severity: Color;
-};
-
-export interface MessagesState {
-  message: Message | null;
-}
-
 interface IMessage {
   text: string;
   error?: any;
 }
+export type Message = IMessage & {
+  severity: Color;
+};
+export interface MessagesState {
+  message: Message | null;
+}
 
 // Adds a message to the store
-const createMessage = function(state: MessagesState, severity: Color, text: IMessage) {
+const createMessage = function(state: MessagesState, severity: Color, text: IMessage): void {
   const message: Message = {
     severity,
     ...text
   };
   state.message = message;
 };
+
 const initialState: MessagesState = {
   message: null
 };

@@ -133,7 +133,7 @@ export function Dashboard(): ReactElement {
         title: 'Current Index',
         children: (
           <>
-            {isAppLoading ? <Skeleton width="250px" /> : `${trim(Number(app.currentIndex), 2)} TIME`}
+            {isAppLoading ? <Skeleton width="250px" /> : `${trim(Number(app.currentIndex), 2)} BIG`}
           </>
         )
       })}

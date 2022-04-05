@@ -5,9 +5,9 @@ import { getBondAddresses } from "@constants/addresses";
 import { DEFAULT_NETWORK } from "@constants/blockchain";
 import { TOKEN_DECIMALS } from '@constants/blockchain';
 import network from '@services/common/network';
+import { useWeb3Context } from '@services/hooks';
 
 import "./styles.scss";
-import { useWeb3Context } from '@services/hooks';
 
 const addTokenToWallet = (tokenId: IBlockchain.TokenType, tokenAddress: string) => async () => {
   const tokenImage: string = getTokenUrl(tokenId);

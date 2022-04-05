@@ -1,15 +1,17 @@
 export namespace IBlockchain {
   export enum NetworksEnum {
-    AVAX = 43114,
     ETH = 1, // Ethereum
     FTM = 250, // Fantom
     BNB = 56, // Binance
     MATIC = 137, // Matic Mainnet / Polygon
+    AVAX = 43114,
   }
+  export type NetworkType = keyof typeof NetworksEnum;
   export interface INetwork {
     id: NetworkType;
     name: string;
     chainId: string;
+    stableTokenType: StableTokenType;
     hexadecimalChainId: string;
     icon?: string;
     chainName?: string;
@@ -38,8 +40,6 @@ export namespace IBlockchain {
     };
     rpcUrls?: string[];
   }
-  export type NetworkType = keyof typeof NetworksEnum;
-  
   export interface IBondAddresses {
     reserveAddress: string;
     bondAddress: string;
@@ -72,10 +72,10 @@ export namespace IBlockchain {
     YEL_dYEL_ADDRESS: string;
   }
   export interface INetworkAddresses {
-    [IBlockchain.NetworksEnum.ETH]: IBlockchain.IBondAddresses;
-    [IBlockchain.NetworksEnum.MATIC]: IBlockchain.IBondAddresses;
-    [IBlockchain.NetworksEnum.BNB]: IBlockchain.IBondAddresses;
-    [IBlockchain.NetworksEnum.FTM]: IBlockchain.IBondAddresses;
+    [NetworksEnum.ETH]?: IBondAddresses;
+    [NetworksEnum.MATIC]?: IBondAddresses;
+    [NetworksEnum.BNB]?: IBondAddresses;
+    [NetworksEnum.FTM]?: IBondAddresses;
   }
   export type TokenType = 'BIG' | 'BANG' | 'dYEL';
   export type TokenNameType = 'big' | 'bang' | 'dYEL';
@@ -85,4 +85,29 @@ export namespace IBlockchain {
     decimals: number;
     symbol: string;
   }
+  export type StableCommonTokenType = 'USDC';
+  export type StableFTMTokenType = StableCommonTokenType;
+  export type FTMTokenType =
+    | StableFTMTokenType
+    | 'wFTM'         // wrapped Coin
+    | 'SCREAM_wFTM'  // LP
+    | 'GEIST_wFTM'   // LP
+    | 'TSHARE_wFTM'  // LP
+    | 'MULTI_wFTM'   // LP
+    | 'BOO_wFTM'     // LP
+    | 'BIG_wFTM'     // LP
+    | 'YEL_dYEL';    // LP
+  export type StableMATICTokenType = StableCommonTokenType;
+  export type MATICTokenType =
+    | StableMATICTokenType
+    | 'wMATIC'         // wrapped Coin
+    | 'QUICK_wMATIC'   // LP
+    | 'CRV_WETH'       // LP
+    | 'SAND_wMATIC'    // LP
+    | 'MANA_wMATIC'    // LP
+    | 'BIG_wMATIC'     // LP
+    | 'YEL_dYEL'       // LP
+    | 'ORBS_wMATIC';   // LP
+  export type StableTokenType = StableFTMTokenType | StableMATICTokenType;
+  export type WTF_TokenType = TokenType | FTMTokenType | MATICTokenType;
 }

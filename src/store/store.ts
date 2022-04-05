@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-
 import accountReducer from "./slices/account-slice";
 import bondingReducer from "./slices/bond-slice";
 import appReducer from "./slices/app-slice";

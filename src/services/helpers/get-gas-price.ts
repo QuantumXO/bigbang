@@ -1,10 +1,10 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { utils } from "ethers";
+import { BigNumber, utils } from 'ethers';
 
-const GAS = "5";
+const GAS: string = "5";
 
-export const getGasPrice = async (provider: JsonRpcProvider) => {
-  const gasPrice = await provider.getGasPrice();
-  const convertGas = utils.parseUnits(GAS, "gwei");
+export const getGasPrice = async (provider: JsonRpcProvider): Promise<BigNumber> => {
+  const gasPrice: BigNumber = await provider.getGasPrice();
+  const convertGas: BigNumber = utils.parseUnits(GAS, "gwei");
   return gasPrice.add(convertGas);
 };

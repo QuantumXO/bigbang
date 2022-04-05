@@ -9,7 +9,6 @@ import { Bond } from '@services/helpers/bond/bond';
 import { IBlockchain } from '@models//blockchain';
 import { getBondCalculator } from '@services/helpers/bond-calculator';
 import { RootState } from '../store';
-import { wavax } from '@services/helpers/bond';
 import { error, info, success, warning } from '../slices/messages-slice';
 import { messages } from '@constants/messages';
 import { getGasPrice } from '@services/helpers/get-gas-price';
@@ -102,9 +101,9 @@ export const calcBondDetails = createAsyncThunk(
     const amountInWei: BigNumber = ethers.utils.parseEther(value);
     
     let bondPrice: number = 0,
-      bondDiscount: number = 0,
-      valuation: number = 0,
-      bondQuote: number = 0;
+        bondDiscount: number = 0,
+        valuation: number = 0,
+        bondQuote: number = 0;
     
     const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
     
@@ -116,8 +115,8 @@ export const calcBondDetails = createAsyncThunk(
     
     let marketPrice = await getMarketPrice(networkID, provider);
     
-    const mimPrice = getTokenPrice('MIM');
-    marketPrice = (marketPrice / Math.pow(10, 9)) * mimPrice;
+    const stableTokenPrice: number = getTokenPrice('USDC');
+    marketPrice = (marketPrice / Math.pow(10, 9)) * stableTokenPrice;
     
     try {
       bondPrice = await bondContract.bondPriceInUSD();
@@ -165,21 +164,16 @@ export const calcBondDetails = createAsyncThunk(
       
       purchased = await bondCalcContract.valuation(assetAddress, purchased);
       purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 9));
-      
-      /*if (bond.name === avaxTime.name) {
-        const avaxPrice = getTokenPrice('AVAX');
-        purchased = purchased * avaxPrice;
-      }*/
     } else {
       if (bond.tokensInStrategy) {
         purchased = BigNumber.from(purchased).add(BigNumber.from(bond.tokensInStrategy)).toString();
       }
       purchased = purchased / Math.pow(10, 18);
       
-      if (bond.name === wavax.name) {
+      /* if (bond.name === wavax.name) {
         const avaxPrice = getTokenPrice('AVAX');
         purchased = purchased * avaxPrice;
-      }
+      } */
     }
     
     return {

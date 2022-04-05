@@ -61,11 +61,11 @@ export function Stake(): ReactElement {
     return state.pendingTransactions;
   });
   
-  const trimmedMemoBalance: string = trim(Number(bangBalance), 6);
+  const trimmedBangBalance: string = trim(Number(bangBalance), 6);
   const trimmedStakingAPY: string = trim(stakingAPY * 100, 1);
   const stakingRebasePercentage: string = trim(stakingRebase * 100, 4);
   const nextRewardValue: string = trim((
-    Number(stakingRebasePercentage) / 100) * Number(trimmedMemoBalance),
+    Number(stakingRebasePercentage) / 100) * Number(trimmedBangBalance),
     6
   );
   
@@ -144,14 +144,14 @@ export function Stake(): ReactElement {
             <div className='row__value'>
               {isAppLoading
                 ? <Skeleton width="80px" />
-                : <>{`${trim(Number(bigBalance), 4)} Token`}</>
+                : <>{`${trim(Number(bigBalance), 4)} BIG`}</>
               }
             </div>
           </div>
           <div className='row'>
             <div className='row__label'>{'Your Staked Balance'}</div>
             <div className='row__value'>
-              {isAppLoading ? <Skeleton width="80px" /> : <>{`${trimmedMemoBalance} Token`}</>}
+              {isAppLoading ? <Skeleton width="80px" /> : <>{`${trimmedBangBalance} BANG`}</>}
             </div>
           </div>
           <div className='row divide--top'>
@@ -169,7 +169,7 @@ export function Stake(): ReactElement {
           <div className='row divide--top'>
             <div className='row__label'>{'Next Reward Amount'}</div>
             <div className='row__value'>
-              {isAppLoading ? <Skeleton width="80px" /> : <>{`${nextRewardValue} Token`}</>}
+              {isAppLoading ? <Skeleton width="80px" /> : <>{`${nextRewardValue} BANG`}</>}
             </div>
           </div>
           <div className='row'>
@@ -205,7 +205,7 @@ export function Stake(): ReactElement {
                     onChangeStake('stake');
                   }}
                 >
-                  <span>{txnButtonText(pendingTransactions, 'staking', 'Stake TIME')}</span>
+                  <span>{txnButtonText(pendingTransactions, 'staking', 'Stake BIG')}</span>
                 </div>
               )
               : (
@@ -233,7 +233,7 @@ export function Stake(): ReactElement {
                     onChangeStake('unstake');
                   }}
                 >
-                  <span>{txnButtonText(pendingTransactions, 'unstaking', 'Unstake TIME')}</span>
+                  <span>{txnButtonText(pendingTransactions, 'unstaking', 'Unstake BIG')}</span>
                 </div>
               )
               : (
@@ -397,18 +397,13 @@ export function Stake(): ReactElement {
                   <div className="metrics__card__inner">
                     <div className="metrics__card__title">{'Current Index'}</div>
                     <div className="metrics__card__value">
-                      {currentIndex ? <>{trim(Number(currentIndex), 2)} TIME</> : <Skeleton width="150px" />}
+                      {currentIndex ? `${trim(Number(currentIndex), 2)} BIG` : <Skeleton width="150px" />}
                     </div>
                   </div>
                 </Grid>
               </Grid>
               {onRenderConnectButton()}
             </div>
-  
-            {!!address && (
-             <></>
-            )}
-    
             {!!address && (
               <Grid
                 container

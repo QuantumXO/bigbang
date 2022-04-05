@@ -9,6 +9,7 @@ import { Bond } from '@services/helpers/bond/bond';
 import { IBlockchain } from "@models/blockchain";
 import { RootState } from "../store";
 import { IToken } from '@services/helpers/tokens';
+import { BigNumberish } from '@ethersproject/bignumber';
 
 interface IGetBalances {
   address: string;
@@ -90,11 +91,11 @@ export const getBalances = createAsyncThunk(
     const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
     
     const bigContract: Contract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, provider);
-    const bigBalance: any = await bigContract.balanceOf(address);
+    const bigBalance: BigNumberish = await bigContract.balanceOf(address);
     const bangContract: Contract = new ethers.Contract(addresses.BANG_ADDRESS, BangTokenContract, provider);
-    const bangBalance: any = await bangContract.balanceOf(address);
+    const bangBalance: BigNumberish = await bangContract.balanceOf(address);
     const dYelContract: Contract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, provider);
-    const dYelBalance: any = await dYelContract.balanceOf(address);
+    const dYelBalance: BigNumberish = await dYelContract.balanceOf(address);
     
     return {
       balances: {
@@ -249,14 +250,14 @@ export const calculateUserTokenDetails = createAsyncThunk(
   
     const addresses = getBondAddresses(networkID);
     
-    const tokenContract = new ethers.Contract(token.address, TokenContract, provider);
+    const tokenContract: Contract = new Contract(token.address, TokenContract, provider);
     
     let balance = "0";
     
     const allowance = await tokenContract.allowance(address, addresses.ZAPIN_ADDRESS);
     balance = await tokenContract.balanceOf(address);
     
-    const balanceVal = Number(balance) / Math.pow(10, token.decimals);
+    const balanceVal: number = Number(balance) / Math.pow(10, token.decimals);
     
     return {
       token: token.name,

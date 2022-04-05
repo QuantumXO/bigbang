@@ -18,6 +18,35 @@ export interface IChangeApproval {
   networkID: IBlockchain.NetworksEnum;
   address: string;
 }
+export interface IChangeWrap {
+  isWrap: boolean;
+  value: string;
+  provider: StaticJsonRpcProvider | JsonRpcProvider;
+  networkID: IBlockchain.NetworksEnum;
+  address: string;
+}
+export interface IWrapSlice {
+  loading: boolean;
+  wrapValue: "";
+  wrapPrice: number;
+}
+export interface IWrapPrice {
+  isWrap: boolean;
+  provider: StaticJsonRpcProvider | JsonRpcProvider;
+  networkID: IBlockchain.NetworksEnum;
+}
+export interface IWrapDetails {
+  isWrap: boolean;
+  value: string;
+  provider: StaticJsonRpcProvider | JsonRpcProvider;
+  networkID: IBlockchain.NetworksEnum;
+}
+
+const initialState: IWrapSlice = {
+  loading: true,
+  wrapValue: "",
+  wrapPrice: 0
+};
 
 export const changeApproval = createAsyncThunk(
   "wrapping/changeApproval",
@@ -65,67 +94,49 @@ export const changeApproval = createAsyncThunk(
   }
 );
 
-export interface IChangeWrap {
-  isWrap: boolean;
-  value: string;
-  provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
-  address: string;
-}
-
-export const changeWrap = createAsyncThunk("wrapping/changeWrap", async ({
-                                                                           isWrap,
-                                                                           value,
-                                                                           provider,
-                                                                           networkID,
-                                                                           address
-                                                                         }: IChangeWrap, { dispatch }) => {
-  if (!provider) {
-    dispatch(warning({ text: messages.please_connect_wallet }));
+export const changeWrap = createAsyncThunk(
+  "wrapping/changeWrap",
+  async ({ isWrap, value, provider, networkID, address}: IChangeWrap, { dispatch }) => {
+    if (!provider) {
+      dispatch(warning({ text: messages.please_connect_wallet }));
+      return;
+    }
+    
+    const addresses = getBondAddresses(networkID);
+    const signer = provider.getSigner();
+    const amountInWei = isWrap ? ethers.utils.parseUnits(value, "gwei") : ethers.utils.parseEther(value);
+    const wmemoContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, signer);
+    
+    let wrapTx;
+    
+    try {
+      const gasPrice = await getGasPrice(provider);
+      
+      if (isWrap) {
+        wrapTx = await wmemoContract.wrap(amountInWei, { gasPrice });
+      } else {
+        wrapTx = await wmemoContract.unwrap(amountInWei, { gasPrice });
+      }
+      
+      const pendingTxnType = isWrap ? "wrapping" : "unwrapping";
+      dispatch(fetchPendingTxns({ txnHash: wrapTx.hash, text: getWrappingTypeText(isWrap), type: pendingTxnType }));
+      await wrapTx.wait();
+      dispatch(success({ text: messages.tx_successfully_send }));
+    } catch (err: any) {
+      return metamaskErrorWrap(err, dispatch);
+    } finally {
+      if (wrapTx) {
+        dispatch(clearPendingTxn(wrapTx.hash));
+      }
+    }
+  
+    dispatch(info({ text: messages.your_balance_update_soon }));
+    await sleep(10);
+    await dispatch(getBalances({ address, networkID, provider }));
+    dispatch(info({ text: messages.your_balance_updated }));
     return;
   }
-  
-  const addresses = getBondAddresses(networkID);
-  const signer = provider.getSigner();
-  const amountInWei = isWrap ? ethers.utils.parseUnits(value, "gwei") : ethers.utils.parseEther(value);
-  const wmemoContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, signer);
-  
-  let wrapTx;
-  
-  try {
-    const gasPrice = await getGasPrice(provider);
-    
-    if (isWrap) {
-      wrapTx = await wmemoContract.wrap(amountInWei, { gasPrice });
-    } else {
-      wrapTx = await wmemoContract.unwrap(amountInWei, { gasPrice });
-    }
-    
-    const pendingTxnType = isWrap ? "wrapping" : "unwrapping";
-    dispatch(fetchPendingTxns({ txnHash: wrapTx.hash, text: getWrappingTypeText(isWrap), type: pendingTxnType }));
-    await wrapTx.wait();
-    dispatch(success({ text: messages.tx_successfully_send }));
-  } catch (err: any) {
-    return metamaskErrorWrap(err, dispatch);
-  } finally {
-    if (wrapTx) {
-      dispatch(clearPendingTxn(wrapTx.hash));
-    }
-  }
-  
-  dispatch(info({ text: messages.your_balance_update_soon }));
-  await sleep(10);
-  await dispatch(getBalances({ address, networkID, provider }));
-  dispatch(info({ text: messages.your_balance_updated }));
-  return;
-});
-
-export interface IWrapDetails {
-  isWrap: boolean;
-  value: string;
-  provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
-}
+);
 
 const calcWrapValue = async ({ isWrap, value, provider, networkID }: IWrapDetails): Promise<number> => {
   const addresses = getBondAddresses(networkID);
@@ -147,66 +158,45 @@ const calcWrapValue = async ({ isWrap, value, provider, networkID }: IWrapDetail
   return wrapValue;
 };
 
-export const calcWrapDetails = createAsyncThunk("wrapping/calcWrapDetails", async ({
-                                                                                     isWrap,
-                                                                                     value,
-                                                                                     provider,
-                                                                                     networkID
-                                                                                   }: IWrapDetails, { dispatch }) => {
-  if (!provider) {
-    dispatch(warning({ text: messages.please_connect_wallet }));
-    return;
+export const calcWrapDetails = createAsyncThunk(
+  "wrapping/calcWrapDetails",
+  async ({ isWrap, value, provider, networkID}: IWrapDetails, { dispatch }) => {
+    if (!provider) {
+      dispatch(warning({ text: messages.please_connect_wallet }));
+      return;
+    }
+    
+    if (!value) {
+      return new Promise<any>(resolve =>
+        resolve({
+          wrapValue: ""
+        })
+      );
+    }
+    
+    const wrapValue = await calcWrapValue({ isWrap, value, provider, networkID });
+    
+    return {
+      wrapValue
+    };
   }
-  
-  if (!value) {
-    return new Promise<any>(resolve =>
-      resolve({
-        wrapValue: ""
-      })
-    );
+);
+
+export const calcWrapPrice = createAsyncThunk(
+  "wrapping/calcWrapPrice",
+  async ({ isWrap, provider, networkID}: IWrapPrice, { dispatch }) => {
+    if (!provider) {
+      dispatch(warning({ text: messages.please_connect_wallet }));
+      return;
+    }
+    
+    const wrapPrice = await calcWrapValue({ isWrap, value: "1", provider, networkID });
+    
+    return {
+      wrapPrice
+    };
   }
-  
-  const wrapValue = await calcWrapValue({ isWrap, value, provider, networkID });
-  
-  return {
-    wrapValue
-  };
-});
-
-export interface IWrapPrice {
-  isWrap: boolean;
-  provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
-}
-
-export const calcWrapPrice = createAsyncThunk("wrapping/calcWrapPrice", async ({
-                                                                                 isWrap,
-                                                                                 provider,
-                                                                                 networkID
-                                                                               }: IWrapPrice, { dispatch }) => {
-  if (!provider) {
-    dispatch(warning({ text: messages.please_connect_wallet }));
-    return;
-  }
-  
-  const wrapPrice = await calcWrapValue({ isWrap, value: "1", provider, networkID });
-  
-  return {
-    wrapPrice
-  };
-});
-
-export interface IWrapSlice {
-  loading: boolean;
-  wrapValue: "";
-  wrapPrice: number;
-}
-
-const initialState: IWrapSlice = {
-  loading: true,
-  wrapValue: "",
-  wrapPrice: 0
-};
+);
 
 const wrapSlice = createSlice({
   name: "wrapping",
