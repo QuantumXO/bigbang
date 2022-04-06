@@ -2,7 +2,6 @@ import { Contract, ethers } from 'ethers';
 import { getBondAddresses } from "@constants/index";
 import { BangTokenContract, BigTokenContract, dYelTokenContract, TokenContract } from "@services/abi";
 import { setAll } from '@services/helpers';
-
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { Bond } from '@services/helpers/bond/bond';
@@ -217,13 +216,15 @@ export const calculateUserBondDetails = createAsyncThunk(
 );
 
 export const calculateUserTokenDetails = createAsyncThunk(
-  "account/calculateUserTokenDetails",
+  'account/calculateUserTokenDetails',
   async ({
     address,
     token,
     networkID,
     provider
   }: ICalcUserTokenDetails) => {
+    // console.log('account/calculateUserTokenDetails: ', address, token, networkID, provider);
+    
     if (!address) {
       return new Promise<any>(resevle => {
         resevle({
@@ -235,7 +236,7 @@ export const calculateUserTokenDetails = createAsyncThunk(
         });
       });
     }
-  
+    
     if (token.isAvax) {
       const avaxBalance = await provider.getSigner().getBalance();
       const avaxVal = ethers.utils.formatEther(avaxBalance);
@@ -256,7 +257,7 @@ export const calculateUserTokenDetails = createAsyncThunk(
     
     const allowance = await tokenContract.allowance(address, addresses.ZAPIN_ADDRESS);
     balance = await tokenContract.balanceOf(address);
-    
+  
     const balanceVal: number = Number(balance) / Math.pow(10, token.decimals);
     
     return {
@@ -297,7 +298,7 @@ const accountSlice = createSlice({
       })
       .addCase(loadAccountDetails.rejected, (state, { error }) => {
         state.loading = false;
-        console.log(error);
+        console.log('loadAccountDetails: ', error);
       })
       .addCase(getBalances.pending, state => {
         state.loading = true;
@@ -308,7 +309,7 @@ const accountSlice = createSlice({
       })
       .addCase(getBalances.rejected, (state, { error }) => {
         state.loading = false;
-        console.log(error);
+        console.log('getBalances: ', error);
       })
       .addCase(calculateUserBondDetails.pending, (state, action) => {
         state.loading = true;
@@ -324,7 +325,7 @@ const accountSlice = createSlice({
       )
       .addCase(calculateUserBondDetails.rejected, (state, { error }) => {
         state.loading = false;
-        console.log(error);
+        console.log('calculateUserBondDetails: ', error);
       })
       .addCase(calculateUserTokenDetails.pending, (state) => {
         state.loading = true;
@@ -337,7 +338,7 @@ const accountSlice = createSlice({
       })
       .addCase(calculateUserTokenDetails.rejected, (state, { error }) => {
         state.loading = false;
-        console.log(error);
+        console.log('calculateUserTokenDetails: ', error);
       });
   }
 });

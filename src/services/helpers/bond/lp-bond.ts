@@ -51,7 +51,7 @@ export class LPBond extends Bond {
     const addresses = getBondAddresses(networkID);
     const token: Contract = this.getContractForReserve(networkID, provider);
     
-    const [reserve0, reserve1] = await token.getReserves();
+    const [reserve0, reserve1]: number[] = await token.getReserves();
     const token1: string = await token.token1();
     const isBig: boolean = token1.toLowerCase() === addresses.BIG_ADDRESS.toLowerCase();
     
@@ -67,8 +67,8 @@ export class LPBond extends Bond {
     return result;
   }
   
-  private toTokenDecimal(isTime: boolean, reserve: number) {
-    return isTime ? reserve / Math.pow(10, 9) : reserve / Math.pow(10, 18);
+  private toTokenDecimal(isBig: boolean, reserve: number): number {
+    return isBig ? reserve / Math.pow(10, 9) : reserve / Math.pow(10, 18);
   }
 }
 

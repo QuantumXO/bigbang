@@ -102,7 +102,6 @@ export const FTM_NETWORK: IBlockchain.INetwork = {
     /////
     BONDING_CALC_ADDRESS: '0x0000000000000000000000000000000000000000',
     /////
-    
   },
 };
 export const AVAX_NETWORK: IBlockchain.INetwork = {

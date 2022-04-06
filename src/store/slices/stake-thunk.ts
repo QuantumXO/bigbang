@@ -14,9 +14,9 @@ import { sleep } from "@services/helpers";
 
 interface IChangeApproval {
   token: string;
-  provider: StaticJsonRpcProvider | JsonRpcProvider;
   address: string;
   networkID: IBlockchain.NetworksEnum;
+  provider: StaticJsonRpcProvider | JsonRpcProvider;
 }
 
 export const changeApproval = createAsyncThunk(
@@ -29,19 +29,19 @@ export const changeApproval = createAsyncThunk(
     const addresses = getBondAddresses(networkID);
     
     const signer = provider.getSigner();
-    const timeContract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, signer);
-    const memoContract = new ethers.Contract(addresses.BANG_ADDRESS, BangTokenContract, signer);
+    const bigContract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, signer);
+    const bangContract = new ethers.Contract(addresses.BANG_ADDRESS, BangTokenContract, signer);
     
     let approveTx;
     try {
       const gasPrice = await getGasPrice(provider);
       
       if (token === "big") {
-        approveTx = await timeContract.approve(addresses.STAKING_HELPER_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
+        approveTx = await bigContract.approve(addresses.STAKING_HELPER_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
       }
       
       if (token === "bang") {
-        approveTx = await memoContract.approve(addresses.STAKING_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
+        approveTx = await bangContract.approve(addresses.STAKING_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
       }
       
       const text = "Approve " + (token === "big" ? "Staking" : "Unstaking");
@@ -60,14 +60,14 @@ export const changeApproval = createAsyncThunk(
   
     await sleep(2);
     
-    const stakeAllowance = await timeContract.allowance(address, addresses.STAKING_HELPER_ADDRESS);
-    const unstakeAllowance = await memoContract.allowance(address, addresses.STAKING_ADDRESS);
+    const stakeAllowance = await bigContract.allowance(address, addresses.STAKING_HELPER_ADDRESS);
+    const unstakeAllowance = await bangContract.allowance(address, addresses.STAKING_ADDRESS);
     
     return dispatch(
       fetchAccountSuccess({
         staking: {
           timeStake: Number(stakeAllowance),
-          memoUnstake: Number(unstakeAllowance)
+          bangUnstake: Number(unstakeAllowance)
         }
       })
     );

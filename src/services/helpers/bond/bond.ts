@@ -29,7 +29,10 @@ export abstract class Bond {
   public abstract displayUnits: string;
   
   // Async method that returns a Promise
-  public abstract getTreasuryBalance(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
+  public abstract getTreasuryBalance(
+    networkID: IBlockchain.NetworksEnum,
+    provider: StaticJsonRpcProvider
+  ): Promise<number>;
   
   public abstract getTokenAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
   

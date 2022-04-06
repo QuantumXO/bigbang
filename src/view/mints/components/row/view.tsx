@@ -1,11 +1,11 @@
-import { priceUnits, trim } from '@services/helpers';
-import { TableRow, TableCell, Link } from '@material-ui/core';
+import { TableRow, TableCell } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
-import { Skeleton } from '@material-ui/lab';
 import { IAllBondData } from '@services/hooks/bonds';
 import getLinkUrl from '@services/common/get-link-url';
 import { ReactElement } from 'react';
 import BondLogo from '@view/mints/components/bond-logo';
+import { priceUnits, trim } from '@services/helpers';
+import { Skeleton } from '@material-ui/lab';
 
 import './styles.scss';
 
@@ -14,7 +14,7 @@ interface IBondProps {
 }
 
 export function BondTableRow({ bond }: IBondProps): ReactElement {
-  // const isBondLoading: boolean = !bond.bondPrice ?? true;
+  const isBondLoading: boolean = !bond.bondPrice ?? true;
 
   return (
     <TableRow className="bond">
@@ -27,8 +27,8 @@ export function BondTableRow({ bond }: IBondProps): ReactElement {
             <span className="bond__text">{bond.displayName}</span>
             {bond.isLP && (
               <NavLink
-                to={bond.lpUrl || '/'}
                 target="_blank"
+                to={bond.lpUrl || '/'}
                 className="bond__contract__link"
               >
                 {'View Contract'}
@@ -39,17 +39,38 @@ export function BondTableRow({ bond }: IBondProps): ReactElement {
       </TableCell>
       <TableCell className="bond__col price">
         <div className="bond__price bond__text">
-          {`$ 0`}
+          {isBondLoading
+            ? <Skeleton width="50px" style={{ display: 'inline-block' }} />
+            : (
+              <>
+                <span className="currency--icon">{priceUnits(bond)}</span>&nbsp;
+                {trim(bond.bondPrice, 2)}
+              </>
+            )
+          }
         </div>
       </TableCell>
       <TableCell className="bond__col ROI">
         <div className="bond__ROI bond__text">
-          {`0%`}
+          {isBondLoading
+            ? <Skeleton width="50px" style={{ display: 'inline-block' }} />
+            : `${trim(bond.bondDiscount * 100, 2)}%`
+          }
         </div>
       </TableCell>
       <TableCell className="bond__col purchased">
         <div className="bond__purchased bond__text">
-          {`$ 74,449,163`}
+          {isBondLoading
+            ? <Skeleton width="50px" style={{ display: 'inline-block' }} />
+            : (
+              new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0,
+                minimumFractionDigits: 0,
+              }).format(bond.purchased)
+            )
+          }
         </div>
       </TableCell>
       <TableCell className="bond__col action">

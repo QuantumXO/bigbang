@@ -14,8 +14,10 @@ export interface IUseTokensReturn {
 const initialTokenArray: IToken[] = allTokens;
 
 function useTokens(): IUseTokensReturn {
-  const accountLoading = useSelector<IReduxState, boolean>(state => state.account.loading);
-  const accountTokensState = useSelector<IReduxState, { [key: string]: IUserTokenDetails }>(state => state.account.tokens);
+  const accountLoading: boolean = useSelector<IReduxState, boolean>(state => state.account.loading);
+  const accountTokensState =
+    useSelector<IReduxState, Record<string, IUserTokenDetails>>(state => state.account.tokens);
+  
   //@ts-ignore
   const [tokens, setTokens] = useState<IAllTokenData[]>(initialTokenArray);
   
@@ -28,9 +30,11 @@ function useTokens(): IUseTokensReturn {
       return token;
     });
     
-    const mostProfitableBonds = tokenDetails.concat().sort((a, b) => {
-      return a["balance"] > b["balance"] ? -1 : b["balance"] > a["balance"] ? 1 : 0;
-    });
+    const mostProfitableBonds: IAllTokenData[] = tokenDetails
+      .concat()
+      .sort((a: IAllTokenData, b: IAllTokenData) => {
+        return a["balance"] > b["balance"] ? -1 : b["balance"] > a["balance"] ? 1 : 0;
+      });
     
     setTokens(mostProfitableBonds);
   }, [accountTokensState, accountLoading]);

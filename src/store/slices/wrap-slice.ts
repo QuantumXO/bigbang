@@ -58,13 +58,13 @@ export const changeApproval = createAsyncThunk(
     
     const addresses = getBondAddresses(networkID);
     const signer = provider.getSigner();
-    const memoContract = new ethers.Contract(addresses.BANG_ADDRESS, dYelTokenContract, signer);
+    const bangContract = new ethers.Contract(addresses.BANG_ADDRESS, dYelTokenContract, signer);
     
     let approveTx;
     try {
       const gasPrice = await getGasPrice(provider);
       
-      approveTx = await memoContract.approve(addresses.DYEL_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
+      approveTx = await bangContract.approve(addresses.DYEL_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
       
       const text = "Approve Wrapping";
       const pendingTxnType = "approve_wrapping";
@@ -82,12 +82,12 @@ export const changeApproval = createAsyncThunk(
     
     await sleep(2);
     
-    const wmemoAllowance = await memoContract.allowance(address, addresses.DYEL_ADDRESS);
+    const dYelAllowance = await bangContract.allowance(address, addresses.DYEL_ADDRESS);
   
     return dispatch(
       fetchAccountSuccess({
         wrapping: {
-          wmemo: Number(wmemoAllowance)
+          dYel: Number(dYelAllowance)
         }
       })
     );
@@ -105,7 +105,7 @@ export const changeWrap = createAsyncThunk(
     const addresses = getBondAddresses(networkID);
     const signer = provider.getSigner();
     const amountInWei = isWrap ? ethers.utils.parseUnits(value, "gwei") : ethers.utils.parseEther(value);
-    const wmemoContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, signer);
+    const dYelContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, signer);
     
     let wrapTx;
     
@@ -113,9 +113,9 @@ export const changeWrap = createAsyncThunk(
       const gasPrice = await getGasPrice(provider);
       
       if (isWrap) {
-        wrapTx = await wmemoContract.wrap(amountInWei, { gasPrice });
+        wrapTx = await dYelContract.wrap(amountInWei, { gasPrice });
       } else {
-        wrapTx = await wmemoContract.unwrap(amountInWei, { gasPrice });
+        wrapTx = await dYelContract.unwrap(amountInWei, { gasPrice });
       }
       
       const pendingTxnType = isWrap ? "wrapping" : "unwrapping";
@@ -145,14 +145,16 @@ const calcWrapValue = async ({ isWrap, value, provider, networkID }: IWrapDetail
   
   let wrapValue = 0;
   
-  const wmemoContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, provider);
+  const dYelContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, provider);
+  
+  console.log('calcWrapValue() dYelContract: ', dYelContract);
   
   if (isWrap) {
-    const wmemoValue = await wmemoContract.MEMOTowMEMO(amountInWei);
-    wrapValue = wmemoValue / Math.pow(10, 18);
+    const dYelValue = await dYelContract.BANGTodYel(amountInWei);
+    wrapValue = dYelValue / Math.pow(10, 18);
   } else {
-    const memoValue = await wmemoContract.wMEMOToMEMO(amountInWei);
-    wrapValue = memoValue / Math.pow(10, 9);
+    const bangValue = await dYelContract.dYelToBANG(amountInWei);
+    wrapValue = bangValue / Math.pow(10, 9);
   }
   
   return wrapValue;
@@ -217,7 +219,7 @@ const wrapSlice = createSlice({
       })
       .addCase(calcWrapDetails.rejected, (state, { error }) => {
         state.loading = false;
-        console.log(error);
+        console.log('calcWrapDetails: ', error);
       })
       .addCase(calcWrapPrice.pending, state => {
         state.loading = true;
@@ -228,7 +230,7 @@ const wrapSlice = createSlice({
       })
       .addCase(calcWrapPrice.rejected, (state, { error }) => {
         state.loading = false;
-        console.log(error);
+        console.log('calcWrapPrice: ', error);
       });
   }
 });

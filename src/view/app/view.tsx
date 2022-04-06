@@ -6,9 +6,8 @@ import { loadAppDetails } from '@store/slices/app-slice';
 import { loadAccountDetails, calculateUserBondDetails, calculateUserTokenDetails } from '@store/slices/account-slice';
 import { IReduxState } from '@store/slices/state.interface';
 import Loading from '../common/loader';
-import useBonds from '@services/hooks/bonds';
-import '@assets/styles/index.scss';
-import useTokens from '@services/hooks/tokens';
+import useBonds, { IAllBondData } from '@services/hooks/bonds';
+import useTokens, { IAllTokenData } from '@services/hooks/tokens';
 import { loadTokenPrices } from '@services/helpers';
 import SnackMessage from '@view/common/messages/snackbar';
 import { SnackbarProvider } from 'notistack';
@@ -16,20 +15,20 @@ import Router from '@view/router';
 import { Dispatch } from 'redux';
 import { JsonRpcProvider } from '@ethersproject/providers';
 
+import '@assets/styles/index.scss';
+
 export function App(): ReactElement {
   const dispatch: Dispatch<any> = useDispatch();
   const { connect, provider, hasCachedProvider, chainID, isConnected } = useWeb3Context();
-  
-  const isAppLoading = useSelector<IReduxState, boolean>(state => state.app.loading);
-  const isAppLoaded = useSelector<IReduxState, boolean>(state => !Boolean(state.app.marketPrice));
-  
   const address: string = useAddress();
   const { bonds } = useBonds();
   const { tokens } = useTokens();
+  const isAppLoading = useSelector<IReduxState, boolean>(state => state.app.loading);
+  const isAppLoaded = useSelector<IReduxState, boolean>(state => !Boolean(state.app.marketPrice));
   let layout: ReactElement;
   
   const [walletChecked, setWalletChecked] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(true);
   
   useEffect((): void => {
     loadTokenPrices().then(() => setLoading(false));
@@ -63,12 +62,12 @@ export function App(): ReactElement {
   }
 
   const loadApp = useCallback(
-    loadProvider => {
+    (loadProvider) => {
       dispatch(loadAppDetails({ networkID: chainID, provider: loadProvider }));
-      bonds.map(bond => {
+      bonds.map((bond: IAllBondData): void => {
         dispatch(calcBondDetails({ bond, value: null, provider: loadProvider, networkID: chainID }));
       });
-      tokens.map(token => {
+      tokens.map((token: IAllTokenData): void => {
         dispatch(calculateUserTokenDetails({ address: '', token, provider, networkID: chainID }));
       });
     },
@@ -76,7 +75,7 @@ export function App(): ReactElement {
   );
 
   const loadAccount = useCallback(
-    loadProvider => {
+    (loadProvider) => {
       dispatch(loadAccountDetails({ networkID: chainID, address, provider: loadProvider }));
     },
     [isConnected],
@@ -108,7 +107,7 @@ export function App(): ReactElement {
     }
   }, [isConnected]);
 
-  if (isAppLoading || loading) {
+  if (isAppLoading || isLoading) {
     layout = <Loading />;
   } else {
     layout = (

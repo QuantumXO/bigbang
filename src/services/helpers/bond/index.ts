@@ -28,7 +28,7 @@ export const ftm: StableBond = new StableBond({
   tokensInStrategy: '0',
 });
 
-export default <IAllBondData[]>[];
+export default <any[]>[ftm];
 
 /* export const wavax: CustomBond = new CustomBond({
  name: "wavax",

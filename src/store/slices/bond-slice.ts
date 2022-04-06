@@ -335,7 +335,7 @@ const bondingSlice = createSlice({
     })
     .addCase(calcBondDetails.rejected, (state, { error }) => {
       state.loading = false;
-      console.log(error);
+      console.log('calcBondDetails: ', error);
     });
   }
 });

@@ -5,7 +5,6 @@ import { IUserBondDetails } from "@store/slices/account-slice";
 import { Bond } from "../helpers/bond/bond";
 import { IBondDetails, IBondSlice } from "@store/slices/bond-slice";
 import { IReduxState } from "@store/slices/state.interface";
-import { CustomBond } from '@services/helpers/bond/stable-bond';
 
 // Smash all the interfaces together to get the BondData Type
 export interface IAllBondData extends Bond, IBondDetails, IUserBondDetails { }
@@ -21,7 +20,6 @@ function useBonds(): IUseBondsReturn {
   const bondLoading: boolean = useSelector<IReduxState, boolean>(state => state.bonding.loading);
   const bondState: IBondSlice = useSelector<IReduxState, IBondSlice>(state => state.bonding);
   const accountBondsState = useSelector<IReduxState, { [key: string]: IUserBondDetails }>(state => state.account.bonds);
-  //@ts-ignore
   const [bonds, setBonds] = useState<IAllBondData[]>(initialBondArray);
   
   useEffect(() => {
