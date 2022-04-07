@@ -36,7 +36,7 @@ export abstract class Bond {
   
   public abstract getTokenAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
   
-  public abstract getTimeAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
+  public abstract getBigAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
   
   constructor(type: IBlockchain.WTF_BondEnum, bondOpts: BondOpts) {
     this.name = bondOpts.name;
@@ -49,7 +49,11 @@ export abstract class Bond {
   }
   
   public getAddressForBond(networkID: IBlockchain.NetworksEnum): string {
-    return this.networkAddresses[networkID].bondAddress;
+    return this.networkAddresses[networkID]?.bondAddress;
+  }
+  
+  public getReserveAddressForBond(networkID: IBlockchain.NetworksEnum): string {
+    return this.networkAddresses[networkID]?.reserveAddress;
   }
   
   public getContractForBond(

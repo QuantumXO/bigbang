@@ -24,7 +24,7 @@ const stakeSliderMarks = [
 
 export function Stake(): ReactElement {
   const dispatch = useDispatch();
-  const { provider, address, connect, chainID, checkIsWrongNetwork } = useWeb3Context();
+  const { provider, address, connect, chainID, getIsWrongNetwork } = useWeb3Context();
   
   const [view, setView] = useState(0);
   const [quantity, setQuantity] = useState<string>('');
@@ -78,13 +78,13 @@ export function Stake(): ReactElement {
   };
   
   const onSeekApproval = async (token: 'big' | 'bang'): Promise<void> => {
-    if (await checkIsWrongNetwork()) return;
+    if (await getIsWrongNetwork()) return;
     
     await dispatch(changeApproval({ address, token, provider, networkID: chainID }));
   };
   
   const onChangeStake = async (action: string): Promise<void> => {
-    if (await checkIsWrongNetwork()) return;
+    if (await getIsWrongNetwork()) return;
     if (quantity === '' || parseFloat(quantity) === 0) {
       dispatch(warning({ text: action === 'stake' ? messages.before_stake : messages.before_unstake }));
     } else {

@@ -3,7 +3,7 @@ import { Bond, BondOpts } from "./bond";
 import { IBlockchain } from "@models/blockchain";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getBondCalculator } from "../bond-calculator";
-import { getBondAddresses } from "@constants/addresses";
+import { getBondAddresses } from "@services/helpers/get-bond-addresses";
 
 // Keep all LP specific fields/logic within the LPBond class
 export interface LPBondOpts extends BondOpts {
@@ -34,7 +34,7 @@ export class LPBond extends Bond {
     const tokenAmount = await token.balanceOf(addresses.TREASURY_ADDRESS);
     const valuation = await bondCalculator.valuation(tokenAddress, tokenAmount);
     const markdown = await bondCalculator.markdown(tokenAddress);
-    const tokenUSD = (valuation / Math.pow(10, 9)) * (markdown / Math.pow(10, 18));
+    const tokenUSD: number = (valuation / Math.pow(10, 9)) * (markdown / Math.pow(10, 18));
     
     return tokenUSD;
   }
@@ -43,7 +43,7 @@ export class LPBond extends Bond {
     return this.getReserves(networkID, provider, true);
   }
   
-  public getTimeAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) {
+  public getBigAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider) {
     return this.getReserves(networkID, provider, false);
   }
   
@@ -62,7 +62,6 @@ export class LPBond extends Bond {
     } else {
       result = this.toTokenDecimal(true, isBig ? reserve1 : reserve0)
     }
-    
     
     return result;
   }

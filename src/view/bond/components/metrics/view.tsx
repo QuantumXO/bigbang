@@ -1,10 +1,18 @@
 import { ReactElement } from 'react';
 import { Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
+import { useSelector } from "react-redux";
+import { IReduxState } from "@store/slices/state.interface";
+import { IAllBondData } from '@services/hooks/bonds';
 
 import "./styles.scss";
 
-export function Metrics(): ReactElement {
+interface IProps {
+  bond: IAllBondData;
+}
+
+export function Metrics({ bond }: IProps): ReactElement {
+  const isBondLoading: boolean = useSelector<IReduxState, boolean>(state => state.bonding.loading ?? true);
   const mintPrice: number = 0;
   const wrapTokenPrice: number = 28796.91;
   const tokenPrice: number = 405.61;

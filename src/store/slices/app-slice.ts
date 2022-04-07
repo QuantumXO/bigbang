@@ -7,6 +7,9 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { RootState } from "@store/store";
 import allBonds from "@services/helpers/bond";
 import { BigNumberish } from '@ethersproject/bignumber';
+import { StableBond } from '@services/helpers/bond/stable-bond';
+import { LPBond } from '@services/helpers/bond/lp-bond';
+import { IBlockchain } from '@models/blockchain';
 
 interface ILoadAppDetails {
   networkID: number;
@@ -35,78 +38,54 @@ export interface IAppSlice {
 export const loadAppDetails = createAsyncThunk(
   'app/loadAppDetails',
   async ({ networkID, provider }: ILoadAppDetails): Promise<Omit<IAppSlice, 'loading' | 'networkID'>> => {
-    console.group('app/loadAppDetails');
+    const stableTokenPrice: number = getTokenPrice("USDC");
     
-    const stableTokenPrice = getTokenPrice("USDC");
-    
-    console.log('stableTokenPrice: ', stableTokenPrice);
-    
-    const addresses = getBondAddresses(networkID);
-  
-    console.log('addresses: ', addresses);
+    const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
     
     const stakingContract: Contract = new Contract(addresses.STAKING_ADDRESS, StakingContract, provider);
     const currentBlock = await provider.getBlockNumber();
     const currentBlockTime = (await provider.getBlock(currentBlock)).timestamp;
     const bangContract: Contract = new Contract(addresses.BANG_ADDRESS, BangTokenContract, provider);
     const bigContract: Contract = new Contract(addresses.BIG_ADDRESS, BigTokenContract, provider);
-  
-    const marketPrice = ((await getMarketPrice(networkID, provider)) / Math.pow(10, 9)) * stableTokenPrice;
-    
-    ///
-    const a = await bigContract.totalSupply();
-    const b = await bangContract.circulatingSupply();
-    console.log('await bigContract.totalSupply(): ', a);
-    console.log('bangContract.circulatingSupply(): ', b);
-    ///
-    
+    const marketPrice: number = ((await getMarketPrice(networkID, provider)) / Math.pow(10, 9)) * stableTokenPrice;
     const totalSupply = (await bigContract.totalSupply()) / Math.pow(10, 9);
     const circSupply = (await bangContract.circulatingSupply()) / Math.pow(10, 9);
+    const stakingTVL: number = circSupply * marketPrice;
+    const marketCap: number = totalSupply * marketPrice;
+    
+    const tokenBalPromises:Promise<number>[] = allBonds
+      .map((bond: StableBond | LPBond) => bond.getTreasuryBalance(networkID, provider));
+    const tokenBalances: number[] = await Promise.all(tokenBalPromises);
   
+    console.log(tokenBalances);
     
-    const stakingTVL = circSupply * marketPrice;
-    const marketCap = totalSupply * marketPrice;
-  
-    console.log('stakingTVL: ', stakingTVL);
-    console.log('marketCap: ', marketCap);
+    const treasuryBalance: number = tokenBalances
+      .reduce((tokenBalance0: number, tokenBalance1: number) => tokenBalance0 + tokenBalance1, 0);
     
-    const tokenBalPromises = allBonds.map(bond => bond.getTreasuryBalance(networkID, provider));
-    const tokenBalances = await Promise.all(tokenBalPromises);
-    const treasuryBalance = tokenBalances
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      .reduce((tokenBalance0, tokenBalance1) => tokenBalance0 + tokenBalance1, 0);
-    
-    const tokenAmountsPromises = allBonds.map(bond => bond.getTokenAmount(networkID, provider));
-    const tokenAmounts = await Promise.all(tokenAmountsPromises);
+    const tokenAmountsPromises = allBonds.map((bond: StableBond | LPBond) => bond.getTokenAmount(networkID, provider));
+    const tokenAmounts: number[] = await Promise.all(tokenAmountsPromises);
     const rfvTreasury = tokenAmounts
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      .reduce((tokenAmount0, tokenAmount1) => tokenAmount0 + tokenAmount1, 0);
+      .reduce((tokenAmount0: number, tokenAmount1: number) => tokenAmount0 + tokenAmount1, 0);
     
-    const timeBondsAmountsPromises = allBonds.map(bond => bond.getTimeAmount(networkID, provider));
-    const timeBondsAmounts = await Promise.all(timeBondsAmountsPromises);
-    const timeAmount = timeBondsAmounts
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      .reduce((timeAmount0, timeAmount1) => timeAmount0 + timeAmount1, 0);
+    const timeBondsAmountsPromises = allBonds.map((bond: StableBond | LPBond) => bond.getBigAmount(networkID, provider));
+    const timeBondsAmounts: number[] = await Promise.all(timeBondsAmountsPromises);
+    const timeAmount: number = timeBondsAmounts
+      .reduce((timeAmount0: number, timeAmount1: number) => timeAmount0 + timeAmount1, 0);
     const timeSupply = totalSupply - timeAmount;
     
-    const rfv = rfvTreasury / timeSupply;
-  
-    console.log('rfv: ', rfv);
+    const rfv: number = rfvTreasury / timeSupply;
     
     const epoch = await stakingContract.epoch();
     const stakingReward = epoch.distribute;
     const circ = await bangContract.circulatingSupply();
-    const stakingRebase = stakingReward / circ;
-    const fiveDayRate = Math.pow(1 + stakingRebase, 5 * 3) - 1;
-    const stakingAPY = Math.pow(1 + stakingRebase, 365 * 3) - 1;
-    
+    const stakingRebase: number = stakingReward / circ;
+    const fiveDayRate: number = Math.pow(1 + stakingRebase, 5 * 3) - 1;
+    const stakingAPY: number = Math.pow(1 + stakingRebase, 365 * 3) - 1;
     const currentIndex: BigNumberish = await stakingContract.index();
     const nextRebase = epoch.endTime;
     
-    const treasuryRunway = rfvTreasury / circSupply;
-    const runway = Math.log(treasuryRunway) / Math.log(1 + stakingRebase) / 3;
-    
-    console.groupEnd();
+    const treasuryRunway: number = rfvTreasury / circSupply;
+    const runway: number = Math.log(treasuryRunway) / Math.log(1 + stakingRebase) / 3;
     
     return {
       currentIndex: String(Number(ethers.utils.formatUnits(currentIndex, "gwei")) / 4.5),

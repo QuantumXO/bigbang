@@ -19,13 +19,14 @@ export namespace IBlockchain {
     isDisabled?: boolean;
     chainNetwork?: 'mainnet';
     blockExplorerUrls?: string[];
-    nativeCurrency?: {
-      name: string;
-      symbol: string;
-      decimals: number;
-    };
+    nativeCurrency: INetworkToken;
     rpcUrls?: string[];
     bondAddresses: IBondMainnetAddresses,
+    tokens: INetworkToken[];
+  }
+  export interface INetworkToken extends Pick<IToken, 'id' | 'address'> {
+    id: WTF_TokenType;
+    address: string;
   }
   export interface IAddEthereumChainParameter {
     chainId: string;
@@ -34,8 +35,8 @@ export namespace IBlockchain {
     chainName?: string;
     iconUrls?: string[];
     nativeCurrency?: {
+      id: string;
       name: string;
-      symbol: string;
       decimals: number;
     };
     rpcUrls?: string[];
@@ -52,6 +53,7 @@ export namespace IBlockchain {
     BIG_ADDRESS: string;
     BANG_ADDRESS: string;
     DYEL_ADDRESS: string;
+    USDC_ADDRESS: string;
     STAKING_ADDRESS: string;
     STAKING_HELPER_ADDRESS: string;
     TREASURY_ADDRESS: string;
@@ -72,22 +74,26 @@ export namespace IBlockchain {
     YEL_dYEL_ADDRESS: string;
   }
   export interface INetworkAddresses {
+    [NetworksEnum.FTM]?: IBondAddresses;
     [NetworksEnum.ETH]?: IBondAddresses;
     [NetworksEnum.MATIC]?: IBondAddresses;
     [NetworksEnum.BNB]?: IBondAddresses;
-    [NetworksEnum.FTM]?: IBondAddresses;
   }
   export type TokenType = 'BIG' | 'BANG' | 'dYEL';
   export type TokenNameType = 'big' | 'bang' | 'dYEL';
   export interface IToken {
-    id: TokenType;
-    name: TokenNameType;
+    id: WTF_TokenType;
+    address: string;
     decimals: number;
-    symbol: string;
+    name?: WTF_TokenNameType;
+    icon?: string;
+    isNativeCurrency?: boolean;
   }
   export type StableCommonTokenType = 'USDC';
+  export type FTMNativeCurrencyType = 'FTM';
   export type StableFTMTokenType = StableCommonTokenType;
   export type FTMTokenType =
+    | FTMNativeCurrencyType
     | StableFTMTokenType
     | 'wFTM'         // wrapped Coin
     | 'SCREAM_wFTM'  // LP
@@ -110,4 +116,5 @@ export namespace IBlockchain {
     | 'ORBS_wMATIC';   // LP
   export type StableTokenType = StableFTMTokenType | StableMATICTokenType;
   export type WTF_TokenType = TokenType | FTMTokenType | MATICTokenType;
+  export type WTF_TokenNameType = | 'unknown' | WTF_TokenType;
 }

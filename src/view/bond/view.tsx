@@ -30,7 +30,7 @@ export function Bond({ bond }: IBondProps): ReactElement {
       <Zoom in>
         <div className="bond__wrapper">
           <Header bond={bond} />
-          <Metrics />
+          <Metrics bond={bond} />
           {onRenderTabContent()}
         </div>
       </Zoom>

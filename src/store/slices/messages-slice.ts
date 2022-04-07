@@ -8,12 +8,12 @@ interface IMessage {
 export type Message = IMessage & {
   severity: Color;
 };
-export interface MessagesState {
+export interface IMessagesState {
   message: Message | null;
 }
 
 // Adds a message to the store
-const createMessage = function(state: MessagesState, severity: Color, text: IMessage): void {
+const createMessage = function(state: IMessagesState, severity: Color, text: IMessage): void {
   const message: Message = {
     severity,
     ...text
@@ -21,7 +21,7 @@ const createMessage = function(state: MessagesState, severity: Color, text: IMes
   state.message = message;
 };
 
-const initialState: MessagesState = {
+const initialState: IMessagesState = {
   message: null
 };
 const messagesSlice = createSlice({

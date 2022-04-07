@@ -147,8 +147,6 @@ const calcWrapValue = async ({ isWrap, value, provider, networkID }: IWrapDetail
   
   const dYelContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, provider);
   
-  console.log('calcWrapValue() dYelContract: ', dYelContract);
-  
   if (isWrap) {
     const dYelValue = await dYelContract.BANGTodYel(amountInWei);
     wrapValue = dYelValue / Math.pow(10, 18);

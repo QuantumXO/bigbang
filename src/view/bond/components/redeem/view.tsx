@@ -7,7 +7,6 @@ import { IPendingTxn, isPendingTxn, txnButtonText } from '@store/slices/pending-
 import { Skeleton } from '@material-ui/lab';
 import { IReduxState } from '@store/slices/state.interface';
 import { IAllBondData } from '@services/hooks/bonds';
-import { IUserBondDetails } from '@store/slices/account-slice';
 import { messages } from '@constants/messages';
 import { warning } from '@store/slices/messages-slice';
 import React, { ReactElement } from 'react';
@@ -16,6 +15,7 @@ import Togglers from '@view/bond/components/togglers';
 
 import "./styles.scss";
 import { IBond } from '@models/bond';
+import { IAccount } from '@models/account';
 
 interface IBondRedeem {
   bond: IAllBondData;
@@ -24,7 +24,7 @@ interface IBondRedeem {
 
 export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement {
   const dispatch = useDispatch();
-  const { provider, address, chainID, checkIsWrongNetwork } = useWeb3Context();
+  const { provider, address, chainID, getIsWrongNetwork } = useWeb3Context();
 
   const isBondLoading: boolean = useSelector<IReduxState, boolean>(state => state.bonding.loading ?? true);
   const currentBlockTime: number = useSelector<IReduxState, number>(state => {
@@ -37,12 +37,12 @@ export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement
     return state.bonding && state.bonding[bond.name];
   });
 
-  const bondDetails: IUserBondDetails = useSelector<IReduxState, IUserBondDetails>(state => {
+  const bondDetails: IAccount.IUserBondDetails = useSelector<IReduxState, IAccount.IUserBondDetails>(state => {
     return state.account.bonds && state.account.bonds[bond.name];
   });
 
   async function onRedeem(autostake: boolean) {
-    if (await checkIsWrongNetwork()) return;
+    if (await getIsWrongNetwork()) return;
 
     if (bond.interestDue === 0 || bond.pendingPayout === 0) {
       dispatch(warning({ text: messages.nothing_to_claim }));

@@ -1,6 +1,7 @@
 import { IBlockchain } from '@models/blockchain';
 import { messages } from '@constants/messages';
 import { SUPPORTED_NETWORKS_CHAIN_IDS, ACTIVE_NETWORKS } from '@constants/blockchain';
+import tokensAssets, { ITokenAsset } from '@constants/tokens';
 
 interface INetworkArgs {
   newNetworkId?: IBlockchain.NetworkType
@@ -92,7 +93,7 @@ export class Network {
         chainName,
         rpcUrls,
         blockExplorerUrls,
-        nativeCurrency
+        // nativeCurrency
       }
   
       return window.ethereum.request({
@@ -108,14 +109,61 @@ export class Network {
     return ACTIVE_NETWORKS.find(({ id }: IBlockchain.INetwork) => id === this.newNetworkId);
   }
   
-  get getStableTokenForCurrentNetwork(): IBlockchain.StableTokenType {
+  /* get getStableTokenForCurrentNetwork(): IBlockchain.StableTokenType | undefined {
     const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
     
     if (currentNetwork) {
       return currentNetwork.stableTokenType;
-    } else {
-      throw new Error('Can\'t get current network');
     }
+  } */
+  
+  get getMainnetRpcURI(): string | undefined {
+    const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
+  
+    if (currentNetwork) {
+      const {rpcUrls = []} = currentNetwork;
+      return rpcUrls[0];
+    }
+  }
+  
+  get getCurrentNetworkTokens(): IBlockchain.IToken[] | undefined {
+    const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
+    let result: IBlockchain.IToken[] | undefined;
+  
+    if (currentNetwork) {
+      const { tokens, nativeCurrency } = currentNetwork;
+      result = tokens
+        .map(({ id, address }: IBlockchain.INetworkToken): IBlockchain.IToken | undefined => {
+          const tokenAsset: ITokenAsset | undefined = tokensAssets
+            .find(({ id: tokenAssetId }: ITokenAsset) => tokenAssetId === id);
+    
+          if (tokenAsset) {
+            return {
+              ...tokenAsset,
+              id,
+              address,
+            };
+          }
+        })
+        .filter((item: IBlockchain.INetworkToken | undefined) => !!item) as IBlockchain.IToken[];
+      
+      const nativeCurrencyAsset: ITokenAsset | undefined = tokensAssets
+        .find(({ id: tokenAssetId }: ITokenAsset) => tokenAssetId === nativeCurrency.id);
+      
+      if (nativeCurrencyAsset) {
+        const { id, address } = nativeCurrency;
+        
+        const nativeCurrencyToken: IBlockchain.IToken = {
+          ...nativeCurrencyAsset,
+          id,
+          address,
+          isNativeCurrency: true,
+        };
+        result.push(nativeCurrencyToken);
+      }
+    }
+    
+    return result;
   }
 }
 

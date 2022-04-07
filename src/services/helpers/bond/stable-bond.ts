@@ -2,7 +2,9 @@ import { BigNumber, Contract, ContractInterface } from 'ethers';
 import { Bond, BondOpts } from "./bond";
 import { IBlockchain } from "@models/blockchain";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
-import { getBondAddresses } from "@constants/addresses";
+import { getBondAddresses } from "@services/helpers/get-bond-addresses";
+import { TokenContract } from '@services/abi';
+import { getNativeCurrencyInUSDC } from '@services/helpers';
 
 export interface StableBondOpts extends BondOpts {
   readonly reserveContractAbi: ContractInterface;
@@ -30,21 +32,24 @@ export class StableBond extends Bond {
     networkID: IBlockchain.NetworksEnum,
     provider: StaticJsonRpcProvider
   ): Promise<number> {
-    const addresses = getBondAddresses(networkID);
-    const token: Contract = this.getContractForReserve(networkID, provider);
-    let tokenAmount = await token.balanceOf(addresses.TREASURY_ADDRESS);
+    const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
+    // const tokenContract: Contract = this.getContractForReserve(networkID, provider);
+    const tokenContract: Contract = new Contract('0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', TokenContract, provider);
     
+    // let tokenAmount = await tokenContract.balanceOf(addresses.TREASURY_ADDRESS);
+    let tokenAmount = await tokenContract.balanceOf('0xF411118dbD6338aB40Fa8e3bF514596DbF1a7528');
+  
     if (this.tokensInStrategy) {
       tokenAmount = BigNumber.from(tokenAmount).add(BigNumber.from(this.tokensInStrategy)).toString();
     }
-    return tokenAmount / Math.pow(10, 18);
+    return (tokenAmount / Math.pow(10, 18) * (await getNativeCurrencyInUSDC(networkID, provider)));
   }
   
   public async getTokenAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number> {
     return this.getTreasuryBalance(networkID, provider);
   }
   
-  public getTimeAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number> {
+  public getBigAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number> {
     return new Promise<number>(reserve => reserve(0));
   }
 }

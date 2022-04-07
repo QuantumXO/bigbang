@@ -1,15 +1,15 @@
 import { IPendingTxn } from "./pending-txns-slice";
-import { IAccountSlice } from "./account-slice";
 import { IAppSlice } from "./app-slice";
 import { IBondSlice } from "./bond-slice";
-import { MessagesState } from "./messages-slice";
+import { IMessagesState } from "./messages-slice";
 import { IWrapSlice } from "./wrap-slice";
+import { IAccount } from '@models/account';
 
 export interface IReduxState {
   pendingTransactions: IPendingTxn[];
-  account: IAccountSlice;
+  account:  IAccount.IAccountSlice;
   app: IAppSlice;
   bonding: IBondSlice;
-  messages: MessagesState;
+  messages: IMessagesState;
   wrapping: IWrapSlice;
 }

@@ -107,16 +107,15 @@ export const calcBondDetails = createAsyncThunk(
     
     const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
     
-    const bondContract = bond.getContractForBond(networkID, provider);
-    const bondCalcContract = getBondCalculator(networkID, provider);
+    const bondContract: Contract = bond.getContractForBond(networkID, provider);
+    const bondCalcContract: Contract = getBondCalculator(networkID, provider);
     
     const terms = await bondContract.terms();
     const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9);
     
-    let marketPrice = await getMarketPrice(networkID, provider);
-    
     const stableTokenPrice: number = getTokenPrice('USDC');
-    marketPrice = (marketPrice / Math.pow(10, 9)) * stableTokenPrice;
+    
+    const marketPrice: number = ((await getMarketPrice(networkID, provider)) / Math.pow(10, 9)) * stableTokenPrice;
     
     try {
       bondPrice = await bondContract.bondPriceInUSD();
@@ -155,11 +154,12 @@ export const calcBondDetails = createAsyncThunk(
     }
     
     // Calculate bonds purchased
-    const token = bond.getContractForReserve(networkID, provider);
+    const token: Contract = bond.getContractForReserve(networkID, provider);
+    
     let purchased = await token.balanceOf(addresses.TREASURY_ADDRESS);
     
     if (bond.isLP) {
-      const assetAddress = bond.getAddressForReserve(networkID);
+      const assetAddress: string = bond.getAddressForReserve(networkID);
       const markdown = await bondCalcContract.markdown(assetAddress);
       
       purchased = await bondCalcContract.valuation(assetAddress, purchased);
@@ -197,13 +197,13 @@ interface IBondAsset {
   networkID: IBlockchain.NetworksEnum;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   slippage: number;
-  useAvax: boolean;
+  useNativeCurrency: boolean;
 }
 
 export const bondAsset = createAsyncThunk(
   'bonding/bondAsset',
   async (
-    { value, address, bond, networkID, provider, slippage, useAvax }: IBondAsset,
+    { value, address, bond, networkID, provider, slippage, useNativeCurrency }: IBondAsset,
     { dispatch }
   ) => {
     const depositorAddress = address;
@@ -219,7 +219,7 @@ export const bondAsset = createAsyncThunk(
     try {
       const gasPrice = await getGasPrice(provider);
       
-      if (useAvax) {
+      if (useNativeCurrency) {
         bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { value: valueInWei, gasPrice });
       } else {
         bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { gasPrice });

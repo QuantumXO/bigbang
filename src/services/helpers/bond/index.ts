@@ -1,34 +1,33 @@
 import { IBlockchain } from '@models/blockchain';
 import { LPBond } from "./lp-bond";
-import { StableBond } from "./stable-bond";
-import { IAllBondData } from '@services/hooks/bonds';
+import { CustomBond, StableBond } from './stable-bond';
 import {
   // LpBondContract,
   // LpReserveContract,
-  // StableReserveContract,
   // WavaxBondContract,
+  StableReserveContract,
   StableBondContract,
 } from "@services/abi";
 
 import AvaxIcon from "@assets/images/tokens/AVAX.svg";
 
-export const ftm: StableBond = new StableBond({
+export const ftm: CustomBond = new CustomBond({
   name: 'ftm',
   displayName: 'wFTM',
   bondToken: 'wFTM',
   bondIconSvg: AvaxIcon,
   bondContractABI: StableBondContract,
-  reserveContractAbi: StableBondContract,
+  reserveContractAbi: StableReserveContract,
   networkAddresses: {
     [IBlockchain.NetworksEnum.FTM]: {
       bondAddress: "0xc8654069E1D103062ef67C9492277f56caaaC26d",
-      reserveAddress: "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"
+      reserveAddress: "0xec711b0b4945d9f583188868fe7b62db7bb059e3"
     },
   },
   tokensInStrategy: '0',
 });
 
-export default <any[]>[ftm];
+export default <(StableBond | LPBond | CustomBond)[]>[ftm];
 
 /* export const wavax: CustomBond = new CustomBond({
  name: "wavax",

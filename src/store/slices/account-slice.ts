@@ -1,92 +1,16 @@
-import { Contract, ethers } from 'ethers';
+import { BigNumber, Contract, ethers } from 'ethers';
 import { getBondAddresses } from "@constants/index";
 import { BangTokenContract, BigTokenContract, dYelTokenContract, TokenContract } from "@services/abi";
 import { setAll } from '@services/helpers';
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
-import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
-import { Bond } from '@services/helpers/bond/bond';
 import { IBlockchain } from "@models/blockchain";
 import { RootState } from "../store";
-import { IToken } from '@services/helpers/tokens';
 import { BigNumberish } from '@ethersproject/bignumber';
-
-interface IGetBalances {
-  address: string;
-  networkID: IBlockchain.NetworksEnum;
-  provider: StaticJsonRpcProvider | JsonRpcProvider;
-}
-interface IAccountBalances {
-  balances: {
-    bang: string;
-    big: string;
-    dYel: string;
-  };
-}
-interface ILoadAccountDetails {
-  address: string;
-  networkID: IBlockchain.NetworksEnum;
-  provider: StaticJsonRpcProvider | JsonRpcProvider;
-}
-interface IUserAccountDetails {
-  balances: {
-    bang: string;
-    big: string;
-    dYel: string;
-  };
-  staking: {
-    big: number;
-    bang: number;
-  };
-  wrapping: {
-    bang: number;
-  };
-}
-interface ICalcUserBondDetails {
-  address: string;
-  bond: Bond;
-  provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
-}
-export interface IUserBondDetails {
-  allowance: number;
-  balance: number;
-  avaxBalance: number;
-  interestDue: number;
-  bondMaturationBlock: number;
-  pendingPayout: number; //Payout formatted in gwei.
-}
-interface ICalcUserTokenDetails {
-  address: string;
-  token: IToken;
-  provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
-}
-export interface IUserTokenDetails {
-  allowance: number;
-  balance: number;
-  isAvax?: boolean;
-}
-export interface IAccountSlice {
-  bonds: { [key: string]: IUserBondDetails };
-  balances: {
-    bang: string;
-    big: string;
-    dYel: string;
-  };
-  loading: boolean;
-  staking: {
-    big: number;
-    bang: number;
-  };
-  wrapping: {
-    bang: number;
-  };
-  tokens: { [key: string]: IUserTokenDetails };
-}
+import { IAccount } from '@models/account';
 
 export const getBalances = createAsyncThunk(
   "account/getBalances",
-  async ({ address, networkID, provider }: IGetBalances): Promise<IAccountBalances> => {
+  async ({ address, networkID, provider }: IAccount.IGetBalances): Promise<IAccount.IAccountBalances> => {
     const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
     
     const bigContract: Contract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, provider);
@@ -107,7 +31,7 @@ export const getBalances = createAsyncThunk(
 
 export const loadAccountDetails = createAsyncThunk(
   "account/loadAccountDetails",
-  async ({ networkID, provider, address }: ILoadAccountDetails): Promise<IUserAccountDetails> => {
+  async ({ networkID, provider, address }: IAccount.ILoadAccountDetails): Promise<IAccount.IUserAccountDetails> => {
     let bigBalance: number = 0;
     let bangBalance: number = 0;
     let dYelBalance: number = 0;
@@ -163,7 +87,7 @@ export const calculateUserBondDetails = createAsyncThunk(
     bond,
     networkID,
     provider
-  }: ICalcUserBondDetails) => {
+  }: IAccount.ICalcUserBondDetails) => {
     if (!address) {
       return new Promise<any>(resolve => {
         resolve({
@@ -179,39 +103,40 @@ export const calculateUserBondDetails = createAsyncThunk(
           avaxBalance: 0
         });
       });
-    }
-    
-    const bondContract: Contract = bond.getContractForBond(networkID, provider);
-    const reserveContract: Contract = bond.getContractForReserve(networkID, provider);
-    
-    const bondDetails = await bondContract.bondInfo(address);
-    const interestDue = bondDetails.payout / Math.pow(10, 9);
-    const bondMaturationBlock = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
-    const pendingPayout = await bondContract.pendingPayoutFor(address);
-    
-    let balance = "0";
-    
-    const allowance = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
-    balance = await reserveContract.balanceOf(address);
-    const balanceVal = ethers.utils.formatEther(balance);
-    
-    const avaxBalance = await provider.getSigner().getBalance();
-    const avaxVal = ethers.utils.formatEther(avaxBalance);
-    
-    const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, "gwei");
+    } else {
+      const bondContract: Contract = bond.getContractForBond(networkID, provider);
+      const reserveContract: Contract = bond.getContractForReserve(networkID, provider);
+      
+      const bondDetails = await bondContract.bondInfo(address);
+      const interestDue: number = bondDetails.payout / Math.pow(10, 9);
+      const bondMaturationBlock: number = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
+      const pendingPayout: BigNumber = await bondContract.pendingPayoutFor(address);
+      
+      let balance = "0";
   
-    return {
-      bond: bond.name,
-      displayName: bond.displayName,
-      bondIconSvg: bond.bondIconSvg,
-      isLP: bond.isLP,
-      allowance: Number(allowance),
-      balance: Number(balanceVal),
-      avaxBalance: Number(avaxVal),
-      interestDue,
-      bondMaturationBlock,
-      pendingPayout: Number(pendingPayoutVal)
-    };
+      const allowance: BigNumber = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
+      
+      balance = await reserveContract.balanceOf(address);
+      
+      const balanceVal: string = ethers.utils.formatEther(balance);
+      const avaxBalance = await provider.getSigner().getBalance();
+      const avaxVal = ethers.utils.formatEther(avaxBalance);
+  
+      const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, "gwei");
+  
+      return {
+        bond: bond.name,
+        displayName: bond.displayName,
+        bondIconSvg: bond.bondIconSvg,
+        isLP: bond.isLP,
+        allowance: Number(allowance),
+        balance: Number(balanceVal),
+        avaxBalance: Number(avaxVal),
+        interestDue,
+        bondMaturationBlock,
+        pendingPayout: Number(pendingPayoutVal)
+      };
+    }
   }
 );
 
@@ -222,12 +147,10 @@ export const calculateUserTokenDetails = createAsyncThunk(
     token,
     networkID,
     provider
-  }: ICalcUserTokenDetails) => {
-    // console.log('account/calculateUserTokenDetails: ', address, token, networkID, provider);
-    
+  }: IAccount.ICalcUserTokenDetailsArgs) => {
     if (!address) {
-      return new Promise<any>(resevle => {
-        resevle({
+      return new Promise<any>((resolve) => {
+        resolve({
           token: "",
           address: "",
           img: "",
@@ -235,42 +158,45 @@ export const calculateUserTokenDetails = createAsyncThunk(
           balance: 0
         });
       });
+    } else {
+      if (token.isNativeCurrency) {
+        const nativeCurrencyBalance: BigNumber = await provider.getSigner().getBalance();
+        const nativeCurrencyVal: string = ethers.utils.formatEther(nativeCurrencyBalance);
+    
+        return {
+          token: token.name,
+          tokenIcon: token.icon,
+          balance: Number(nativeCurrencyVal),
+          isNativeCurrency: true
+        };
+      } else {
+        if (token.address) {
+          
+          const addresses = getBondAddresses(networkID);
+          const tokenContract: Contract = new Contract(token.address, TokenContract, provider);
+          const balance = await tokenContract.balanceOf(address);
+          // #TODO remove comment
+          // const allowance = await tokenContract.allowance(address, addresses.ZAPIN_ADDRESS);
+          const allowance = 1;
+    
+          const balanceVal: number = Number(balance) / Math.pow(10, token.decimals);
+    
+          return {
+            token: token.name,
+            address: token.address,
+            icon: token.icon,
+            allowance: Number(allowance),
+            balance: Number(balanceVal)
+          };
+        } else {
+          throw new Error('No exist token address');
+        }
+      }
     }
-    
-    if (token.isAvax) {
-      const avaxBalance = await provider.getSigner().getBalance();
-      const avaxVal = ethers.utils.formatEther(avaxBalance);
-      
-      return {
-        token: token.name,
-        tokenIcon: token.img,
-        balance: Number(avaxVal),
-        isAvax: true
-      };
-    }
-  
-    const addresses = getBondAddresses(networkID);
-    
-    const tokenContract: Contract = new Contract(token.address, TokenContract, provider);
-    
-    let balance = "0";
-    
-    const allowance = await tokenContract.allowance(address, addresses.ZAPIN_ADDRESS);
-    balance = await tokenContract.balanceOf(address);
-  
-    const balanceVal: number = Number(balance) / Math.pow(10, token.decimals);
-    
-    return {
-      token: token.name,
-      address: token.address,
-      img: token.img,
-      allowance: Number(allowance),
-      balance: Number(balanceVal)
-    };
   }
 );
 
-const initialState: IAccountSlice = {
+const initialState: IAccount.IAccountSlice = {
   loading: true,
   bonds: {},
   balances: { bang: "", big: "", dYel: "" },
@@ -287,7 +213,7 @@ const accountSlice = createSlice({
       setAll(state, action.payload);
     }
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
       .addCase(loadAccountDetails.pending, state => {
         state.loading = true;

@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { IBlockchain } from '@models/blockchain';
 import { getTokenUrl } from '@services/helpers'
-import { getBondAddresses } from "@constants/addresses";
+import { getBondAddresses } from "@services/helpers/get-bond-addresses";
 import { DEFAULT_NETWORK } from "@constants/blockchain";
 import { TOKEN_DECIMALS } from '@constants/blockchain';
 import network from '@services/common/network';

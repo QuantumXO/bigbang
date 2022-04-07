@@ -26,13 +26,13 @@ interface IBondPurchaseProps {
 
 export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps): ReactElement {
   const dispatch = useDispatch();
-  const { provider, address, chainID, checkIsWrongNetwork } = useWeb3Context();
+  const { provider, address, chainID, getIsWrongNetwork } = useWeb3Context();
 
   const [quantity, setQuantity] = useState<string>('');
-  const [useAvax, setUseAvax] = useState<boolean>(false);
+  const [useNativeCurrency, setUseAvax] = useState<boolean>(false);
   
   const bondDetailsDebounce = useDebounce(quantity, 1000);
-  const displayUnits: string = useAvax ? 'AVAX' : bond.displayUnits;
+  const displayUnits: string = useNativeCurrency ? 'AVAX' : bond.displayUnits;
   
   useEffect((): void => {
     dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainID }));
@@ -52,7 +52,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
   };
 
   async function onBond() {
-    if (await checkIsWrongNetwork()) return;
+    if (await getIsWrongNetwork()) return;
 
     if (quantity === '') {
       dispatch(warning({ text: messages.before_minting }));
@@ -72,7 +72,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
             networkID: chainID,
             provider,
             address,
-            useAvax,
+            useNativeCurrency,
           }),
         );
         clearInput();
@@ -80,7 +80,6 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
     } else {
       const trimBalance = trim(Number(quantity), 10);
       await dispatch(
-        //@ts-ignore
         bondAsset({
           value: trimBalance,
           slippage,
@@ -88,7 +87,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
           networkID: chainID,
           provider,
           address,
-          useAvax,
+          useNativeCurrency,
         }),
       );
       clearInput();
@@ -99,7 +98,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
 
   const setMax = (): void => {
     let amount: string | number = Math
-      .min(bond.maxBondPriceToken * 0.9999, useAvax ? bond.avaxBalance * 0.99 : bond.balance);
+      .min(bond.maxBondPriceToken * 0.9999, useNativeCurrency ? bond.nativeCurrencyBalance * 0.99 : bond.balance);
 
     if (amount) {
       amount = trim(amount);
@@ -110,7 +109,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
 
 
   const onSeekApproval = async () => {
-    if (!await checkIsWrongNetwork()) {
+    if (!await getIsWrongNetwork()) {
       dispatch(changeApproval({ address, bond, provider, networkID: chainID }));
     }
   };
@@ -118,7 +117,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
   const onRenderMintBtn = (): ReactElement => {
     let layout: ReactElement;
     
-    if (hasAllowance() || useAvax) {
+    if (hasAllowance() || useNativeCurrency) {
       layout = (
         <div
           className="action__btn btn__primary--fulfilled"
@@ -152,7 +151,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
       {
         id: 'yourBalance',
         label: 'Your Balance',
-        value: `${trim(useAvax ? bond.avaxBalance : bond.balance, 4)} ${displayUnits}`
+        value: `${trim(useNativeCurrency ? bond.nativeCurrencyBalance : bond.balance, 4)} ${displayUnits}`
       },
       {
         isDivided: true,
@@ -210,7 +209,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
                         thumb: 'thumb',
                         input: 'input',
                         track: 'track',
-                        root: cx('switch', { checked: useAvax }),
+                        root: cx('switch', { checked: useNativeCurrency }),
                         checked: 'checked',
                       }}
                       onChange={(e: ChangeEvent<HTMLInputElement>, checked: boolean) => setUseAvax(checked)}
@@ -238,7 +237,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
               />
             </div>
   
-            {!hasAllowance() && !useAvax && (
+            {!hasAllowance() && !useNativeCurrency && (
               <p className="description">
                 Note: The "Approve" transaction is only needed when minting for the first time; subsequent minting only&nbsp;
                 requires you to perform the "Mint" transaction.

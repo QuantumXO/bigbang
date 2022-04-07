@@ -23,16 +23,44 @@ export function App(): ReactElement {
   const address: string = useAddress();
   const { bonds } = useBonds();
   const { tokens } = useTokens();
-  const isAppLoading = useSelector<IReduxState, boolean>(state => state.app.loading);
-  const isAppLoaded = useSelector<IReduxState, boolean>(state => !Boolean(state.app.marketPrice));
+  const isAppLoading: boolean = useSelector<IReduxState, boolean>(state => state.app.loading);
+  const isAppLoaded: boolean = useSelector<IReduxState, boolean>(state => !Boolean(state.app.marketPrice));
   let layout: ReactElement;
   
-  const [walletChecked, setWalletChecked] = useState(false);
-  const [isLoading, setLoading] = useState(true);
+  const [walletChecked, setWalletChecked] = useState<boolean>(false);
+  const [isLoadingTokensPrices, seIsLoadingTokensPrices] = useState<boolean>(true);
   
   useEffect((): void => {
-    loadTokenPrices().then(() => setLoading(false));
+    (async function() {
+      await loadTokenPrices();
+      seIsLoadingTokensPrices(false);
+  
+      if (hasCachedProvider()) {
+        await connect();
+        setWalletChecked(true);
+      } else {
+        setWalletChecked(true);
+      }
+    })()
   }, []);
+  
+  useEffect((): void => {
+    if (walletChecked) {
+      loadDetails('app');
+      loadDetails('account');
+      loadDetails('userBonds');
+      loadDetails('userTokens');
+    }
+  }, [walletChecked]);
+  
+  useEffect((): void => {
+    if (isConnected) {
+      loadDetails('app');
+      loadDetails('account');
+      loadDetails('userBonds');
+      loadDetails('userTokens');
+    }
+  }, [isConnected]);
 
   async function loadDetails(whichDetails: string): Promise<void> {
     const loadProvider: JsonRpcProvider = provider;
@@ -50,23 +78,25 @@ export function App(): ReactElement {
 
     if (whichDetails === 'userBonds' && address && isConnected) {
       bonds.map(bond => {
-        dispatch(calculateUserBondDetails({ address, bond, provider, networkID: chainID }));
+        dispatch(calculateUserBondDetails({ address, bond, networkID: chainID, provider }));
       });
     }
 
     if (whichDetails === 'userTokens' && address && isConnected) {
-      tokens.map(token => {
+      tokens.map((token: IAllTokenData) => {
         dispatch(calculateUserTokenDetails({ address, token, provider, networkID: chainID }));
       });
     }
   }
 
   const loadApp = useCallback(
-    (loadProvider) => {
+    (loadProvider: JsonRpcProvider): void => {
       dispatch(loadAppDetails({ networkID: chainID, provider: loadProvider }));
+      
       bonds.map((bond: IAllBondData): void => {
         dispatch(calcBondDetails({ bond, value: null, provider: loadProvider, networkID: chainID }));
       });
+      
       tokens.map((token: IAllTokenData): void => {
         dispatch(calculateUserTokenDetails({ address: '', token, provider, networkID: chainID }));
       });
@@ -75,39 +105,13 @@ export function App(): ReactElement {
   );
 
   const loadAccount = useCallback(
-    (loadProvider) => {
+    (loadProvider: JsonRpcProvider): void => {
       dispatch(loadAccountDetails({ networkID: chainID, address, provider: loadProvider }));
     },
     [isConnected],
   );
 
-  useEffect(() => {
-    if (hasCachedProvider()) {
-      connect().then(() => setWalletChecked(true));
-    } else {
-      setWalletChecked(true);
-    }
-  }, []);
-
-  useEffect((): void => {
-    if (walletChecked) {
-      loadDetails('app');
-      loadDetails('account');
-      loadDetails('userBonds');
-      loadDetails('userTokens');
-    }
-  }, [walletChecked]);
-
-  useEffect((): void => {
-    if (isConnected) {
-      loadDetails('app');
-      loadDetails('account');
-      loadDetails('userBonds');
-      loadDetails('userTokens');
-    }
-  }, [isConnected]);
-
-  if (isAppLoading || isLoading) {
+  if (isAppLoading || isLoadingTokensPrices) {
     layout = <Loading />;
   } else {
     layout = (

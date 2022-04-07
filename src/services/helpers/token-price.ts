@@ -14,6 +14,10 @@ export const loadTokenPrices = async (): Promise<void> => {
   
   cache['FTM'] = data['fantom']?.usd;
   cache['USDC'] = data['usd-coin']?.usd;
+  
+  return data;
 };
 
-export const getTokenPrice = (symbol: IBlockchain.WTF_TokenType): number => Number(cache[symbol]);
+export const getTokenPrice = (tokenType: IBlockchain.WTF_TokenType): number => {
+  return Number(cache[tokenType]);
+};

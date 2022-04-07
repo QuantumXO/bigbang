@@ -1,28 +1,32 @@
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import allBonds from "../helpers/bond";
-import { IUserBondDetails } from "@store/slices/account-slice";
 import { Bond } from "../helpers/bond/bond";
 import { IBondDetails, IBondSlice } from "@store/slices/bond-slice";
 import { IReduxState } from "@store/slices/state.interface";
+import { StableBond } from '@services/helpers/bond/stable-bond';
+import { LPBond } from '@services/helpers/bond/lp-bond';
+import { IAccount } from '@models/account';
 
 // Smash all the interfaces together to get the BondData Type
-export interface IAllBondData extends Bond, IBondDetails, IUserBondDetails { }
+export interface IAllBondData extends Bond, IBondDetails, IAccount.IUserBondDetails { }
 export interface IUseBondsReturn {
   bonds: IAllBondData[];
   loading: boolean;
 }
 
-const initialBondArray: IAllBondData[] = allBonds;
+const initialBondArray: (StableBond | LPBond)[] = allBonds;
 
 // Slaps together bond data within the account & bonding states
 function useBonds(): IUseBondsReturn {
   const bondLoading: boolean = useSelector<IReduxState, boolean>(state => state.bonding.loading);
   const bondState: IBondSlice = useSelector<IReduxState, IBondSlice>(state => state.bonding);
-  const accountBondsState = useSelector<IReduxState, { [key: string]: IUserBondDetails }>(state => state.account.bonds);
+  const accountBondsState =
+    useSelector<IReduxState, { [key: string]: IAccount.IUserBondDetails }>(state => state.account.bonds);
+  // @ts-ignore
   const [bonds, setBonds] = useState<IAllBondData[]>(initialBondArray);
   
-  useEffect(() => {
+  useEffect((): void => {
     const bondDetails: IAllBondData[] = allBonds
       .flatMap((bond) => {
         if (bondState[bond.name] && bondState[bond.name].bondDiscount) {

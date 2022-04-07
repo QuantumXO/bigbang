@@ -21,7 +21,7 @@ interface IProps {
 
 export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
   const dispatch = useDispatch();
-  const { provider, address, chainID, checkIsWrongNetwork } = useWeb3Context();
+  const { provider, address, chainID, getIsWrongNetwork } = useWeb3Context();
   const wrapBond: string = 'BANG'
   const unwrapBond: string = 'dYEL'
   
@@ -85,7 +85,7 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
   const getBalance = (): string => isWrap ? `${trimmedBangBalance} ${wrapBond}` : `${trimmedDYelBalance} ${unwrapBond}`;
   
   const handleOnWrap = async () => {
-    if (await checkIsWrongNetwork()) return;
+    if (await getIsWrongNetwork()) return;
     
     if (value === '' || parseFloat(value) === 0) {
       dispatch(warning({ text: isWrap ? messages.before_wrap : messages.before_unwrap }));
@@ -96,7 +96,7 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
   };
   
   const onSeekApproval = async () => {
-    if (await checkIsWrongNetwork()) return;
+    if (await getIsWrongNetwork()) return;
     
     await dispatch(changeApproval({ address, provider, networkID: chainID }));
   };
