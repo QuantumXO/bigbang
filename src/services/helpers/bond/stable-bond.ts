@@ -5,6 +5,8 @@ import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getBondAddresses } from "@services/helpers/get-bond-addresses";
 import { TokenContract } from '@services/abi';
 import { getNativeCurrencyInUSDC } from '@services/helpers';
+import * as net from 'net';
+import network from '@services/common/network';
 
 export interface StableBondOpts extends BondOpts {
   readonly reserveContractAbi: ContractInterface;
@@ -33,15 +35,15 @@ export class StableBond extends Bond {
     provider: StaticJsonRpcProvider
   ): Promise<number> {
     const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
-    // const tokenContract: Contract = this.getContractForReserve(networkID, provider);
-    const tokenContract: Contract = new Contract('0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', TokenContract, provider);
-    
-    // let tokenAmount = await tokenContract.balanceOf(addresses.TREASURY_ADDRESS);
-    let tokenAmount = await tokenContract.balanceOf('0xF411118dbD6338aB40Fa8e3bF514596DbF1a7528');
+    const tokens: IBlockchain.IToken[] = network().getCurrentNetworkTokens || [];
+    const wrapTokenAddress: string = tokens.find(({ isWrap }: IBlockchain.IToken) => isWrap)?.address || 'unknown';
+    const tokenContract: Contract = new Contract(wrapTokenAddress, TokenContract, provider);
+    let tokenAmount = await tokenContract.balanceOf(addresses.TREASURY_ADDRESS);
   
     if (this.tokensInStrategy) {
       tokenAmount = BigNumber.from(tokenAmount).add(BigNumber.from(this.tokensInStrategy)).toString();
     }
+    
     return (tokenAmount / Math.pow(10, 18) * (await getNativeCurrencyInUSDC(networkID, provider)));
   }
   
@@ -63,7 +65,10 @@ export class CustomBond extends StableBond {
       provider: StaticJsonRpcProvider
     ): Promise<number> => {
       const tokenAmount: number = await super.getTreasuryBalance(networkID, provider);
+      // #TODO error
       const tokenPrice: number = this.getTokenPrice();
+  
+      console.log('[CustomBond] tokenAmount, tokenPrice: ', tokenAmount, tokenPrice);
       
       return tokenAmount * tokenPrice;
     };

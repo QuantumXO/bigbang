@@ -2,7 +2,7 @@ import React, { Context, ReactElement, useCallback, useContext, useMemo, useStat
 import Web3Modal from "web3modal";
 import { JsonRpcProvider, Network, StaticJsonRpcProvider, Web3Provider } from '@ethersproject/providers';
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { DEFAULT_NETWORK } from "@constants/index";
+import { DEFAULT_NETWORK } from "@constants/networks";
 import { IBlockchain } from "@models/blockchain";
 import network from "@services/common/network";
 

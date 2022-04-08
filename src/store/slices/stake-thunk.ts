@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { getBondAddresses } from "@constants/index";
 import { BangTokenContract, StakingContract, StakingHelperContract, BigTokenContract } from "@services/abi";
 import { clearPendingTxn, fetchPendingTxns, getStakingTypeText } from "./pending-txns-slice";
 import { createAsyncThunk } from "@reduxjs/toolkit";
@@ -10,7 +9,7 @@ import { info, success, warning } from "@store/slices/messages-slice";
 import { messages } from "@constants/messages";
 import { getGasPrice } from "@services/helpers/get-gas-price";
 import { metamaskErrorWrap } from "@services/helpers/metamask-error-wrap";
-import { sleep } from "@services/helpers";
+import { sleep, getBondAddresses } from "@services/helpers";
 
 interface IChangeApproval {
   token: string;
@@ -66,7 +65,7 @@ export const changeApproval = createAsyncThunk(
     return dispatch(
       fetchAccountSuccess({
         staking: {
-          timeStake: Number(stakeAllowance),
+          bigStake: Number(stakeAllowance),
           bangUnstake: Number(unstakeAllowance)
         }
       })

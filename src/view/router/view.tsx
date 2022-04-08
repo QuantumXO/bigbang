@@ -17,8 +17,8 @@ export const Router: FC = (): ReactElement => {
         {bonds.map((bond: IAllBondData): ReactElement => {
           return (
             <Route
-              key={bond.name}
-              path={`mints/${bond.name}`}
+              key={bond.id}
+              path={`mints/${bond.id}`}
               element={(
                 <CommonRoute>
                   <Bond bond={bond} />

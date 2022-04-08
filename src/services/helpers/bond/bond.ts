@@ -1,10 +1,10 @@
 import { IBlockchain } from '@models/blockchain';
 import { Contract, ContractInterface } from "ethers";
 import { JsonRpcSigner, StaticJsonRpcProvider } from "@ethersproject/providers";
-import { getTokenPrice } from "../token-price";
+import { getTokenPrice } from "@services/helpers/token-price";
 
 export interface BondOpts {
-  readonly name: string; // Internal name used for references
+  readonly id: string; // Internal name used for references
   readonly displayName: string; // Displayname on UI
   readonly bondIconSvg: string; //  SVG path for icons
   readonly bondContractABI: ContractInterface; // ABI for contract
@@ -13,7 +13,7 @@ export interface BondOpts {
 }
 
 export abstract class Bond {
-  public readonly name: string;
+  public readonly id: string;
   public readonly displayName: string;
   public readonly type: IBlockchain.WTF_BondEnum;
   public readonly bondIconSvg: string;
@@ -39,7 +39,7 @@ export abstract class Bond {
   public abstract getBigAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
   
   constructor(type: IBlockchain.WTF_BondEnum, bondOpts: BondOpts) {
-    this.name = bondOpts.name;
+    this.id = bondOpts.id;
     this.displayName = bondOpts.displayName;
     this.type = type;
     this.bondIconSvg = bondOpts.bondIconSvg;

@@ -4,6 +4,8 @@ import { Skeleton } from '@material-ui/lab';
 import { useSelector } from "react-redux";
 import { IReduxState } from "@store/slices/state.interface";
 import { IAllBondData } from '@services/hooks/bonds';
+import { IAppSlice } from '@store/slices/app-slice';
+import { trim } from '@services/helpers';
 
 import "./styles.scss";
 
@@ -13,9 +15,7 @@ interface IProps {
 
 export function Metrics({ bond }: IProps): ReactElement {
   const isBondLoading: boolean = useSelector<IReduxState, boolean>(state => state.bonding.loading ?? true);
-  const mintPrice: number = 0;
-  const wrapTokenPrice: number = 28796.91;
-  const tokenPrice: number = 405.61;
+  const app: IAppSlice = useSelector<IReduxState, IAppSlice>(state => state.app);
   
   return (
     <Grid
@@ -27,8 +27,8 @@ export function Metrics({ bond }: IProps): ReactElement {
         <div className="metrics__card__inner">
           <div className="metrics__card__title">{'Mint Price'}</div>
           <div className="metrics__card__value">
-            {mintPrice
-              ? <>{`$${mintPrice}`}</>
+            {!isBondLoading
+              ? <>{`$${bond.bondPrice}`}</>
               : <Skeleton width="150px" />}
           </div>
         </div>
@@ -38,8 +38,8 @@ export function Metrics({ bond }: IProps): ReactElement {
         <div className="metrics__card__inner">
           <div className="metrics__card__title">{'BIG Price'}</div>
           <div className="metrics__card__value">
-            {wrapTokenPrice
-              ? <>{`$${wrapTokenPrice}`}</>
+            {!isBondLoading
+              ? <>{`$${trim(app.marketPrice, 2)}`}</>
               : <Skeleton width="150px" />}
           </div>
         </div>
@@ -49,8 +49,8 @@ export function Metrics({ bond }: IProps): ReactElement {
         <div className="metrics__card__inner">
           <div className="metrics__card__title">{`dYEL`}</div>
           <div className="metrics__card__value">
-            {tokenPrice
-              ? <>{`$${tokenPrice}`}</>
+            {!isBondLoading
+              ? <>{`$${app.dYelPrice}`}</>
               : <Skeleton width="150px" />}
           </div>
         </div>

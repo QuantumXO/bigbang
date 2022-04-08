@@ -1,6 +1,6 @@
 import React, { ReactElement, useState, MouseEvent } from 'react';
 import cx from 'classnames';
-import { ACTIVE_NETWORKS } from '@constants/blockchain';
+import { ACTIVE_NETWORKS } from '@constants/networks';
 import { IBlockchain } from '@models/blockchain';
 import { Fade, Popper } from '@material-ui/core';
 import network from '@services/common/network';

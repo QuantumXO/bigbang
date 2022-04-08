@@ -53,7 +53,6 @@ export namespace IBlockchain {
     BIG_ADDRESS: string;
     BANG_ADDRESS: string;
     DYEL_ADDRESS: string;
-    USDC_ADDRESS: string;
     STAKING_ADDRESS: string;
     STAKING_HELPER_ADDRESS: string;
     TREASURY_ADDRESS: string;
@@ -88,6 +87,10 @@ export namespace IBlockchain {
     name?: WTF_TokenNameType;
     icon?: string;
     isNativeCurrency?: boolean;
+    isWrap?: boolean;
+    isLP?: boolean;
+    isStable?: boolean;
+    
   }
   export type StableCommonTokenType = 'USDC';
   export type FTMNativeCurrencyType = 'FTM';
@@ -96,6 +99,7 @@ export namespace IBlockchain {
     | FTMNativeCurrencyType
     | StableFTMTokenType
     | 'wFTM'         // wrapped Coin
+    | 'USDCwFTM'     // LP
     | 'SCREAM_wFTM'  // LP
     | 'GEIST_wFTM'   // LP
     | 'TSHARE_wFTM'  // LP

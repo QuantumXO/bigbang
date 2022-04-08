@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useWeb3Context } from '@services/hooks';
-import { SUPPORTED_NETWORKS_CHAIN_IDS } from '@constants/index';
+import { SUPPORTED_NETWORKS_CHAIN_IDS } from '@constants/networks';
 import { IReduxState } from '@store/slices/state.interface';
 import { IPendingTxn } from '@store/slices/pending-txns-slice';
 import CircularProgress from '@material-ui/core/CircularProgress';

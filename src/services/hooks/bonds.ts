@@ -29,14 +29,14 @@ function useBonds(): IUseBondsReturn {
   useEffect((): void => {
     const bondDetails: IAllBondData[] = allBonds
       .flatMap((bond) => {
-        if (bondState[bond.name] && bondState[bond.name].bondDiscount) {
-          return Object.assign(bond, bondState[bond.name]); // Keeps the object type
+        if (bondState[bond.id] && bondState[bond.id].bondDiscount) {
+          return Object.assign(bond, bondState[bond.id]); // Keeps the object type
         }
         return bond;
       })
       .flatMap((bond) => {
-        if (accountBondsState[bond.name]) {
-          return Object.assign(bond, accountBondsState[bond.name]);
+        if (accountBondsState[bond.id]) {
+          return Object.assign(bond, accountBondsState[bond.id]);
         }
         return bond;
       });

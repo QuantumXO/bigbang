@@ -34,11 +34,11 @@ export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement
     return state.pendingTransactions;
   });
   const bondingState:IBondDetails = useSelector<IReduxState, IBondDetails>(state => {
-    return state.bonding && state.bonding[bond.name];
+    return state.bonding && state.bonding[bond.id];
   });
 
   const bondDetails: IAccount.IUserBondDetails = useSelector<IReduxState, IAccount.IUserBondDetails>(state => {
-    return state.account.bonds && state.account.bonds[bond.name];
+    return state.account.bonds && state.account.bonds[bond.id];
   });
 
   async function onRedeem(autostake: boolean) {
@@ -102,22 +102,22 @@ export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement
         <div
           className="action__btn btn__primary--fulfilled claim"
           onClick={() => {
-            if (isPendingTxn(pendingTransactions, 'redeem_bond_' + bond.name)) return;
+            if (isPendingTxn(pendingTransactions, 'redeem_bond_' + bond.id)) return;
             onRedeem(false);
           }}
         >
-          {txnButtonText(pendingTransactions, 'redeem_bond_' + bond.name, 'Claim')}
+          {txnButtonText(pendingTransactions, 'redeem_bond_' + bond.id, 'Claim')}
         </div>
         <div
           className="action__btn claim--autostake"
           onClick={() => {
-            if (isPendingTxn(pendingTransactions, 'redeem_bond_' + bond.name + '_autostake')) return;
+            if (isPendingTxn(pendingTransactions, 'redeem_bond_' + bond.id + '_autostake')) return;
             onRedeem(true);
           }}
         >
           {txnButtonText(
             pendingTransactions,
-            'redeem_bond_' + bond.name + '_autostake',
+            'redeem_bond_' + bond.id + '_autostake',
             'Claim and Autostake'
           )}
         </div>

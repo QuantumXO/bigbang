@@ -16,7 +16,6 @@
 // import XavaIcon from "@assets/images/tokens/XAVA.png";
 // import YakIcon from "@assets/images/tokens/YAK.png";
 // import UsdtEIcon from "@assets/images/tokens/USDT.e.png";
-import AvaxIcon from "@assets/images/tokens/AVAX.svg";
 // import AaveIcon from "@assets/images/tokens/AAVE.e.png";
 // import BnbIcon from "@assets/images/tokens/BNB.png";
 // import EleIcon from "@assets/images/tokens/ELE.png";
@@ -46,20 +45,53 @@ import AvaxIcon from "@assets/images/tokens/AVAX.svg";
 // import WethEIcon from "@assets/images/tokens/WETH.e.png";
 // import WavaxIcon from "@assets/images/tokens/WAVAX.png";
 // import UsdcEIcon from "@assets/images/tokens/USDC.e.png";
+import AvaxIcon from "@assets/images/tokens/AVAX.svg";
+import FTMIcon from "@assets/images/common/tokens/ftm.svg";
 import { IBlockchain } from '@models/blockchain';
 
-export interface ITokenAsset {
+export interface ITokenAsset extends Pick<
+  IBlockchain.IToken,
+  'id' | 'icon' | 'decimals' | 'name' | 'isWrap' | 'isLP' | 'isStable'
+  > {
   id: IBlockchain.WTF_TokenType;
   icon: string;
   decimals: number;
   name: IBlockchain.WTF_TokenNameType;
+  isWrap?: boolean;
+  isLP?: boolean;
+  isStable?: boolean;
 }
 
 export const wftm: ITokenAsset = {
   id: "wFTM",
-  icon: AvaxIcon,
+  icon: FTMIcon,
   decimals: 18,
   name: 'wFTM',
+  isWrap: true,
+};
+export const ftm: ITokenAsset = {
+  id: "FTM",
+  icon: FTMIcon,
+  decimals: 18,
+  name: 'FTM',
+};
+export const usdcWftm: ITokenAsset = {
+  id: "USDCwFTM",
+  icon: AvaxIcon,
+  decimals: 18,
+  name: 'USDCwFTM',
+};
+export const usdc: ITokenAsset = {
+  id: "USDC",
+  icon: AvaxIcon,
+  decimals: 6,
+  name: 'USDC',
+};
+export const bigWftm: ITokenAsset = {
+  id: "BIG_wFTM",
+  icon: AvaxIcon,
+  decimals: 18,
+  name: 'BIG_wFTM',
 };
 
 /* export const avax: ITokenAsset = {
@@ -268,6 +300,10 @@ const weth: ITokenAsset = {
 
 export default <ITokenAsset[]>[
   wftm,
+  ftm,
+  usdc,
+  usdcWftm,
+  bigWftm,
   /* avax,
   aave,
   bnb,

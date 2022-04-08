@@ -29,7 +29,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
   const { provider, address, chainID, getIsWrongNetwork } = useWeb3Context();
 
   const [quantity, setQuantity] = useState<string>('');
-  const [useNativeCurrency, setUseAvax] = useState<boolean>(false);
+  const [useNativeCurrency, setUseNativeCurrency] = useState<boolean>(false);
   
   const bondDetailsDebounce = useDebounce(quantity, 1000);
   const displayUnits: string = useNativeCurrency ? 'AVAX' : bond.displayUnits;
@@ -38,18 +38,15 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
     dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainID }));
   }, [bondDetailsDebounce]);
   
-  const hasAllowance = useCallback(() => {
+  const hasAllowance = useCallback((): boolean => {
     return bond.allowance > 0;
   }, [bond.allowance]);
   
-  const isBondLoading: boolean = useSelector<IReduxState, boolean>(state => state.bonding.loading ?? true);
   const pendingTransactions: IPendingTxn[] = useSelector<IReduxState, IPendingTxn[]>(state => {
     return state.pendingTransactions;
   });
 
-  const vestingPeriod = (): string => {
-    return prettifySeconds(bond.vestingTerm, 'day');
-  };
+  const vestingPeriod = (): string => prettifySeconds(bond.vestingTerm, 'day');
 
   async function onBond() {
     if (await getIsWrongNetwork()) return;
@@ -122,11 +119,11 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
         <div
           className="action__btn btn__primary--fulfilled"
           onClick={async () => {
-            if (isPendingTxn(pendingTransactions, 'bond_' + bond.name)) return;
+            if (isPendingTxn(pendingTransactions, 'bond_' + bond.id)) return;
             await onBond();
           }}
         >
-          {txnButtonText(pendingTransactions, 'bond_' + bond.name, 'Mint')}
+          {txnButtonText(pendingTransactions, 'bond_' + bond.id, 'Mint')}
         </div>
       );
     } else {
@@ -134,11 +131,11 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
         <div
           className="action__btn btn__primary--fulfilled"
           onClick={async () => {
-            if (isPendingTxn(pendingTransactions, 'approve_' + bond.name)) return;
+            if (isPendingTxn(pendingTransactions, 'approve_' + bond.id)) return;
             await onSeekApproval();
           }}
         >
-          {txnButtonText(pendingTransactions, 'approve_' + bond.name, 'Mint')}
+          {txnButtonText(pendingTransactions, 'approve_' + bond.id, 'Approve')}
         </div>
       );
     }
@@ -194,7 +191,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
         <div className="form--card card card--custom">
           <Togglers handleChangeView={handleChangeTab} activeTabIndex={0} />
           <div className="form--card__inner">
-            {(bond.name === 'wavax') && (
+            {(bond.id === 'wavax') && (
               <FormGroup className="avax--checkbox__wrapper">
                 <FormControlLabel
                   label="Use AVAX"
@@ -212,7 +209,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
                         root: cx('switch', { checked: useNativeCurrency }),
                         checked: 'checked',
                       }}
-                      onChange={(e: ChangeEvent<HTMLInputElement>, checked: boolean) => setUseAvax(checked)}
+                      onChange={(e: ChangeEvent<HTMLInputElement>, checked: boolean) => setUseNativeCurrency(checked)}
                     />
                   )}
                 />

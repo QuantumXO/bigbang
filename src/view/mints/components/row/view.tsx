@@ -15,7 +15,7 @@ interface IBondProps {
 
 export function BondTableRow({ bond }: IBondProps): ReactElement {
   const isBondLoading: boolean = !bond.bondPrice ?? true;
-
+  
   return (
     <TableRow className="bond">
       <TableCell className="bond__col mint">
@@ -43,7 +43,7 @@ export function BondTableRow({ bond }: IBondProps): ReactElement {
             ? <Skeleton width="50px" style={{ display: 'inline-block' }} />
             : (
               <>
-                <span className="currency--icon">{priceUnits(bond)}</span>&nbsp;
+                <span className="currency--icon">{priceUnits(bond)}</span>
                 {trim(bond.bondPrice, 2)}
               </>
             )
@@ -75,7 +75,7 @@ export function BondTableRow({ bond }: IBondProps): ReactElement {
       </TableCell>
       <TableCell className="bond__col action">
         <NavLink
-          to={getLinkUrl().get.bond(bond.name)}
+          to={getLinkUrl().get.bond(bond.id)}
           className="bond__link btn__primary--fulfilled"
         >
           {'Mint'}

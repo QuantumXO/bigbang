@@ -1,6 +1,6 @@
 import { IBlockchain } from '@models/blockchain';
 import { messages } from '@constants/messages';
-import { SUPPORTED_NETWORKS_CHAIN_IDS, ACTIVE_NETWORKS } from '@constants/blockchain';
+import { SUPPORTED_NETWORKS_CHAIN_IDS, ACTIVE_NETWORKS } from '@constants/networks';
 import tokensAssets, { ITokenAsset } from '@constants/tokens';
 
 interface INetworkArgs {
@@ -14,6 +14,7 @@ export class Network {
   constructor(props: INetworkArgs = {}) {
     const { newNetworkId } = props;
     
+    this.setCurrentChainId();
     this.newNetworkId = newNetworkId;
   }
   
@@ -106,7 +107,7 @@ export class Network {
   };
   
   get getCurrentNetwork(): IBlockchain.INetwork | undefined {
-    return ACTIVE_NETWORKS.find(({ id }: IBlockchain.INetwork) => id === this.newNetworkId);
+    return ACTIVE_NETWORKS.find(({ chainId }: IBlockchain.INetwork) => chainId === this.currentChainId);
   }
   
   /* get getStableTokenForCurrentNetwork(): IBlockchain.StableTokenType | undefined {
@@ -129,14 +130,13 @@ export class Network {
   get getCurrentNetworkTokens(): IBlockchain.IToken[] | undefined {
     const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
     let result: IBlockchain.IToken[] | undefined;
-  
+    
     if (currentNetwork) {
       const { tokens, nativeCurrency } = currentNetwork;
       result = tokens
         .map(({ id, address }: IBlockchain.INetworkToken): IBlockchain.IToken | undefined => {
           const tokenAsset: ITokenAsset | undefined = tokensAssets
             .find(({ id: tokenAssetId }: ITokenAsset) => tokenAssetId === id);
-    
           if (tokenAsset) {
             return {
               ...tokenAsset,
@@ -152,7 +152,6 @@ export class Network {
       
       if (nativeCurrencyAsset) {
         const { id, address } = nativeCurrency;
-        
         const nativeCurrencyToken: IBlockchain.IToken = {
           ...nativeCurrencyAsset,
           id,

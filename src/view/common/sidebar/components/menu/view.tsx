@@ -58,11 +58,12 @@ export const SidebarContent = (): ReactElement => {
                   {'Mint discounts'}
                 </span>
                 <div className={cx('submenu', { hidden: isHiddenMints })}>
-                  {bonds.map(({ displayName, bond, name, bondDiscount }: IAllBondData): ReactElement => {
+                  {bonds.map((item: IAllBondData): ReactElement => {
+                    const { displayName, bond, id: bondId, bondDiscount } = item;
                     return (
                       <NavLink
                         key={bond}
-                        to={`${linkUrl().get.mints()}/${name}`}
+                        to={`${linkUrl().get.mints()}/${bondId}`}
                         className={cx('submenu__item__link', id)}
                       >
                         {!bondDiscount

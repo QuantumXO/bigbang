@@ -1,16 +1,16 @@
 import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 import { messages } from "@constants/messages";
-import { getBondAddresses } from "../../constants";
 import { IBlockchain } from "@models/blockchain";
 import { setAll, sleep } from "@services/helpers";
 import { info, success, warning } from "./messages-slice";
 import { RootState } from "../store";
 import { ethers } from "ethers";
 import { metamaskErrorWrap } from "@services/helpers/metamask-error-wrap";
-import { dYelTokenContract } from "../../services/abi";
+import { dYelTokenContract } from "@services/abi";
 import { clearPendingTxn, fetchPendingTxns, getWrappingTypeText } from "./pending-txns-slice";
 import { getGasPrice } from "@services/helpers/get-gas-price";
+import { getBondAddresses } from "@services/helpers/get-bond-addresses";
 import { fetchAccountSuccess, getBalances } from "./account-slice";
 
 export interface IChangeApproval {

@@ -9,13 +9,13 @@ import {
   StableBondContract,
 } from "@services/abi";
 
-import AvaxIcon from "@assets/images/tokens/AVAX.svg";
+import FTMIcon from "@assets/images/common/tokens/ftm.svg";
 
-export const ftm: CustomBond = new CustomBond({
-  name: 'ftm',
+export const ftm: StableBond = new StableBond({
+  id: 'ftm',
   displayName: 'wFTM',
   bondToken: 'wFTM',
-  bondIconSvg: AvaxIcon,
+  bondIconSvg: FTMIcon,
   bondContractABI: StableBondContract,
   reserveContractAbi: StableReserveContract,
   networkAddresses: {

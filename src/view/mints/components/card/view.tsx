@@ -76,7 +76,7 @@ export function BondDataCard({ bond }: IBondProps): ReactElement {
           </div>
         </div>
         <NavLink
-          to={`${mintsUrl}/${bond.name}`}
+          to={`${mintsUrl}/${bond.id}`}
           className="mint__link btn__primary--fulfilled"
         >
           Mint {bond.displayName}

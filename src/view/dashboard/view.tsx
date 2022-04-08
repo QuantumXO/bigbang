@@ -76,7 +76,7 @@ export function Dashboard(): ReactElement {
         title: 'dYEL Price',
         children: (
           <>
-            {isAppLoading ? <Skeleton width="100px" /> : `$${trim(app.marketPrice, 2)}`}
+            {isAppLoading ? <Skeleton width="100px" /> : `$${trim(app.dYelPrice, 2)}`}
           </>
         )
       })}

@@ -115,7 +115,7 @@ export function Mints(): ReactElement {
               </TableHead>
               <TableBody className="mints__table__tbody">
                 {bonds.map((bond: IAllBondData): ReactElement => (
-                  <BondTableRow key={bond.name} bond={bond} />
+                  <BondTableRow key={bond.id} bond={bond} />
                 ))}
               </TableBody>
             </Table>
@@ -134,8 +134,8 @@ export function Mints(): ReactElement {
       layout = (
         <Grid container item spacing={2}>
           {bonds.map((bond) => (
-            <Grid item xs={12} key={bond.name}>
-              <BondDataCard key={bond.name} bond={bond} />
+            <Grid item xs={12} key={bond.id}>
+              <BondDataCard key={bond.id} bond={bond} />
             </Grid>
           ))}
         </Grid>
