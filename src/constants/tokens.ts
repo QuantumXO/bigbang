@@ -89,6 +89,13 @@ export const usdc: ITokenAsset = {
   name: 'USDC',
   isStable: true,
 };
+export const wusdc: ITokenAsset = {
+  id: "wUSDC",
+  icon: AvaxIcon,
+  decimals: 6,
+  name: 'wUSDC',
+  isWrap: true,
+};
 export const bigWftm: ITokenAsset = {
   id: "BIG_wFTM",
   icon: AvaxIcon,

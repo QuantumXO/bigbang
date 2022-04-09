@@ -50,7 +50,6 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
 
   async function onBond() {
     if (await getIsWrongNetwork()) return;
-
     
     if (quantity === '') {
       dispatch(warning({ text: messages.before_minting }));
@@ -60,8 +59,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
     } else if (bond.interestDue > 0 || bond.pendingPayout > 0) {
       const shouldProceed = window.confirm(messages.existing_mint);
       if (shouldProceed) {
-        const trimBalance = trim(Number(quantity), 10);
-
+        const trimBalance: string = trim(Number(quantity), 10);
         await dispatch(
           bondAsset({
             value: trimBalance,
@@ -145,13 +143,11 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
   };
   
   const onRenderBondData = (): ReactElement => {
-    console.log(bond, useNativeCurrency);
-    
     const bondData: IBond.IUserData[] = [
       {
         id: 'yourBalance',
         label: 'Your Balance',
-        value: `${trim(useNativeCurrency ? bond.nativeCurrencyBalance : bond.balance, 4)} ${displayUnits}`
+        value: `${trim(useNativeCurrency ? bond.nativeCurrencyBalance : bond.balance)} ${displayUnits}`
       },
       {
         isDivided: true,
@@ -179,7 +175,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
       {
         id: 'minimumPurchase',
         label: 'Minimum purchase',
-        value: `0.01 ${'BIG'}`
+        value: `${bond.minPurchase} BIG`
       },
     ];
     

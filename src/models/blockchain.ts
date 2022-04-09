@@ -94,6 +94,7 @@ export namespace IBlockchain {
     isCommonNativeCurrencyLP?: boolean;
   }
   export type StableCommonTokenType = 'USDC';
+  export type StableWrapCommonTokenType = 'wUSDC';
   export type FTMNativeCurrencyType = 'FTM';
   export type StableFTMTokenType = StableCommonTokenType;
   export type FTMTokenType =
@@ -120,6 +121,6 @@ export namespace IBlockchain {
     | 'YEL_dYEL'       // LP
     | 'ORBS_wMATIC';   // LP
   export type StableTokenType = StableFTMTokenType | StableMATICTokenType;
-  export type WTF_TokenType = TokenType | FTMTokenType | MATICTokenType;
+  export type WTF_TokenType = TokenType | FTMTokenType | MATICTokenType | StableWrapCommonTokenType;
   export type WTF_TokenNameType = | 'unknown' | WTF_TokenType;
 }

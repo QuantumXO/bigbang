@@ -1,5 +1,5 @@
 import { BigNumber, Contract, ethers } from 'ethers';
-import { BangTokenContract, BigTokenContract, dYelTokenContract, TokenContract, wFTMBondContract_STABLE, wFTMReserveContract } from '@services/abi';
+import { BangTokenContract, BigTokenContract, dYelTokenContract, TokenContract, StableBondContract, wFTMReserveContract } from '@services/abi';
 import { setAll, getBondAddresses } from '@services/helpers';
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 import { IBlockchain } from "@models/blockchain";
@@ -103,7 +103,7 @@ export const calculateUserBondDetails = createAsyncThunk(
         });
       });
     } else {
-      const bondContract: Contract = new ethers.Contract(bond.bondAddress, wFTMBondContract_STABLE, provider);
+      const bondContract: Contract = new ethers.Contract(bond.bondAddress, StableBondContract, provider);
       const reserveContract: Contract = new Contract(bond.getReserveAddress, wFTMReserveContract, provider);
       
       const bondDetails = await bondContract.bondInfo(address);
@@ -111,7 +111,7 @@ export const calculateUserBondDetails = createAsyncThunk(
       const bondMaturationBlock: number = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
       const pendingPayout: BigNumber = await bondContract.pendingPayoutFor(address);
       
-      let balance = "0";
+      let balance: string | number = "0";
   
       // const allowance: BigNumber = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
       const allowance: BigNumber = await reserveContract.allowance(address, bond.bondAddress);
@@ -124,13 +124,18 @@ export const calculateUserBondDetails = createAsyncThunk(
   
       const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, "gwei");
   
+      // #TODO check
+      balance = (bond.id !== 'USDC')
+        ? Number(balanceVal)
+        : Number(balanceVal) * Math.pow(10, 12);
+      
       return {
         bond: bond.id,
         displayName: bond.displayName,
         bondIconSvg: bond.bondIconSvg,
         isLP: bond.isLP,
         allowance: Number(allowance),
-        balance: Number(balanceVal),
+        balance,
         nativeCurrencyBalance: Number(nativeCurrencyVal),
         interestDue,
         bondMaturationBlock,
@@ -224,7 +229,6 @@ const accountSlice = createSlice({
       })
       .addCase(loadAccountDetails.rejected, (state, { error }) => {
         state.loading = false;
-        console.log('loadAccountDetails: ', error);
       })
       .addCase(getBalances.pending, state => {
         state.loading = true;
@@ -235,7 +239,6 @@ const accountSlice = createSlice({
       })
       .addCase(getBalances.rejected, (state, { error }) => {
         state.loading = false;
-        console.log('getBalances: ', error);
       })
       .addCase(calculateUserBondDetails.pending, (state, action) => {
         state.loading = true;
