@@ -1,6 +1,6 @@
 export { abi as StableBondContract } from "./bonds/StableContract.json";
 export { abi as LpBondContract } from "./bonds/LpContract.json";
-export { abi as wFTMBondContract } from "./bonds/wFTMContract.json";
+export { abi as wFTMBondContract } from "@services/abi/bonds/wFTMContract_STABLE.json";
 
 export { abi as StableReserveContract } from "./reserves/StableContract.json";
 export { abi as LpReserveContract } from "./reserves/LpContract.json";
