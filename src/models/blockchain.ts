@@ -90,7 +90,8 @@ export namespace IBlockchain {
     isWrap?: boolean;
     isLP?: boolean;
     isStable?: boolean;
-    
+    isBigNativeCurrencyLP?: boolean;
+    isCommonNativeCurrencyLP?: boolean;
   }
   export type StableCommonTokenType = 'USDC';
   export type FTMNativeCurrencyType = 'FTM';

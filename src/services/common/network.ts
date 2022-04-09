@@ -164,6 +164,16 @@ export class Network {
     
     return result;
   }
+  
+  get getCurrentNetworkCommonBIGLPToken(): IBlockchain.IToken | undefined  {
+    const tokens: IBlockchain.IToken[] | undefined = this.getCurrentNetworkTokens;
+    return tokens?.find(({ isBigNativeCurrencyLP }: IBlockchain.IToken) => isBigNativeCurrencyLP);
+  }
+  
+  get getCurrentNetworkCommonNativeCurrencyLPToken(): IBlockchain.IToken | undefined  {
+    const tokens: IBlockchain.IToken[] | undefined = this.getCurrentNetworkTokens;
+    return tokens?.find(({ isCommonNativeCurrencyLP }: IBlockchain.IToken) => isCommonNativeCurrencyLP);
+  }
 }
 
 const network = (args?: INetworkArgs) => new Network(args);

@@ -6,5 +6,5 @@ import { getBondAddresses } from "@services/helpers/get-bond-addresses";
 
 export function getBondCalculator(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Contract {
   const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
-  return new Contract(addresses?.BONDING_CALC_ADDRESS, BondingCalcContract, provider);
+  return new Contract(addresses.BONDING_CALC_ADDRESS, BondingCalcContract, provider);
 }

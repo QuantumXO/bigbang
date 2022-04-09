@@ -51,6 +51,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
   async function onBond() {
     if (await getIsWrongNetwork()) return;
 
+    
     if (quantity === '') {
       dispatch(warning({ text: messages.before_minting }));
       //@ts-ignore
@@ -75,7 +76,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
         clearInput();
       }
     } else {
-      const trimBalance = trim(Number(quantity), 10);
+      const trimBalance: string = trim(Number(quantity), 10);
       await dispatch(
         bondAsset({
           value: trimBalance,
@@ -119,11 +120,11 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
         <div
           className="action__btn btn__primary--fulfilled"
           onClick={async () => {
-            if (isPendingTxn(pendingTransactions, 'bond_' + bond.id)) return;
+            if (isPendingTxn(pendingTransactions, 'bond_' + String(bond.id))) return;
             await onBond();
           }}
         >
-          {txnButtonText(pendingTransactions, 'bond_' + bond.id, 'Mint')}
+          {txnButtonText(pendingTransactions, 'bond_' + String(bond.id), 'Mint')}
         </div>
       );
     } else {
@@ -131,11 +132,11 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
         <div
           className="action__btn btn__primary--fulfilled"
           onClick={async () => {
-            if (isPendingTxn(pendingTransactions, 'approve_' + bond.id)) return;
+            if (isPendingTxn(pendingTransactions, 'approve_' + String(bond.id))) return;
             await onSeekApproval();
           }}
         >
-          {txnButtonText(pendingTransactions, 'approve_' + bond.id, 'Approve')}
+          {txnButtonText(pendingTransactions, 'approve_' + String(bond.id), 'Approve')}
         </div>
       );
     }
@@ -144,6 +145,8 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
   };
   
   const onRenderBondData = (): ReactElement => {
+    console.log(bond, useNativeCurrency);
+    
     const bondData: IBond.IUserData[] = [
       {
         id: 'yourBalance',
@@ -164,7 +167,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
       },
       {
         id: 'ROI',
-        label: 'ROI',
+        label: 'Discount',
         isDivided: true,
         value: `${trim(bond.bondDiscount * 100, 2)}%`
       },
@@ -191,7 +194,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
         <div className="form--card card card--custom">
           <Togglers handleChangeView={handleChangeTab} activeTabIndex={0} />
           <div className="form--card__inner">
-            {(bond.id === 'wavax') && (
+            {(bond.id === 'wFTM') && (
               <FormGroup className="avax--checkbox__wrapper">
                 <FormControlLabel
                   label="Use AVAX"

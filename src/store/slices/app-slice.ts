@@ -4,7 +4,7 @@ import { getMarketPrice, getTokenPrice, setAll, getBondAddresses } from "@servic
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { RootState } from "@store/store";
-import allBonds from "@services/helpers/bond";
+import allBonds from "@constants/bonds";
 import { BigNumberish } from '@ethersproject/bignumber';
 import { CustomBond, StableBond } from '@services/helpers/bond/stable-bond';
 import { LPBond } from '@services/helpers/bond/lp-bond';
@@ -47,13 +47,12 @@ export const loadAppDetails = createAsyncThunk(
     const bigContract: Contract = new Contract(addresses.BIG_ADDRESS, BigTokenContract, provider);
     
     // #TODO check
-    // const marketPrice: number = ((await getMarketPrice(networkID, provider)) / Math.pow(10, 9)) * stableTokenPrice;
     const marketPrice: number = await getMarketPrice(networkID, provider);
     const totalSupply: number = (await bigContract.totalSupply()) / Math.pow(10, 9);
     const circSupply: number = (await bangContract.circulatingSupply()) / Math.pow(10, 9);
     const stakingTVL: number = circSupply * marketPrice;
     const marketCap: number = totalSupply * marketPrice;
-  
+    
     const tokenBalPromises: Promise<number>[] = allBonds
       .map(async (bond: StableBond | LPBond | CustomBond): Promise<number> => {
         return bond.getTreasuryBalance(networkID, provider);

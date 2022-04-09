@@ -1,10 +1,8 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, Slide } from '@material-ui/core';
 import { IBondDetails, redeemBond } from '@store/slices/bond-slice';
 import { useWeb3Context } from '@services/hooks';
 import { trim, prettifySeconds, prettyVestingPeriod } from '@services/helpers';
 import { IPendingTxn, isPendingTxn, txnButtonText } from '@store/slices/pending-txns-slice';
-import { Skeleton } from '@material-ui/lab';
 import { IReduxState } from '@store/slices/state.interface';
 import { IAllBondData } from '@services/hooks/bonds';
 import { messages } from '@constants/messages';
@@ -43,7 +41,6 @@ export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement
 
   async function onRedeem(autostake: boolean) {
     if (await getIsWrongNetwork()) return;
-
     if (bond.interestDue === 0 || bond.pendingPayout === 0) {
       dispatch(warning({ text: messages.nothing_to_claim }));
       return;
@@ -68,13 +65,13 @@ export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement
       {
         id: 'pendingRewards',
         label: 'Pending Rewards',
-        value: `${trim(bond.interestDue, 4)} ${'BIG'}`,
+        value: `${trim(bond.interestDue, 8)} ${'BIG'}`,
       },
       {
         isDivided: true,
         id: 'claimableRewards',
         label: 'Claimable Rewards',
-        value: `${trim(bond.pendingPayout, 4)} ${'dYEL'}`,
+        value: `${trim(bond.pendingPayout, 10)} ${'BIG'}`,
       },
       {
         isDivided: true,

@@ -5,7 +5,6 @@ import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getBondAddresses } from "@services/helpers/get-bond-addresses";
 import { TokenContract } from '@services/abi';
 import { getNativeCurrencyInUSDC } from '@services/helpers';
-import * as net from 'net';
 import network from '@services/common/network';
 
 export interface StableBondOpts extends BondOpts {

@@ -1,6 +1,6 @@
 import { IBlockchain } from '@models/blockchain';
-import { LPBond } from "./lp-bond";
-import { CustomBond, StableBond } from './stable-bond';
+import { LPBond } from "@services/helpers/bond/lp-bond";
+import { CustomBond, StableBond } from '@services/helpers/bond/stable-bond';
 import {
   // LpBondContract,
   // LpReserveContract,
@@ -10,24 +10,33 @@ import {
 } from "@services/abi";
 
 import FTMIcon from "@assets/images/common/tokens/ftm.svg";
+import USDCIcon from "@assets/images/common/tokens/usdc.svg";
 
-export const ftm: StableBond = new StableBond({
-  id: 'ftm',
+export const wFTM: StableBond = new StableBond({
+  id: 'wFTM',
+  isWrap: true,
   displayName: 'wFTM',
   bondToken: 'wFTM',
   bondIconSvg: FTMIcon,
+  bondAddress: '0xc59570FA143af3db62E0f36B9fe0723e9F6Db5B5',
   bondContractABI: StableBondContract,
   reserveContractAbi: StableReserveContract,
-  networkAddresses: {
-    [IBlockchain.NetworksEnum.FTM]: {
-      bondAddress: "0xc8654069E1D103062ef67C9492277f56caaaC26d",
-      reserveAddress: "0xec711b0b4945d9f583188868fe7b62db7bb059e3"
-    },
-  },
   tokensInStrategy: '0',
 });
 
-export default <(StableBond | LPBond | CustomBond)[]>[ftm];
+export const USDC: StableBond = new StableBond({
+  id: 'USDC',
+  isWrap: true,
+  displayName: 'USDC',
+  bondToken: 'USDC',
+  bondIconSvg: USDCIcon,
+  bondContractABI: StableBondContract,
+  reserveContractAbi: StableReserveContract,
+  bondAddress: '0xFFf2fDd8Ff796cD3903b0CE550f0050172804215',
+  tokensInStrategy: '0',
+});
+
+export default <(StableBond | LPBond | CustomBond)[]>[wFTM, USDC];
 
 /* export const wavax: CustomBond = new CustomBond({
  name: "wavax",

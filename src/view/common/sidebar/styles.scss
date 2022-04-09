@@ -134,6 +134,7 @@
           display: flex;
           margin-top: 32px;
           margin-left: 49px;
+          margin-right: 18px;
           overflow: hidden;
           flex-direction: column;
           &.hidden {
@@ -150,6 +151,11 @@
             }
             &:nth-child(n+2) {
               margin-top: 19px;
+            }
+            .bond {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
             }
           }
         }

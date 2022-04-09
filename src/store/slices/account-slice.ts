@@ -1,5 +1,5 @@
 import { BigNumber, Contract, ethers } from 'ethers';
-import { BangTokenContract, BigTokenContract, dYelTokenContract, TokenContract, wFTMBondContract, wFTMReserveContract } from '@services/abi';
+import { BangTokenContract, BigTokenContract, dYelTokenContract, TokenContract, wFTMBondContract_STABLE, wFTMReserveContract } from '@services/abi';
 import { setAll, getBondAddresses } from '@services/helpers';
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 import { IBlockchain } from "@models/blockchain";
@@ -103,10 +103,8 @@ export const calculateUserBondDetails = createAsyncThunk(
         });
       });
     } else {
-      // const bondContract: Contract = bond.getContractForBond(networkID, provider);
-      // const reserveContract: Contract = bond.getContractForReserve(networkID, provider);
-      const bondContract: Contract = new ethers.Contract('0xc59570FA143af3db62E0f36B9fe0723e9F6Db5B5', wFTMBondContract, provider);
-      const reserveContract: Contract = new Contract('0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', wFTMReserveContract, provider);
+      const bondContract: Contract = new ethers.Contract(bond.bondAddress, wFTMBondContract_STABLE, provider);
+      const reserveContract: Contract = new Contract(bond.getReserveAddress, wFTMReserveContract, provider);
       
       const bondDetails = await bondContract.bondInfo(address);
       const interestDue: number = bondDetails.payout / Math.pow(10, 9);
@@ -116,7 +114,7 @@ export const calculateUserBondDetails = createAsyncThunk(
       let balance = "0";
   
       // const allowance: BigNumber = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
-      const allowance: BigNumber = await reserveContract.allowance(address, '0xc59570FA143af3db62E0f36B9fe0723e9F6Db5B5');
+      const allowance: BigNumber = await reserveContract.allowance(address, bond.bondAddress);
       
       balance = await reserveContract.balanceOf(address);
       

@@ -12,13 +12,37 @@ import { error, info, success, warning } from '../slices/messages-slice';
 import { messages } from '@constants/messages';
 import { getGasPrice } from '@services/helpers/get-gas-price';
 import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
-import { wFTMBondContract, wFTMReserveContract } from '@services/abi';
+import { wFTMBondContract_STABLE, wFTMReserveContract } from '@services/abi';
 
 interface IChangeApproval {
   bond: Bond;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   networkID: IBlockchain.NetworksEnum;
   address: string;
+}
+interface ICalcBondDetails {
+  bond: Bond;
+  value: string | null;
+  provider: StaticJsonRpcProvider | JsonRpcProvider;
+  networkID: IBlockchain.NetworksEnum;
+}
+interface IRedeemBond {
+  address: string;
+  bond: Bond;
+  networkID: IBlockchain.NetworksEnum;
+  provider: StaticJsonRpcProvider | JsonRpcProvider;
+  autostake: boolean;
+}
+export interface IBondDetails {
+  bond: string;
+  bondDiscount: number;
+  bondQuote: number;
+  purchased: number;
+  vestingTerm: number;
+  maxBondPrice: number;
+  bondPrice: number;
+  marketPrice: number;
+  maxBondPriceToken: number;
 }
 
 export const changeApproval = createAsyncThunk(
@@ -31,21 +55,19 @@ export const changeApproval = createAsyncThunk(
     }
     
     const signer = provider.getSigner();
-    // const reserveContract: Contract = bond.getContractForReserve(networkID, signer);
-    const reserveContract: Contract = new Contract('0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', wFTMReserveContract, signer);
+    // const reserveContract: Contract = new Contract('0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', wFTMReserveContract, signer);
+    const reserveContract: Contract = new Contract(bond.getReserveAddress, wFTMReserveContract, signer);
     
     let approveTx;
     try {
       const gasPrice: BigNumber = await getGasPrice(provider);
-      const bondAddress: string = '0xc59570FA143af3db62E0f36B9fe0723e9F6Db5B5';
-      
-      approveTx = await reserveContract.approve(bondAddress, constants.MaxUint256, { gasPrice });
+      approveTx = await reserveContract.approve(bond.bondAddress, constants.MaxUint256, { gasPrice });
       
       dispatch(
         fetchPendingTxns({
           txnHash: approveTx.hash,
           text: 'Approving ' + bond.displayName,
-          type: 'approve_' + bond.id
+          type: 'approve_' + String(bond.id)
         })
       );
       await approveTx.wait();
@@ -62,7 +84,7 @@ export const changeApproval = createAsyncThunk(
     await sleep(2);
     
     // const allowance: any = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
-    const allowance: any = await reserveContract.allowance(address, '0xc59570FA143af3db62E0f36B9fe0723e9F6Db5B5');
+    const allowance: any = await reserveContract.allowance(address, bond.bondAddress);
     
     return dispatch(
       fetchAccountSuccess({
@@ -75,25 +97,6 @@ export const changeApproval = createAsyncThunk(
     );
   }
 );
-
-interface ICalcBondDetails {
-  bond: Bond;
-  value: string | null;
-  provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
-}
-
-export interface IBondDetails {
-  bond: string;
-  bondDiscount: number;
-  bondQuote: number;
-  purchased: number;
-  vestingTerm: number;
-  maxBondPrice: number;
-  bondPrice: number;
-  marketPrice: number;
-  maxBondPriceToken: number;
-}
 
 export const calcBondDetails = createAsyncThunk(
   'bonding/calcBondDetails',
@@ -116,15 +119,19 @@ export const calcBondDetails = createAsyncThunk(
     const bondCalcContract: Contract = getBondCalculator(networkID, provider);
     
     // #TODO check
-    const bondContract: Contract = new Contract('0xc59570FA143af3db62E0f36B9fe0723e9F6Db5B5', wFTMBondContract, provider);
+    const bondContract: Contract = new Contract(bond.bondAddress, wFTMBondContract_STABLE, provider);
     
     const terms = await bondContract.terms();
-    const maxBondPrice = (await bondContract.maxPayout()) / Math.pow(10, 9);
+    const maxBondPrice: number = (await bondContract.maxPayout()) / Math.pow(10, 9);
     
     const marketPrice: number = await getMarketPrice(networkID, provider);
     
     try {
-      bondPriceInUSD = (await bondContract.bondPriceInUSD()) / Math.pow(10, 18);
+      if (bond.id === 'USDC') {
+        bondPriceInUSD = (await bondContract.bondPriceInUSD()) / Math.pow(10, 6);
+      } else {
+        bondPriceInUSD = (await bondContract.bondPriceInUSD()) / Math.pow(10, 18);
+      }
       
       /*if (bond.id === avaxTime.name) {
         const avaxPrice = getTokenPrice('AVAX');
@@ -140,15 +147,18 @@ export const calcBondDetails = createAsyncThunk(
     const maxBodValue = ethers.utils.parseEther('1');
     
     if (bond.isLP) {
-      valuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), amountInWei);
+      // valuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), amountInWei);
+      valuation = await bondCalcContract.valuation('0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F', amountInWei);
       bondQuote = await bondContract.payoutFor(valuation);
       bondQuote = bondQuote / Math.pow(10, 9);
       
-      const maxValuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), maxBodValue);
+      const maxValuation = await bondCalcContract.valuation('0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F', maxBodValue);
       const maxBondQuote = await bondContract.payoutFor(maxValuation);
       maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9));
     } else {
       bondQuote = await bondContract.payoutFor(amountInWei);
+  
+      
       bondQuote = bondQuote / Math.pow(10, 18);
       
       const maxBondQuote = await bondContract.payoutFor(maxBodValue);
@@ -160,12 +170,15 @@ export const calcBondDetails = createAsyncThunk(
     }
     
     // Calculate bonds purchased
-    const token: Contract = bond.getContractForReserve(networkID, provider);
+    // const token: Contract = bond.getContractForReserve(networkID, provider);
+    const token: Contract = new ethers.Contract(bond.getReserveAddress, wFTMReserveContract, provider);
     
     let purchased = await token.balanceOf(addresses.TREASURY_ADDRESS);
+  
     
     if (bond.isLP) {
-      const assetAddress: string = bond.getAddressForReserve(networkID);
+      // const assetAddress: string = bond.getAddressForReserve(networkID);
+      const assetAddress: string = '0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F';
       const markdown = await bondCalcContract.markdown(assetAddress);
       
       purchased = await bondCalcContract.valuation(assetAddress, purchased);
@@ -217,8 +230,7 @@ export const bondAsset = createAsyncThunk(
     const valueInWei: BigNumber = ethers.utils.parseUnits(value, 'ether');
     const signer = provider.getSigner();
     // const bondContract = bond.getContractForBond(networkID, signer);
-    const bondContract = new ethers.Contract('0xc59570FA143af3db62E0f36B9fe0723e9F6Db5B5', wFTMReserveContract, signer);
-    
+    const bondContract = new ethers.Contract(bond.bondAddress, wFTMBondContract_STABLE, signer);
     const calculatePremium = await bondContract.bondPrice();
     const maxPremium: number = Math.round(calculatePremium * (1 + acceptedSlippage));
     
@@ -231,11 +243,12 @@ export const bondAsset = createAsyncThunk(
       } else {
         bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { gasPrice });
       }
+      
       dispatch(
         fetchPendingTxns({
           txnHash: bondTx.hash,
           text: 'Bonding ' + bond.displayName,
-          type: 'bond_' + bond.id
+          type: 'bond_' + String(bond.id)
         })
       );
       await bondTx.wait();
@@ -255,32 +268,25 @@ export const bondAsset = createAsyncThunk(
   }
 );
 
-interface IRedeemBond {
-  address: string;
-  bond: Bond;
-  networkID: IBlockchain.NetworksEnum;
-  provider: StaticJsonRpcProvider | JsonRpcProvider;
-  autostake: boolean;
-}
-
 export const redeemBond = createAsyncThunk(
   'bonding/redeemBond',
   async ({ address, bond, networkID, provider, autostake }: IRedeemBond,
-  { dispatch }) => {
+  { dispatch }): Promise<void | undefined> => {
     if (!provider) {
       dispatch(warning({ text: messages.please_connect_wallet }));
       return;
     }
     
     const signer = provider.getSigner();
-    const bondContract = bond.getContractForBond(networkID, signer);
+    // const bondContract = bond.getContractForBond(networkID, signer);
+    const bondContract = new ethers.Contract(bond.bondAddress, wFTMBondContract_STABLE, signer);
     
     let redeemTx;
     try {
       const gasPrice = await getGasPrice(provider);
       
       redeemTx = await bondContract.redeem(address, autostake, { gasPrice });
-      const pendingTxnType = 'redeem_bond_' + bond.id + (autostake ? '_autostake' : '');
+      const pendingTxnType = 'redeem_bond_' + String(bond.id) + (autostake ? '_autostake' : '');
       dispatch(
         fetchPendingTxns({
           txnHash: redeemTx.hash,
@@ -316,7 +322,7 @@ const initialState: IBondSlice = {
   loading: true
 };
 
-const setBondState = (state: IBondSlice, payload: any) => {
+const setBondState = (state: IBondSlice, payload: any): void => {
   const bond = payload.bond;
   const newState = { ...state[bond], ...payload };
   state[bond] = newState;
@@ -342,7 +348,6 @@ const bondingSlice = createSlice({
     })
     .addCase(calcBondDetails.rejected, (state, { error }) => {
       state.loading = false;
-      console.log('calcBondDetails: ', error);
     });
   }
 });

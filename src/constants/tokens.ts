@@ -51,7 +51,7 @@ import { IBlockchain } from '@models/blockchain';
 
 export interface ITokenAsset extends Pick<
   IBlockchain.IToken,
-  'id' | 'icon' | 'decimals' | 'name' | 'isWrap' | 'isLP' | 'isStable'
+  'id' | 'icon' | 'decimals' | 'name' | 'isWrap' | 'isLP' | 'isStable' | 'isBigNativeCurrencyLP' | 'isCommonNativeCurrencyLP'
   > {
   id: IBlockchain.WTF_TokenType;
   icon: string;
@@ -80,18 +80,21 @@ export const usdcWftm: ITokenAsset = {
   icon: AvaxIcon,
   decimals: 18,
   name: 'USDCwFTM',
+  isCommonNativeCurrencyLP: true,
 };
 export const usdc: ITokenAsset = {
   id: "USDC",
   icon: AvaxIcon,
   decimals: 6,
   name: 'USDC',
+  isStable: true,
 };
 export const bigWftm: ITokenAsset = {
   id: "BIG_wFTM",
   icon: AvaxIcon,
   decimals: 18,
   name: 'BIG_wFTM',
+  isBigNativeCurrencyLP: true,
 };
 
 /* export const avax: ITokenAsset = {
