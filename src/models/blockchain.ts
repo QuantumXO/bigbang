@@ -24,10 +24,7 @@ export namespace IBlockchain {
     bondAddresses: IBondMainnetAddresses,
     tokens: INetworkToken[];
   }
-  export interface INetworkToken extends Pick<IToken, 'id' | 'address'> {
-    id: WTF_TokenType;
-    address: string;
-  }
+  export interface INetworkToken extends Pick<IToken, 'id' | 'address' | 'WTF_LPAddress'> { }
   export interface IAddEthereumChainParameter {
     chainId: string;
     chainNetwork?: 'mainnet';
@@ -61,23 +58,6 @@ export namespace IBlockchain {
     STAKING_WARMUP_ADDRESS: string;
     ZAPIN_ADDRESS: string;
   }
-  export interface IFTMMainnetBondAddresses extends IBondMainnetAddresses {
-    FTM_ADDRESS: string;
-    USDC_ADDRESS: string;
-    SCREAM_FTM_ADDRESS: string;
-    GEIST_FTM_ADDRESS: string;
-    TSHARE_FTM_ADDRESS: string;
-    MULTI_FTM_ADDRESS: string;
-    BOO_FTM_ADDRESS: string;
-    BIG_FTM_ADDRESS: string;
-    YEL_dYEL_ADDRESS: string;
-  }
-  export interface INetworkAddresses {
-    [NetworksEnum.FTM]?: IBondAddresses;
-    [NetworksEnum.ETH]?: IBondAddresses;
-    [NetworksEnum.MATIC]?: IBondAddresses;
-    [NetworksEnum.BNB]?: IBondAddresses;
-  }
   export type TokenType = 'BIG' | 'BANG' | 'dYEL';
   export type TokenNameType = 'big' | 'bang' | 'dYEL';
   export interface IToken {
@@ -92,6 +72,7 @@ export namespace IBlockchain {
     isStable?: boolean;
     isBigNativeCurrencyLP?: boolean;
     isCommonNativeCurrencyLP?: boolean;
+    WTF_LPAddress?: string;
   }
   export type StableCommonTokenType = 'USDC';
   export type StableWrapCommonTokenType = 'wUSDC';

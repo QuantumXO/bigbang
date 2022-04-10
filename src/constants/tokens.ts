@@ -65,6 +65,7 @@ export const bigWftm: ITokenAsset = {
   icon: AvaxIcon,
   decimals: 18,
   name: 'BIG_wFTM',
+  isLP: true,
   isBigNativeCurrencyLP: true,
 };
 export const scream: ITokenAsset = {
@@ -99,5 +100,5 @@ export const boo: ITokenAsset = {
 };
 
 export default <ITokenAsset[]>[
-  wftm, ftm, usdc, usdcWftm, bigWftm, scream, geist, tshare, multi, boo,
+  wftm, ftm, usdc, usdcWftm, bigWftm, scream, geist, tshare, multi, boo
 ];

@@ -28,7 +28,7 @@ export function Metrics({ bond }: IProps): ReactElement {
           <div className="metrics__card__title">{'Mint Price'}</div>
           <div className="metrics__card__value">
             {!isBondLoading
-              ? <>{`$${bond.bondPrice}`}</>
+              ? <>{`$${trim(bond.bondPrice, 2)}`}</>
               : <Skeleton width="150px" />}
           </div>
         </div>

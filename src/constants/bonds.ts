@@ -19,6 +19,7 @@ export const wFTM: StableBond = new StableBond({
   bondContractABI: StableBondContract,
   reserveContractAbi: StableReserveContract,
   tokensInStrategy: '0',
+  
 });
 export const USDC: StableBond = new StableBond({
   id: 'USDC',
@@ -80,7 +81,18 @@ export const BOO: StableBond = new StableBond({
   bondAddress: '0xFDED6d63356d130b363BefF73F01d05Cc5B196AD',
   tokensInStrategy: '0',
 });
+export const BIG_wFTM: StableBond = new StableBond({
+  id: 'BIG_wFTM',
+  displayName: 'BIG_wFTM',
+  bondToken: 'BIG_wFTM',
+  bondIconSvg: tokensIcons.BOOIcon,
+  bondContractABI: StableBondContract,
+  reserveContractAbi: StableReserveContract,
+  bondAddress: '0xa0DEFC1F78C4bcCD402b8d0ED1089Ff9E2a58171',
+  tokensInStrategy: '0',
+  isLP: true,
+});
 
 export default <(StableBond | LPBond | CustomBond)[]>[
-  wFTM, USDC, SCREAM, GEIST, TSHARE, MULTI, BOO
+  wFTM, USDC, SCREAM, GEIST, TSHARE, MULTI, BOO, BIG_wFTM
 ];

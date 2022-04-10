@@ -103,7 +103,7 @@ export function Mints(): ReactElement {
                     <span className="mints__table__title">Price</span>
                   </TableCell>
                   <TableCell className="mints__table__col ROI">
-                    <span className="mints__table__title">ROI</span>
+                    <span className="mints__table__title">Discount</span>
                   </TableCell>
                   <TableCell className="mints__table__col purchased">
                     <span className="mints__table__title">Purchased</span>

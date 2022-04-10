@@ -1,5 +1,5 @@
 import { BigNumber, constants, ethers, Contract } from 'ethers';
-import { getMarketPrice, getTokenPrice, sleep, getBondAddresses } from '@services/helpers';
+import { getMarketPrice, getTokenPrice, sleep, getBondAddresses, getNativeCurrencyInUSDC, getTokenInNativeCurrency } from '@services/helpers';
 import { calculateUserBondDetails, fetchAccountSuccess, getBalances } from './account-slice';
 import { clearPendingTxn, fetchPendingTxns } from './pending-txns-slice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -114,6 +114,7 @@ export const calcBondDetails = createAsyncThunk(
         bondDiscount: number = 0,
         valuation: number = 0,
         bondQuote: number = 0;
+    let bondPrice: number = 0;
     
     const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
     
@@ -125,24 +126,29 @@ export const calcBondDetails = createAsyncThunk(
     
     const terms = await bondContract.terms();
     const maxBondPrice: number = (await bondContract.maxPayout()) / Math.pow(10, 9);
-    
     const marketPrice: number = await getMarketPrice(networkID, provider);
-    
     const minPurchase: number = await bondContract.minPayout() / Math.pow(10, 9);
     
     try {
+      bondPriceInUSD = await bondContract.bondPriceInUSD();
+      
       if (bond.id === 'USDC') {
-        bondPriceInUSD = (await bondContract.bondPriceInUSD()) / Math.pow(10, 6);
+        bondPrice = bondPriceInUSD / Math.pow(10, 6);
       } else {
-        bondPriceInUSD = (await bondContract.bondPriceInUSD()) / Math.pow(10, 18);
+        bondPrice = bondPriceInUSD / Math.pow(10, 18); // in bond token
       }
       
-      /*if (bond.id === avaxTime.name) {
-        const avaxPrice = getTokenPrice('AVAX');
-        bondPrice = bondPrice * avaxPrice;
-      }*/
+      if (!bond.isWrap && bond.id !== 'USDC') {
+       /*  bondPrice = bondPrice * (await getNativeCurrencyInUSDC(networkID, provider));
+  
+        bondPrice = bondPrice * await getTokenInNativeCurrency(bond.id, networkID, provider); */
+  
+        const tokenPriceInUSDC = (await getTokenInNativeCurrency(bond.id, networkID, provider)) * (await getNativeCurrencyInUSDC(networkID, provider))
+  
+        bondPrice = bondPrice * tokenPriceInUSDC;
+      }
       
-      bondDiscount = (marketPrice - bondPriceInUSD) / marketPrice;
+      bondDiscount = (marketPrice - bondPrice) / marketPrice;
     } catch (e) {
       console.log('error getting bondPriceInUSD', e);
     }
@@ -207,7 +213,7 @@ export const calcBondDetails = createAsyncThunk(
       purchased,
       vestingTerm: Number(terms.vestingTerm),
       maxBondPrice,
-      bondPrice: bondPriceInUSD,
+      bondPrice,
       marketPrice,
       maxBondPriceToken,
       minPurchase

@@ -134,7 +134,7 @@ export class Network {
     if (currentNetwork) {
       const { tokens, nativeCurrency } = currentNetwork;
       result = tokens
-        .map(({ id, address }: IBlockchain.INetworkToken): IBlockchain.IToken | undefined => {
+        .map(({ id, address, WTF_LPAddress }: IBlockchain.INetworkToken): IBlockchain.IToken | undefined => {
           const tokenAsset: ITokenAsset | undefined = tokensAssets
             .find(({ id: tokenAssetId }: ITokenAsset) => tokenAssetId === id);
           if (tokenAsset) {
@@ -142,6 +142,7 @@ export class Network {
               ...tokenAsset,
               id,
               address,
+              WTF_LPAddress,
             };
           }
         })

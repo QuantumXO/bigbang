@@ -29,22 +29,23 @@ export abstract class Bond {
   public readonly tokensInStrategy?: string;
   public readonly isWrap?: boolean;
   public readonly bondAddress: string;
+  public readonly isLP?: boolean;
   
   // The following two fields will differ on how they are set depending on bond type
-  public abstract isLP: boolean;
+  // public abstract isLP: boolean;
   protected abstract reserveContractAbi: ContractInterface; // Token ABI
   public abstract displayUnits: string;
   
   // Async method that returns a Promise
   public abstract getTreasuryBalance(
     networkID: IBlockchain.NetworksEnum,
-    provider: StaticJsonRpcProvider
+    provider: StaticJsonRpcProvider,
   ): Promise<number>;
   
   public abstract getTokenAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
   
   public abstract getBigAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
-  
+
   constructor(type: IBlockchain.WTF_BondEnum, bondOpts: BondOpts) {
     this.id = bondOpts.id;
     this.displayName = bondOpts.displayName;
@@ -55,6 +56,7 @@ export abstract class Bond {
     this.bondToken = bondOpts.bondToken;
     this.isWrap = bondOpts.isWrap;
     this.bondAddress = bondOpts.bondAddress;
+    this.isLP = bondOpts.isLP;
   }
   
   /* public getAddressForBond(networkID: IBlockchain.NetworksEnum): string {

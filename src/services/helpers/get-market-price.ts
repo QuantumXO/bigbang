@@ -4,6 +4,7 @@ import { getBondAddresses } from '@services/helpers/get-bond-addresses';
 import { IBlockchain } from '@models/blockchain';
 import { getToken } from '@services/helpers/get-token';
 import network from '@services/common/network';
+import { Bond } from '@services/helpers/bond/bond';
 
 // #TODO check method
 export const getMarketPrice = async (
@@ -83,5 +84,39 @@ export const getNativeCurrencyInUSDC = async (
     return nativeCurrencyInUSDC;
   } else {
     throw new Error('getNativeCurrencyInUSDC error');
+  }
+};
+
+export const getTokenInNativeCurrency = async (
+  bondId: IBlockchain.WTF_TokenType,
+  networkID: number,
+  provider: ethers.Signer | ethers.providers.Provider
+): Promise<number> => {
+  const currentNetwork: IBlockchain.INetwork | undefined = network().getCurrentNetwork;
+  
+  if (currentNetwork) {
+    const WTF_LPAddress: string = getToken(bondId, 'WTF_LPAddress');
+    const nativeCurrencyTokenId: IBlockchain.WTF_TokenType = currentNetwork.nativeCurrency.id;
+    const nativeCurrencyTokenAddress: string = getToken(nativeCurrencyTokenId, 'address');
+    const contract: Contract = new Contract(WTF_LPAddress, LpReserveContract, provider);
+    const [reserve0, reserve1] = await contract.getReserves();
+    const token0Address: string = (await contract.token0()).toLowerCase();
+    const token1Address: string = (await contract.token1()).toLowerCase();
+    let result: number;
+    
+    if (token0Address === nativeCurrencyTokenAddress) {
+      //
+    } else if (token1Address === nativeCurrencyTokenAddress) {
+      //
+    } else {
+      //
+    }
+    
+    // eslint-disable-next-line prefer-const
+    result = reserve0 / reserve1;
+  
+    return result;
+  } else {
+    throw new Error('getTokenInNativeCurrency Error');
   }
 };

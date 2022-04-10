@@ -10,6 +10,7 @@ export { abi as TokenContract } from "./tokens/tokenContract.json";
 export { abi as BangTokenContract } from "./tokens/BangContract.json";
 export { abi as BigTokenContract } from "./tokens/BigContract.json";
 export { abi as dYelTokenContract } from "./tokens/dYelContract.json";
+export { abi as LPTokenContract } from "./tokens/LPContract.json";
 
 export { abi as BondingCalcContract } from "./BondingCalcContract.json";
 export { abi as StakingContract } from "./StakingContract.json";

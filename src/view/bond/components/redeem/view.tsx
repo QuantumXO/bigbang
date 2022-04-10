@@ -81,7 +81,7 @@ export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement
       },
       {
         id: 'ROI',
-        label: 'ROI',
+        label: 'Discount',
         value: `${trim(bond.bondDiscount * 100, 2)}%`,
       },
       {
