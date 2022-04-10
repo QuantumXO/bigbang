@@ -81,7 +81,9 @@ export const loadAppDetails = createAsyncThunk(
     const epoch = await stakingContract.epoch();
     const stakingReward = epoch.distribute;
     const circ = await bangContract.circulatingSupply();
-    const stakingRebase: number = stakingReward / circ;
+  
+    // #TODO check
+    const stakingRebase: number = (stakingReward / circ) || 0; // NaN
     const fiveDayRate: number = Math.pow(1 + stakingRebase, 5 * 3) - 1;
     const stakingAPY: number = Math.pow(1 + stakingRebase, 365 * 3) - 1;
     const currentIndex: BigNumberish = await stakingContract.index();

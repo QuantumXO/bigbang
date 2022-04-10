@@ -62,15 +62,8 @@ export function BondDataCard({ bond }: IBondProps): ReactElement {
             <span className="data__row__label">Purchased</span>
             <div className="data__row__value">
               {isBondLoading
-                ? <Skeleton width="80px" />
-                : (
-                  new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    maximumFractionDigits: 0,
-                    minimumFractionDigits: 0,
-                  }).format(bond.purchased)
-                )
+                ? <Skeleton width="50px" style={{display: 'inline-block'}} />
+                : `${trim(bond.purchased, 2)} ${bond.displayName}`
               }
             </div>
           </div>

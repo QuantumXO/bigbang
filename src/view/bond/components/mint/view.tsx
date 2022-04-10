@@ -32,7 +32,11 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
   const [useNativeCurrency, setUseNativeCurrency] = useState<boolean>(false);
   
   const bondDetailsDebounce = useDebounce(quantity, 1000);
-  const displayUnits: string = useNativeCurrency ? 'AVAX' : bond.displayUnits;
+  const displayUnits: string = useNativeCurrency ? 'FTM' : bond.displayUnits;
+  
+  useEffect((): void => {
+    setUseNativeCurrency(false);
+  }, [bond.id]);
   
   useEffect((): void => {
     dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainID }));
@@ -193,7 +197,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
             {(bond.id === 'wFTM') && (
               <FormGroup className="avax--checkbox__wrapper">
                 <FormControlLabel
-                  label="Use AVAX"
+                  label="Use FTM"
                   classes={{
                     label: 'label',
                     root: 'root'

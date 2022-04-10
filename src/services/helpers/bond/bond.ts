@@ -1,7 +1,7 @@
 import { IBlockchain } from '@models/blockchain';
-import { Contract, ContractInterface } from "ethers";
-import { JsonRpcSigner, StaticJsonRpcProvider } from "@ethersproject/providers";
-import { getTokenPrice } from "@services/helpers/token-price";
+import { ContractInterface } from 'ethers';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { getTokenPrice } from '@services/helpers/token-price';
 import { IBond } from '@models/bond';
 import { getToken } from '@services/helpers/get-token';
 
@@ -46,8 +46,6 @@ export abstract class Bond {
   public abstract getBigAmount(networkID: IBlockchain.NetworksEnum, provider: StaticJsonRpcProvider): Promise<number>;
   
   constructor(type: IBlockchain.WTF_BondEnum, bondOpts: BondOpts) {
-    console.log('bondOpts: ', bondOpts);
-    
     this.id = bondOpts.id;
     this.displayName = bondOpts.displayName;
     this.type = type;
@@ -92,7 +90,6 @@ export abstract class Bond {
   }
   
   get getReserveAddress(): string {
-    const reserveAddress: string = getToken(this.bondToken, 'address');
-    return reserveAddress;
+    return getToken(this.bondToken, 'address');
   }
 }

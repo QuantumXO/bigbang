@@ -101,14 +101,14 @@ export namespace IBlockchain {
     | FTMNativeCurrencyType
     | StableFTMTokenType
     | 'wFTM'         // wrapped Coin
-    | 'USDCwFTM'     // LP
-    | 'SCREAM_wFTM'  // LP
-    | 'GEIST_wFTM'   // LP
-    | 'TSHARE_wFTM'  // LP
-    | 'MULTI_wFTM'   // LP
-    | 'BOO_wFTM'     // LP
+    | 'SCREAM'
+    | 'GEIST'
+    | 'TSHARE'
+    | 'MULTI'
+    | 'BOO'
     | 'BIG_wFTM'     // LP
-    | 'YEL_dYEL';    // LP
+    | 'YEL_dYEL'    // LP
+    | 'USDCwFTM';     // LP
   export type StableMATICTokenType = StableCommonTokenType;
   export type MATICTokenType =
     | StableMATICTokenType

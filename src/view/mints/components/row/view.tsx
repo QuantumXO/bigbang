@@ -62,14 +62,15 @@ export function BondTableRow({ bond }: IBondProps): ReactElement {
         <div className="bond__purchased bond__text">
           {isBondLoading
             ? <Skeleton width="50px" style={{ display: 'inline-block' }} />
-            : (
+            : `${trim(bond.purchased, 2)} ${bond.displayName}`
+            /* : (
               new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
                 maximumFractionDigits: 0,
                 minimumFractionDigits: 0,
               }).format(bond.purchased)
-            )
+            ) */
           }
         </div>
       </TableCell>

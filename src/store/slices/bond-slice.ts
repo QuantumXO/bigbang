@@ -13,6 +13,7 @@ import { messages } from '@constants/messages';
 import { getGasPrice } from '@services/helpers/get-gas-price';
 import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
 import { StableBondContract, wFTMReserveContract } from '@services/abi';
+import { getToken } from '@services/helpers/get-token';
 
 interface IChangeApproval {
   bond: Bond;
@@ -127,7 +128,7 @@ export const calcBondDetails = createAsyncThunk(
     
     const marketPrice: number = await getMarketPrice(networkID, provider);
     
-    const minPurchase: number = await bondContract.minPayout ? bondContract.minPayout() : 0;
+    const minPurchase: number = await bondContract.minPayout() / Math.pow(10, 9);
     
     try {
       if (bond.id === 'USDC') {
@@ -174,6 +175,7 @@ export const calcBondDetails = createAsyncThunk(
     // Calculate bonds purchased
     // const token: Contract = bond.getContractForReserve(networkID, provider);
     const token: Contract = new ethers.Contract(bond.getReserveAddress, wFTMReserveContract, provider);
+    const tokenDecimals: number = await token.decimals();
     
     let purchased = await token.balanceOf(addresses.TREASURY_ADDRESS);
   
@@ -188,7 +190,9 @@ export const calcBondDetails = createAsyncThunk(
       if (bond.tokensInStrategy) {
         purchased = BigNumber.from(purchased).add(BigNumber.from(bond.tokensInStrategy)).toString();
       }
-      purchased = purchased / Math.pow(10, 18);
+  
+      // #TODO check
+      purchased = purchased / Math.pow(10, tokenDecimals);
       
       /* if (bond.id === wavax.name) {
         const avaxPrice = getTokenPrice('AVAX');
@@ -229,7 +233,11 @@ export const bondAsset = createAsyncThunk(
   ) => {
     const depositorAddress: string = address;
     const acceptedSlippage: number = slippage / 100 || 0.005;
-    const valueInWei: BigNumber = ethers.utils.parseUnits(value, 'ether');
+    const tokenDecimals: number = getToken(bond.id, 'decimals');
+    // @ts-ignore
+    const transformedValue: string = String(value * Math.pow(10, tokenDecimals));
+    // const valueInWei: BigNumber = ethers.utils.parseUnits(transformedValue, 'ether');
+    const valueInWei: string = transformedValue;
     const signer = provider.getSigner();
     const bondContract = new ethers.Contract(bond.bondAddress, StableBondContract, signer);
     const calculatePremium = await bondContract.bondPrice();
@@ -237,15 +245,14 @@ export const bondAsset = createAsyncThunk(
     let bondTx;
     try {
       const gasPrice: BigNumber = await getGasPrice(provider);
-  
-      console.log(valueInWei, maxPremium, depositorAddress, gasPrice);
       
+      // @ts-ignore
+      console.log(valueInWei, maxPremium, depositorAddress, gasPrice);
       if (useNativeCurrency) {
         bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { value: valueInWei, gasPrice });
       } else {
         bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { gasPrice });
       }
-      
       dispatch(
         fetchPendingTxns({
           txnHash: bondTx.hash,

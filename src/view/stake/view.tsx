@@ -61,7 +61,7 @@ export function Stake(): ReactElement {
     return state.pendingTransactions;
   });
   
-  const trimmedBangBalance: string = trim(Number(bangBalance), 6);
+  const trimmedBangBalance: string = trim(Number(bangBalance), 9);
   const trimmedStakingAPY: string = trim(stakingAPY * 100, 1);
   const stakingRebasePercentage: string = trim(stakingRebase * 100, 4);
   const nextRewardValue: string = trim((
@@ -108,10 +108,9 @@ export function Stake(): ReactElement {
   };
   
   const onHandleStakeSlider = (value: number | number[]): void => {
-    const maxValue: number = (view === 0) ? Number(bigBalance) : Number(bangBalance);
-    const newValue: number = (value as number) * maxValue / 100;
-    
-    setQuantity((String(newValue)));
+    const maxValue: string = (view === 0) ? bigBalance : bangBalance;
+    const newValue: number = (value as number) * Number(maxValue) / 100;
+    setQuantity(trim(newValue, 9));
   };
   
   const onRenderConnectButton = (): ReactNode => {
@@ -144,7 +143,7 @@ export function Stake(): ReactElement {
             <div className='row__value'>
               {isAppLoading
                 ? <Skeleton width="80px" />
-                : <>{`${trim(Number(bigBalance), 4)} BIG`}</>
+                : <>{`${trim(Number(bigBalance), 9)} BIG`}</>
               }
             </div>
           </div>
@@ -157,7 +156,7 @@ export function Stake(): ReactElement {
           <div className='row divide--top'>
             <div className='row__label'>{'Wrapped Balance'}</div>
             <div className='row__value'>
-              <Skeleton width="80px" /> {/* getSide().wrapTokenType */}
+              {isAppLoading ? <Skeleton width="80px" /> : <>{`0 dYel`}</>}
             </div>
           </div>
           <div className='row exchange--rate'>
