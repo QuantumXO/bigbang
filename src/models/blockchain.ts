@@ -1,12 +1,5 @@
 export namespace IBlockchain {
-  export enum NetworksEnum {
-    ETH = 1, // Ethereum
-    FTM = 250, // Fantom
-    BNB = 56, // Binance
-    MATIC = 137, // Matic Mainnet / Polygon
-    AVAX = 43114,
-  }
-  export type NetworkType = keyof typeof NetworksEnum;
+  export type NetworkType = 'ETH' | 'FTM' | 'BNB' | 'MATIC';
   export interface INetwork {
     id: NetworkType;
     name: string;
@@ -24,7 +17,7 @@ export namespace IBlockchain {
     bondAddresses: IBondMainnetAddresses,
     tokens: INetworkToken[];
   }
-  export interface INetworkToken extends Pick<IToken, 'id' | 'address' | 'WTF_LPAddress'> { }
+  export interface INetworkToken extends Pick<IToken, 'id' | 'address' | 'tokenNativeCurrencyLPAddress'> { }
   export interface IAddEthereumChainParameter {
     chainId: string;
     chainNetwork?: 'mainnet';
@@ -58,50 +51,50 @@ export namespace IBlockchain {
     STAKING_WARMUP_ADDRESS: string;
     ZAPIN_ADDRESS: string;
   }
-  export type TokenType = 'BIG' | 'BANG' | 'dYEL';
-  export type TokenNameType = 'big' | 'bang' | 'dYEL';
+  export type OurTokenType = 'BIG' | 'BANG' | 'dYEL';
+  export type OurTokenNameType = 'big' | 'bang' | 'dYEL';
   export interface IToken {
-    id: WTF_TokenType;
+    id: TokenType;
     address: string;
     decimals: number;
-    name?: WTF_TokenNameType;
+    name?: TokenNameType;
     icon?: string;
     isNativeCurrency?: boolean;
     isWrap?: boolean;
     isLP?: boolean;
     isStable?: boolean;
     isBigNativeCurrencyLP?: boolean;
-    isCommonNativeCurrencyLP?: boolean;
-    WTF_LPAddress?: string;
+    isUSDCNativeCurrencyLP?: boolean;
+    tokenNativeCurrencyLPAddress?: string;
   }
   export type StableCommonTokenType = 'USDC';
   export type StableWrapCommonTokenType = 'wUSDC';
-  export type FTMNativeCurrencyType = 'FTM';
+  export type FTMNativeCurrencyType = 'wFTM';
   export type StableFTMTokenType = StableCommonTokenType;
   export type FTMTokenType =
     | FTMNativeCurrencyType
     | StableFTMTokenType
-    | 'wFTM'         // wrapped Coin
     | 'SCREAM'
     | 'GEIST'
     | 'TSHARE'
     | 'MULTI'
     | 'BOO'
-    | 'BIG_wFTM'     // LP
-    | 'YEL_dYEL'    // LP
-    | 'USDCwFTM';     // LP
+    | 'BIGwFTM'
+    // | 'YEL_dYEL'
+    | 'USDCwFTM';
   export type StableMATICTokenType = StableCommonTokenType;
+  export type MATICNativeCurrencyType = 'wMATIC';
   export type MATICTokenType =
     | StableMATICTokenType
-    | 'wMATIC'         // wrapped Coin
-    | 'QUICK_wMATIC'   // LP
-    | 'CRV_WETH'       // LP
-    | 'SAND_wMATIC'    // LP
-    | 'MANA_wMATIC'    // LP
-    | 'BIG_wMATIC'     // LP
-    | 'YEL_dYEL'       // LP
-    | 'ORBS_wMATIC';   // LP
+    | MATICNativeCurrencyType
+    | 'QUICK'
+    | 'CRV'
+    | 'SAND'
+    | 'MANA'
+    | 'WETH'
+    | 'BIGwMATIC'
+    | 'USDCwMATIC';
   export type StableTokenType = StableFTMTokenType | StableMATICTokenType;
-  export type WTF_TokenType = TokenType | FTMTokenType | MATICTokenType | StableWrapCommonTokenType;
-  export type WTF_TokenNameType = | 'unknown' | WTF_TokenType;
+  export type TokenType = OurTokenType | FTMTokenType | MATICTokenType | StableWrapCommonTokenType;
+  export type TokenNameType = TokenType;
 }

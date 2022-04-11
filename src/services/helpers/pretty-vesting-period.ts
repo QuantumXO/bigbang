@@ -1,7 +1,7 @@
 import { prettifySeconds } from "./prettify-seconds";
 import { secondsUntilBlock } from "./seconds-until-block";
 
-export const prettyVestingPeriod = (currentBlock: number, vestingBlock: number) => {
+export const prettyVestingPeriod = (currentBlock: number, vestingBlock: number): string => {
   if (vestingBlock === 0) {
     return "";
   }

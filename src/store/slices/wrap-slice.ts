@@ -15,14 +15,14 @@ import { fetchAccountSuccess, getBalances } from "./account-slice";
 
 export interface IChangeApproval {
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
+  networkID: number;
   address: string;
 }
 export interface IChangeWrap {
   isWrap: boolean;
   value: string;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
+  networkID: number;
   address: string;
 }
 export interface IWrapSlice {
@@ -33,13 +33,13 @@ export interface IWrapSlice {
 export interface IWrapPrice {
   isWrap: boolean;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
+  networkID: number;
 }
 export interface IWrapDetails {
   isWrap: boolean;
   value: string;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
+  networkID: number;
 }
 
 const initialState: IWrapSlice = {

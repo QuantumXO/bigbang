@@ -5,6 +5,7 @@ import { IBlockchain } from '@models/blockchain';
 import { getToken } from '@services/helpers/get-token';
 import network from '@services/common/network';
 import { Bond } from '@services/helpers/bond/bond';
+import { IBond } from '@models/bond';
 
 // #TODO check method
 export const getMarketPrice = async (
@@ -59,12 +60,11 @@ export const getNativeCurrencyInUSDC = async (
   networkID: number,
   provider: ethers.Signer | ethers.providers.Provider
 ): Promise<number> => {
-  const commonNativeCurrencyLPToken: IBlockchain.IToken | undefined = network()
-    .getCurrentNetworkCommonNativeCurrencyLPToken;
-  
-  if (commonNativeCurrencyLPToken) {
+  const uSDCNativeCurrencyLPToken: IBlockchain.IToken | undefined = network()
+    .getCurrentNetworkUSDCNativeCurrencyLPToken;
+  if (uSDCNativeCurrencyLPToken) {
     const uSDCAddress: string = getToken('USDC', 'address');
-    const uSDCNativeCurrencyLPAddress: string = getToken(commonNativeCurrencyLPToken.id, 'address');
+    const uSDCNativeCurrencyLPAddress: string = getToken(uSDCNativeCurrencyLPToken.id, 'address');
     const uSDCNativeCurrencyLPContract: Contract = new Contract(uSDCNativeCurrencyLPAddress, LpReserveContract, provider);
     const [reserve0, reserve1] = await uSDCNativeCurrencyLPContract.getReserves();
     const token0Address: string = await uSDCNativeCurrencyLPContract.token0();
@@ -88,17 +88,17 @@ export const getNativeCurrencyInUSDC = async (
 };
 
 export const getTokenInNativeCurrency = async (
-  bondId: IBlockchain.WTF_TokenType,
+  bondId: IBond.IBondType,
   networkID: number,
   provider: ethers.Signer | ethers.providers.Provider
 ): Promise<number> => {
   const currentNetwork: IBlockchain.INetwork | undefined = network().getCurrentNetwork;
   
   if (currentNetwork) {
-    const WTF_LPAddress: string = getToken(bondId, 'WTF_LPAddress');
-    const nativeCurrencyTokenId: IBlockchain.WTF_TokenType = currentNetwork.nativeCurrency.id;
+    const tokenNativeCurrencyLPAddress: string = getToken(bondId, 'tokenNativeCurrencyLPAddress');
+    const nativeCurrencyTokenId: IBlockchain.TokenType = currentNetwork.nativeCurrency.id;
     const nativeCurrencyTokenAddress: string = getToken(nativeCurrencyTokenId, 'address');
-    const contract: Contract = new Contract(WTF_LPAddress, LpReserveContract, provider);
+    const contract: Contract = new Contract(tokenNativeCurrencyLPAddress, LpReserveContract, provider);
     const [reserve0, reserve1] = await contract.getReserves();
     const token0Address: string = (await contract.token0()).toLowerCase();
     const token1Address: string = (await contract.token1()).toLowerCase();

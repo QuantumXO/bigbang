@@ -5,7 +5,7 @@ import { calcBondDetails } from '@store/slices/bond-slice';
 import { loadAppDetails } from '@store/slices/app-slice';
 import { loadAccountDetails, calculateUserBondDetails, calculateUserTokenDetails } from '@store/slices/account-slice';
 import { IReduxState } from '@store/slices/state.interface';
-import Loading from '../common/loader';
+import Loader from '@view/common/loader';
 import useBonds, { IAllBondData } from '@services/hooks/bonds';
 import useTokens, { IAllTokenData } from '@services/hooks/tokens';
 import { loadTokenPrices } from '@services/helpers';
@@ -112,7 +112,7 @@ export function App(): ReactElement {
   );
 
   if (isAppLoading || isLoadingTokensPrices) {
-    layout = <Loading />;
+    layout = <Loader />;
   } else {
     layout = (
       <SnackbarProvider

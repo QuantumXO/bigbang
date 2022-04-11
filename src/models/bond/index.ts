@@ -7,5 +7,5 @@ export namespace IBond {
     value: string | number;
     isDivided?: boolean;
   }
-  export type IBondType = IBlockchain.WTF_TokenType;
+  export type IBondType = IBlockchain.TokenType;
 }

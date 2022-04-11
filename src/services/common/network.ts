@@ -36,10 +36,9 @@ export class Network {
     return (
       async (): Promise<boolean> => {
         if (!SUPPORTED_NETWORKS_CHAIN_IDS.includes(String(this.getCurrentChainId))) {
-          const shouldSwitch: boolean = window.confirm(messages.switch_to_eth);
+          const shouldSwitch: boolean = window.confirm(messages.switch_to_ftm);
           if (shouldSwitch) {
-            await network({ newNetworkId: 'ETH' }).switchNetwork();
-            window.location.reload();
+            await network({ newNetworkId: 'FTM' }).switchNetwork();
           }
           result = true;
         }
@@ -53,11 +52,13 @@ export class Network {
     if (this.getIsEthereumAPIAvailable) {
       try {
         await this.switchChainRequest();
+        window.location.reload();
       } catch (error: any) {
         if (error.code === 4902) {
           try {
             await this.addChainRequest();
             await this.switchChainRequest();
+            window.location.reload();
           } catch (addError) {
             console.error(error);
           }
@@ -89,6 +90,7 @@ export class Network {
     
     if (newNetwork) {
       const { rpcUrls, blockExplorerUrls, nativeCurrency, chainName, hexadecimalChainId } = newNetwork;
+      
       const param: IBlockchain.IAddEthereumChainParameter = {
         chainId: hexadecimalChainId,
         chainName,
@@ -110,14 +112,6 @@ export class Network {
     return ACTIVE_NETWORKS.find(({ chainId }: IBlockchain.INetwork) => chainId === this.currentChainId);
   }
   
-  /* get getStableTokenForCurrentNetwork(): IBlockchain.StableTokenType | undefined {
-    const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
-    
-    if (currentNetwork) {
-      return currentNetwork.stableTokenType;
-    }
-  } */
-  
   get getMainnetRpcURI(): string | undefined {
     const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
   
@@ -134,7 +128,7 @@ export class Network {
     if (currentNetwork) {
       const { tokens, nativeCurrency } = currentNetwork;
       result = tokens
-        .map(({ id, address, WTF_LPAddress }: IBlockchain.INetworkToken): IBlockchain.IToken | undefined => {
+        .map(({ id, address, tokenNativeCurrencyLPAddress }: IBlockchain.INetworkToken): IBlockchain.IToken | undefined => {
           const tokenAsset: ITokenAsset | undefined = tokensAssets
             .find(({ id: tokenAssetId }: ITokenAsset) => tokenAssetId === id);
           if (tokenAsset) {
@@ -142,7 +136,7 @@ export class Network {
               ...tokenAsset,
               id,
               address,
-              WTF_LPAddress,
+              tokenNativeCurrencyLPAddress,
             };
           }
         })
@@ -171,9 +165,9 @@ export class Network {
     return tokens?.find(({ isBigNativeCurrencyLP }: IBlockchain.IToken) => isBigNativeCurrencyLP);
   }
   
-  get getCurrentNetworkCommonNativeCurrencyLPToken(): IBlockchain.IToken | undefined  {
+  get getCurrentNetworkUSDCNativeCurrencyLPToken(): IBlockchain.IToken | undefined  {
     const tokens: IBlockchain.IToken[] | undefined = this.getCurrentNetworkTokens;
-    return tokens?.find(({ isCommonNativeCurrencyLP }: IBlockchain.IToken) => isCommonNativeCurrencyLP);
+    return tokens?.find(({ isUSDCNativeCurrencyLP }: IBlockchain.IToken) => isUSDCNativeCurrencyLP);
   }
 }
 

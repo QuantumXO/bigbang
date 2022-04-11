@@ -14,7 +14,7 @@ import { sleep, getBondAddresses } from "@services/helpers";
 interface IChangeApproval {
   token: string;
   address: string;
-  networkID: IBlockchain.NetworksEnum;
+  networkID: number;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
 }
 
@@ -78,7 +78,7 @@ interface IChangeStake {
   value: string;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   address: string;
-  networkID: IBlockchain.NetworksEnum;
+  networkID: number;
 }
 
 export const changeStake = createAsyncThunk("stake/changeStake", async ({

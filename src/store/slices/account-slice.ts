@@ -10,6 +10,8 @@ import { IAccount } from '@models/account';
 export const getBalances = createAsyncThunk(
   "account/getBalances",
   async ({ address, networkID, provider }: IAccount.IGetBalances): Promise<IAccount.IAccountBalances> => {
+    console.log('networkID: ', networkID);
+    
     const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
     
     const bigContract: Contract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, provider);

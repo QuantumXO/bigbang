@@ -9,6 +9,7 @@
   flex-direction: column;
   &__drawer__paper {
     box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, .7) !important;
+    z-index: 9!important;
   }
   &--logo {
     width: 150px;

@@ -5,7 +5,7 @@ import { Bond } from '@services/helpers/bond/bond';
 export namespace IAccount {
   export interface IGetBalances {
     address: string;
-    networkID: IBlockchain.NetworksEnum;
+    networkID: number;
     provider: StaticJsonRpcProvider | JsonRpcProvider;
   }
   export interface IAccountBalances {
@@ -17,7 +17,7 @@ export namespace IAccount {
   }
   export interface ILoadAccountDetails {
     address: string;
-    networkID: IBlockchain.NetworksEnum;
+    networkID: number;
     provider: StaticJsonRpcProvider | JsonRpcProvider;
   }
   export interface IUserAccountDetails {
@@ -38,7 +38,7 @@ export namespace IAccount {
     address: string;
     bond: Bond;
     provider: StaticJsonRpcProvider | JsonRpcProvider;
-    networkID: IBlockchain.NetworksEnum;
+    networkID: number;
   }
   export interface IUserBondDetails {
     allowance: number;
@@ -52,7 +52,7 @@ export namespace IAccount {
     address: string;
     token: IBlockchain.IToken;
     provider: StaticJsonRpcProvider | JsonRpcProvider;
-    networkID: IBlockchain.NetworksEnum;
+    networkID: number;
   }
   export interface IUserTokenDetails {
     allowance: number;

@@ -1,15 +1,9 @@
-import { LPBond } from "@services/helpers/bond/lp-bond";
-import { CustomBond, StableBond } from '@services/helpers/bond/stable-bond';
-import {
-  // LpBondContract,
-  // LpReserveContract,
-  // WavaxBondContract,
-  StableReserveContract,
-  StableBondContract,
-} from "@services/abi";
+import { Bond } from '@services/helpers/bond/bond';
+import { StableReserveContract, StableBondContract } from "@services/abi";
+
 import { tokensIcons } from '@constants/tokens';
 
-export const wFTM: StableBond = new StableBond({
+export const wFTM: Bond = new Bond({
   id: 'wFTM',
   isWrap: true,
   displayName: 'wFTM',
@@ -19,9 +13,8 @@ export const wFTM: StableBond = new StableBond({
   bondContractABI: StableBondContract,
   reserveContractAbi: StableReserveContract,
   tokensInStrategy: '0',
-  
 });
-export const USDC: StableBond = new StableBond({
+export const USDC: Bond = new Bond({
   id: 'USDC',
   displayName: 'USDC',
   bondToken: 'USDC',
@@ -31,7 +24,7 @@ export const USDC: StableBond = new StableBond({
   bondAddress: '0xFFf2fDd8Ff796cD3903b0CE550f0050172804215',
   tokensInStrategy: '0',
 });
-export const SCREAM: StableBond = new StableBond({
+export const SCREAM: Bond = new Bond({
   id: 'SCREAM',
   displayName: 'SCREAM',
   bondToken: 'SCREAM',
@@ -41,7 +34,7 @@ export const SCREAM: StableBond = new StableBond({
   bondAddress: '0x08dafdB796f7E95dD4f16f910Db84E3f9Ade7b99',
   tokensInStrategy: '0',
 });
-export const GEIST: StableBond = new StableBond({
+export const GEIST: Bond = new Bond({
   id: 'GEIST',
   displayName: 'GEIST',
   bondToken: 'GEIST',
@@ -51,7 +44,7 @@ export const GEIST: StableBond = new StableBond({
   bondAddress: '0x85878783Fea0ED4d59c893634B3F836D69574929',
   tokensInStrategy: '0',
 });
-export const TSHARE: StableBond = new StableBond({
+export const TSHARE: Bond = new Bond({
   id: 'TSHARE',
   displayName: 'TSHARE',
   bondToken: 'TSHARE',
@@ -61,7 +54,7 @@ export const TSHARE: StableBond = new StableBond({
   bondAddress: '0xA2C549AA935bdD275429E02989b8888A68e47Bfc',
   tokensInStrategy: '0',
 });
-export const MULTI: StableBond = new StableBond({
+export const MULTI: Bond = new Bond({
   id: 'MULTI',
   displayName: 'MULTI',
   bondToken: 'MULTI',
@@ -71,7 +64,7 @@ export const MULTI: StableBond = new StableBond({
   bondAddress: '0x534fD86683b1012745070bb1d78aE0907C43d5d9',
   tokensInStrategy: '0',
 });
-export const BOO: StableBond = new StableBond({
+export const BOO: Bond = new Bond({
   id: 'BOO',
   displayName: 'BOO',
   bondToken: 'BOO',
@@ -81,11 +74,11 @@ export const BOO: StableBond = new StableBond({
   bondAddress: '0xFDED6d63356d130b363BefF73F01d05Cc5B196AD',
   tokensInStrategy: '0',
 });
-export const BIG_wFTM: StableBond = new StableBond({
-  id: 'BIG_wFTM',
-  displayName: 'BIG_wFTM',
-  bondToken: 'BIG_wFTM',
-  bondIconSvg: tokensIcons.BOOIcon,
+export const BIGwFTM: Bond = new Bond({
+  id: 'BIGwFTM',
+  displayName: 'BIGwFTM',
+  bondToken: 'BIGwFTM',
+  bondIconSvg: tokensIcons.AvaxIcon,
   bondContractABI: StableBondContract,
   reserveContractAbi: StableReserveContract,
   bondAddress: '0xa0DEFC1F78C4bcCD402b8d0ED1089Ff9E2a58171',
@@ -93,6 +86,6 @@ export const BIG_wFTM: StableBond = new StableBond({
   isLP: true,
 });
 
-export default <(StableBond | LPBond | CustomBond)[]>[
-  wFTM, USDC, SCREAM, GEIST, TSHARE, MULTI, BOO, BIG_wFTM
+export default <(Bond)[]>[
+  wFTM, USDC, SCREAM, GEIST, TSHARE, MULTI, BOO, BIGwFTM
 ];

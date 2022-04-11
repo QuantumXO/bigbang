@@ -4,8 +4,6 @@ import allBonds from "@constants/bonds";
 import { Bond } from "../helpers/bond/bond";
 import { IBondDetails, IBondSlice } from "@store/slices/bond-slice";
 import { IReduxState } from "@store/slices/state.interface";
-import { StableBond } from '@services/helpers/bond/stable-bond';
-import { LPBond } from '@services/helpers/bond/lp-bond';
 import { IAccount } from '@models/account';
 
 // Smash all the interfaces together to get the BondData Type
@@ -15,7 +13,7 @@ export interface IUseBondsReturn {
   loading: boolean;
 }
 
-const initialBondArray: (StableBond | LPBond)[] = allBonds;
+const initialBondArray: (Bond)[] = allBonds;
 
 // Slaps together bond data within the account & bonding states
 function useBonds(): IUseBondsReturn {

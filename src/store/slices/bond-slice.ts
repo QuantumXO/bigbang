@@ -18,19 +18,19 @@ import { getToken } from '@services/helpers/get-token';
 interface IChangeApproval {
   bond: Bond;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
+  networkID: number;
   address: string;
 }
 interface ICalcBondDetails {
   bond: Bond;
   value: string | null;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
-  networkID: IBlockchain.NetworksEnum;
+  networkID: number;
 }
 interface IRedeemBond {
   address: string;
   bond: Bond;
-  networkID: IBlockchain.NetworksEnum;
+  networkID: number;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   autostake: boolean;
 }
@@ -225,7 +225,7 @@ interface IBondAsset {
   value: string;
   address: string;
   bond: Bond;
-  networkID: IBlockchain.NetworksEnum;
+  networkID: number;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   slippage: number;
   useNativeCurrency: boolean;

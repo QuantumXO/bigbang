@@ -2,7 +2,7 @@ import axios from "axios";
 import { IBlockchain } from '@models/blockchain';
 
 type ICache = {
-  [key in IBlockchain.WTF_TokenType]?: number;
+  [key in IBlockchain.TokenType]?: number;
 };
 
 const cache: ICache = {};
@@ -18,6 +18,6 @@ export const loadTokenPrices = async (): Promise<void> => {
   return data;
 };
 
-export const getTokenPrice = (tokenType: IBlockchain.WTF_TokenType): number => {
+export const getTokenPrice = (tokenType: IBlockchain.TokenType): number => {
   return Number(cache[tokenType]);
 };
