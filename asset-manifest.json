@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/bigbang/static/css/main.fd97d797.chunk.css",
-    "main.js": "/bigbang/static/js/main.75a9aae9.chunk.js",
+    "main.css": "/bigbang/static/css/main.590c81b7.chunk.css",
+    "main.js": "/bigbang/static/js/main.fab7a92d.chunk.js",
     "runtime-main.js": "/bigbang/static/js/runtime-main.d383285f.js",
     "static/js/2.c3bd201e.chunk.js": "/bigbang/static/js/2.c3bd201e.chunk.js",
     "index.html": "/bigbang/index.html",
@@ -25,7 +25,7 @@
   "entrypoints": [
     "static/js/runtime-main.d383285f.js",
     "static/js/2.c3bd201e.chunk.js",
-    "static/css/main.fd97d797.chunk.css",
-    "static/js/main.75a9aae9.chunk.js"
+    "static/css/main.590c81b7.chunk.css",
+    "static/js/main.fab7a92d.chunk.js"
   ]
 }
