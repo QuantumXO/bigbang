@@ -1,11 +1,11 @@
 {
   "files": {
     "main.css": "/bigbang/static/css/main.590c81b7.chunk.css",
-    "main.js": "/bigbang/static/js/main.fab7a92d.chunk.js",
+    "main.js": "/bigbang/static/js/main.eef7941c.chunk.js",
     "runtime-main.js": "/bigbang/static/js/runtime-main.d383285f.js",
-    "static/js/2.c3bd201e.chunk.js": "/bigbang/static/js/2.c3bd201e.chunk.js",
+    "static/js/2.e3cadb06.chunk.js": "/bigbang/static/js/2.e3cadb06.chunk.js",
     "index.html": "/bigbang/index.html",
-    "static/js/2.c3bd201e.chunk.js.LICENSE.txt": "/bigbang/static/js/2.c3bd201e.chunk.js.LICENSE.txt",
+    "static/js/2.e3cadb06.chunk.js.LICENSE.txt": "/bigbang/static/js/2.e3cadb06.chunk.js.LICENSE.txt",
     "static/media/AVAX.bf288bae.svg": "/bigbang/static/media/AVAX.bf288bae.svg",
     "static/media/index.scss": "/bigbang/static/media/Ubuntu-Regular.f20e45a9.woff",
     "static/media/styles.scss": "/bigbang/static/media/twitter-icon.c887f99f.svg",
@@ -24,8 +24,8 @@
   },
   "entrypoints": [
     "static/js/runtime-main.d383285f.js",
-    "static/js/2.c3bd201e.chunk.js",
+    "static/js/2.e3cadb06.chunk.js",
     "static/css/main.590c81b7.chunk.css",
-    "static/js/main.fab7a92d.chunk.js"
+    "static/js/main.eef7941c.chunk.js"
   ]
 }
