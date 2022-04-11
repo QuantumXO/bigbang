@@ -1,11 +1,11 @@
 {
   "files": {
-    "main.css": "/bigbang/static/css/main.e728c75a.chunk.css",
-    "main.js": "/bigbang/static/js/main.0fd79ceb.chunk.js",
+    "main.css": "/bigbang/static/css/main.fd97d797.chunk.css",
+    "main.js": "/bigbang/static/js/main.75a9aae9.chunk.js",
     "runtime-main.js": "/bigbang/static/js/runtime-main.d383285f.js",
-    "static/js/2.51cab64a.chunk.js": "/bigbang/static/js/2.51cab64a.chunk.js",
+    "static/js/2.c3bd201e.chunk.js": "/bigbang/static/js/2.c3bd201e.chunk.js",
     "index.html": "/bigbang/index.html",
-    "static/js/2.51cab64a.chunk.js.LICENSE.txt": "/bigbang/static/js/2.51cab64a.chunk.js.LICENSE.txt",
+    "static/js/2.c3bd201e.chunk.js.LICENSE.txt": "/bigbang/static/js/2.c3bd201e.chunk.js.LICENSE.txt",
     "static/media/AVAX.bf288bae.svg": "/bigbang/static/media/AVAX.bf288bae.svg",
     "static/media/index.scss": "/bigbang/static/media/Ubuntu-Regular.f20e45a9.woff",
     "static/media/styles.scss": "/bigbang/static/media/twitter-icon.c887f99f.svg",
@@ -15,6 +15,7 @@
     "static/media/dyel.9be81413.svg": "/bigbang/static/media/dyel.9be81413.svg",
     "static/media/ftm.3f8c71bb.svg": "/bigbang/static/media/ftm.3f8c71bb.svg",
     "static/media/geist.a1209baf.png": "/bigbang/static/media/geist.a1209baf.png",
+    "static/media/matic.c13e4066.svg": "/bigbang/static/media/matic.c13e4066.svg",
     "static/media/multichain.d4bde313.png": "/bigbang/static/media/multichain.d4bde313.png",
     "static/media/scream.647d431f.png": "/bigbang/static/media/scream.647d431f.png",
     "static/media/tshare.e33a9641.svg": "/bigbang/static/media/tshare.e33a9641.svg",
@@ -23,8 +24,8 @@
   },
   "entrypoints": [
     "static/js/runtime-main.d383285f.js",
-    "static/js/2.51cab64a.chunk.js",
-    "static/css/main.e728c75a.chunk.css",
-    "static/js/main.0fd79ceb.chunk.js"
+    "static/js/2.c3bd201e.chunk.js",
+    "static/css/main.fd97d797.chunk.css",
+    "static/js/main.75a9aae9.chunk.js"
   ]
 }
