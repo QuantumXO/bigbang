@@ -4,7 +4,6 @@ export namespace IBlockchain {
     id: NetworkType;
     name: string;
     chainId: string;
-    stableTokenType: StableTokenType;
     hexadecimalChainId: string;
     icon?: string;
     chainName?: string;
@@ -63,6 +62,7 @@ export namespace IBlockchain {
     isWrap?: boolean;
     isLP?: boolean;
     isStable?: boolean;
+    networkType?: string;
     isBigNativeCurrencyLP?: boolean;
     isUSDCNativeCurrencyLP?: boolean;
     tokenNativeCurrencyLPAddress?: string;
@@ -70,7 +70,7 @@ export namespace IBlockchain {
   export type StableCommonTokenType = 'USDC';
   export type StableWrapCommonTokenType = 'wUSDC';
   export type FTMNativeCurrencyType = 'wFTM';
-  export type StableFTMTokenType = StableCommonTokenType;
+  export type StableFTMTokenType = 'USDCInFTM';
   export type FTMTokenType =
     | FTMNativeCurrencyType
     | StableFTMTokenType

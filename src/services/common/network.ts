@@ -2,6 +2,8 @@ import { IBlockchain } from '@models/blockchain';
 import { messages } from '@constants/messages';
 import { SUPPORTED_NETWORKS_CHAIN_IDS, ACTIVE_NETWORKS } from '@constants/networks';
 import tokensAssets, { ITokenAsset } from '@constants/tokens';
+import { Bond } from '@services/helpers/bond/bond';
+import allBonds from "@constants/bonds";
 
 interface INetworkArgs {
   newNetworkId?: IBlockchain.NetworkType
@@ -166,6 +168,17 @@ export class Network {
   get getCurrentNetworkUSDCNativeCurrencyLPToken(): IBlockchain.IToken | undefined  {
     const tokens: IBlockchain.IToken[] | undefined = this.getCurrentNetworkTokens;
     return tokens?.find(({ isUSDCNativeCurrencyLP }: IBlockchain.IToken) => isUSDCNativeCurrencyLP);
+  }
+  
+  get getCurrentNetworkBonds(): Bond[] {
+    const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
+    let result: Bond[] = [];
+    
+    if (currentNetwork) {
+      result = allBonds.filter(({ networkType }: Bond) => currentNetwork.id === networkType);
+    }
+    
+    return result;
   }
 }
 

@@ -12,7 +12,7 @@ import { error, info, success, warning } from '../slices/messages-slice';
 import { messages } from '@constants/messages';
 import { getGasPrice } from '@services/helpers/get-gas-price';
 import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
-import { StableBondContract, wFTMReserveContract } from '@services/abi';
+import { StableBondContract, wFTMReserveContract, LpReserveContract } from '@services/abi';
 import { getToken } from '@services/helpers/get-token';
 
 interface IChangeApproval {
@@ -123,29 +123,57 @@ export const calcBondDetails = createAsyncThunk(
     
     // #TODO check
     const bondContract: Contract = new Contract(bond.bondAddress, StableBondContract, provider);
-    
     const terms = await bondContract.terms();
     const maxBondPrice: number = (await bondContract.maxPayout()) / Math.pow(10, 9);
     const marketPrice: number = await getMarketPrice(networkID, provider);
     const minPurchase: number = await bondContract.minPayout() / Math.pow(10, 9);
+    const tokenPriceInUSDC = (await getTokenInNativeCurrency(bond.id, networkID, provider)) * (await getNativeCurrencyInUSDC(networkID, provider))
     
     try {
       bondPriceInUSD = await bondContract.bondPriceInUSD();
       
       if (bond.id === 'USDC') {
         bondPrice = bondPriceInUSD / Math.pow(10, 6);
+      } else if (bond.isWrap) {
+        bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * (await getNativeCurrencyInUSDC(networkID, provider)); // in bond token
+      } else if (bond.id === 'CRV') {
+        const crvPriceInWETHContract = new Contract('0x396E655C309676cAF0acf4607a868e0CDed876dB', LpReserveContract, provider);
+        const crvAddress: string = getToken('CRV', 'address')?.toLowerCase();
+        const [crvReserve0, crvReserve1] = await crvPriceInWETHContract.getReserves();
+        const srvToken0Address: string = (await crvPriceInWETHContract.token0()).toLowerCase();
+        const srvToken1Address: string = (await crvPriceInWETHContract.token1()).toLowerCase();
+        let crvPriceInWETH: number = 0;
+  
+        if (srvToken0Address === crvAddress) {
+          crvPriceInWETH = crvReserve1 / crvReserve0;
+        } else if (srvToken1Address === crvAddress) {
+          crvPriceInWETH = crvReserve0 / crvReserve1;
+        } else {
+          throw new Error('CRV error');
+        }
+  
+        const wethPriceInWMaticContract = new Contract('0xadbf1854e5883eb8aa7baf50705338739e558e5b', LpReserveContract, provider);
+  
+        const wMATICAddress: string = getToken('wMATIC', 'address')?.toLowerCase();
+        const wethPriceInWMatic0Address: string = (await wethPriceInWMaticContract.token0()).toLowerCase();
+        const wethPriceInWMatic1Address: string = (await wethPriceInWMaticContract.token1()).toLowerCase();
+        const [wethPriceInWMaticReserve0, wethPriceInWMaticReserve1] = await wethPriceInWMaticContract.getReserves();
+        let wethPriceInWMAtic: number = 0;
+  
+        if (wethPriceInWMatic0Address === wMATICAddress) {
+          wethPriceInWMAtic = wethPriceInWMaticReserve0 / wethPriceInWMaticReserve1;
+        } else if (wethPriceInWMatic1Address === wMATICAddress) {
+          wethPriceInWMAtic = wethPriceInWMaticReserve1 / wethPriceInWMaticReserve0;
+        } else {
+          throw new Error('wethPriceInWMatic error');
+        }
+  
+        const crvPriceInUSDC = crvPriceInWETH * wethPriceInWMAtic * (await getNativeCurrencyInUSDC(networkID, provider));
+  
+        bondPrice = crvPriceInUSDC * (bondPriceInUSD / Math.pow(10, 18));
       } else {
-        bondPrice = bondPriceInUSD / Math.pow(10, 18); // in bond token
-      }
-      
-      if (!bond.isWrap && bond.id !== 'USDC') {
-       /*  bondPrice = bondPrice * (await getNativeCurrencyInUSDC(networkID, provider));
-  
-        bondPrice = bondPrice * await getTokenInNativeCurrency(bond.id, networkID, provider); */
-  
-        const tokenPriceInUSDC = (await getTokenInNativeCurrency(bond.id, networkID, provider)) * (await getNativeCurrencyInUSDC(networkID, provider))
-  
-        bondPrice = bondPrice * tokenPriceInUSDC;
+        // LP and tokens
+        bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * tokenPriceInUSDC; // in bond token
       }
       
       bondDiscount = (marketPrice - bondPrice) / marketPrice;
@@ -199,11 +227,6 @@ export const calcBondDetails = createAsyncThunk(
   
       // #TODO check
       purchased = purchased / Math.pow(10, tokenDecimals);
-      
-      /* if (bond.id === wavax.name) {
-        const avaxPrice = getTokenPrice('AVAX');
-        purchased = purchased * avaxPrice;
-      } */
     }
     
     return {
@@ -251,9 +274,6 @@ export const bondAsset = createAsyncThunk(
     let bondTx;
     try {
       const gasPrice: BigNumber = await getGasPrice(provider);
-      
-      // @ts-ignore
-      console.log(valueInWei, maxPremium, depositorAddress, gasPrice);
       if (useNativeCurrency) {
         bondTx = await bondContract.deposit(valueInWei, maxPremium, depositorAddress, { value: valueInWei, gasPrice });
       } else {

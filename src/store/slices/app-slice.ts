@@ -1,13 +1,13 @@
 import { ethers, Contract } from "ethers";
-import { BangTokenContract, StakingContract, BigTokenContract, dYelTokenContract } from "@services/abi";
-import { getMarketPrice, getTokenPrice, setAll, getBondAddresses } from "@services/helpers";
+import { BangTokenContract, StakingContract, BigTokenContract } from "@services/abi";
+import { getMarketPrice, setAll, getBondAddresses } from "@services/helpers";
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { RootState } from "@store/store";
-import allBonds from "@constants/bonds";
 import { BigNumberish } from '@ethersproject/bignumber';
 import { IBlockchain } from '@models/blockchain';
 import { Bond } from '@services/helpers/bond/bond';
+import network from '@services/common/network';
 
 interface ILoadAppDetails {
   networkID: number;
@@ -48,8 +48,9 @@ export const loadAppDetails = createAsyncThunk(
     const circSupply: number = (await bangContract.circulatingSupply()) / Math.pow(10, 9);
     const stakingTVL: number = circSupply * marketPrice;
     const marketCap: number = totalSupply * marketPrice;
+    const currentNetworkBonds: Bond[] = network().getCurrentNetworkBonds;
     
-    const tokenBalPromises: Promise<number>[] = allBonds
+    const tokenBalPromises: Promise<number>[] = currentNetworkBonds
       .map(async (bond: Bond): Promise<number> => {
         return bond.getTreasuryBalance(networkID, provider);
       });
@@ -61,12 +62,12 @@ export const loadAppDetails = createAsyncThunk(
   
     const dYelPrice: number = 0;
     
-    const tokenAmountsPromises = allBonds.map((bond: Bond) => bond.getTokenAmount(networkID, provider));
+    const tokenAmountsPromises = currentNetworkBonds.map((bond: Bond) => bond.getTokenAmount(networkID, provider));
     const tokenAmounts: number[] = await Promise.all(tokenAmountsPromises);
     const rfvTreasury = tokenAmounts
       .reduce((tokenAmount0: number, tokenAmount1: number) => tokenAmount0 + tokenAmount1, 0);
     
-    const bigBondsAmountsPromises = allBonds.map((bond: Bond) => bond.getBigAmount(networkID, provider));
+    const bigBondsAmountsPromises = currentNetworkBonds.map((bond: Bond) => bond.getBigAmount(networkID, provider));
     const bigBondsAmounts: number[] = await Promise.all(bigBondsAmountsPromises);
     const bigAmount: number = bigBondsAmounts
       .reduce((bigAmount0: number, bigAmount1: number) => bigAmount0 + bigAmount1, 0);

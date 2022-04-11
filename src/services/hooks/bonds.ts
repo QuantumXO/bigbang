@@ -1,10 +1,10 @@
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import allBonds from "@constants/bonds";
 import { Bond } from "../helpers/bond/bond";
 import { IBondDetails, IBondSlice } from "@store/slices/bond-slice";
 import { IReduxState } from "@store/slices/state.interface";
 import { IAccount } from '@models/account';
+import network from '@services/common/network';
 
 // Smash all the interfaces together to get the BondData Type
 export interface IAllBondData extends Bond, IBondDetails, IAccount.IUserBondDetails { }
@@ -13,7 +13,7 @@ export interface IUseBondsReturn {
   loading: boolean;
 }
 
-const initialBondArray: (Bond)[] = allBonds;
+const initialBondArray: (Bond)[] = network().getCurrentNetworkBonds;
 
 // Slaps together bond data within the account & bonding states
 function useBonds(): IUseBondsReturn {
@@ -25,7 +25,7 @@ function useBonds(): IUseBondsReturn {
   const [bonds, setBonds] = useState<IAllBondData[]>(initialBondArray);
   
   useEffect((): void => {
-    const bondDetails: IAllBondData[] = allBonds
+    const bondDetails: IAllBondData[] = network().getCurrentNetworkBonds
       .flatMap((bond) => {
         if (bondState[bond.id] && bondState[bond.id].bondDiscount) {
           return Object.assign(bond, bondState[bond.id]); // Keeps the object type

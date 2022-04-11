@@ -10,10 +10,7 @@ import { IAccount } from '@models/account';
 export const getBalances = createAsyncThunk(
   "account/getBalances",
   async ({ address, networkID, provider }: IAccount.IGetBalances): Promise<IAccount.IAccountBalances> => {
-    console.log('networkID: ', networkID);
-    
     const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
-    
     const bigContract: Contract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, provider);
     const bigBalance: BigNumberish = await bigContract.balanceOf(address);
     const bangContract: Contract = new ethers.Contract(addresses.BANG_ADDRESS, BangTokenContract, provider);
@@ -105,14 +102,14 @@ export const calculateUserBondDetails = createAsyncThunk(
         });
       });
     } else {
-      const bondContract: Contract = new ethers.Contract(bond.bondAddress, StableBondContract, provider);
-      const reserveContract: Contract = new Contract(bond.getReserveAddress, wFTMReserveContract, provider);
       
+      const bondContract: Contract = new ethers.Contract(bond.bondAddress, StableBondContract, provider);
+      // #TODO check
+      const reserveContract: Contract = new Contract(bond.getReserveAddress, wFTMReserveContract, provider);
       const bondDetails = await bondContract.bondInfo(address);
       const interestDue: number = bondDetails.payout / Math.pow(10, 9);
       const bondMaturationBlock: number = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
       const pendingPayout: BigNumber = await bondContract.pendingPayoutFor(address);
-      
       let balance: string | number = "0";
   
       // const allowance: BigNumber = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
@@ -130,7 +127,6 @@ export const calculateUserBondDetails = createAsyncThunk(
       balance = (bond.id !== 'USDC')
         ? Number(balanceVal)
         : Number(balanceVal) * Math.pow(10, 12);
-      
       return {
         bond: bond.id,
         displayName: bond.displayName,

@@ -3,6 +3,18 @@ import { StableReserveContract, StableBondContract } from "@services/abi";
 
 import { tokensIcons } from '@constants/tokens';
 
+//-------------- FTM --------------
+export const USDCInFTM: Bond = new Bond({
+  id: 'USDC',
+  displayName: 'USDC',
+  bondToken: 'USDC',
+  bondIconSvg: tokensIcons.USDCIcon,
+  bondContractABI: StableBondContract,
+  reserveContractAbi: StableReserveContract,
+  bondAddress: '0xFFf2fDd8Ff796cD3903b0CE550f0050172804215',
+  tokensInStrategy: '0',
+  networkType: 'FTM',
+});
 export const wFTM: Bond = new Bond({
   id: 'wFTM',
   isWrap: true,
@@ -13,16 +25,7 @@ export const wFTM: Bond = new Bond({
   bondContractABI: StableBondContract,
   reserveContractAbi: StableReserveContract,
   tokensInStrategy: '0',
-});
-export const USDC: Bond = new Bond({
-  id: 'USDC',
-  displayName: 'USDC',
-  bondToken: 'USDC',
-  bondIconSvg: tokensIcons.USDCIcon,
-  bondContractABI: StableBondContract,
-  reserveContractAbi: StableReserveContract,
-  bondAddress: '0xFFf2fDd8Ff796cD3903b0CE550f0050172804215',
-  tokensInStrategy: '0',
+  networkType: 'FTM',
 });
 export const SCREAM: Bond = new Bond({
   id: 'SCREAM',
@@ -33,6 +36,7 @@ export const SCREAM: Bond = new Bond({
   reserveContractAbi: StableReserveContract,
   bondAddress: '0x08dafdB796f7E95dD4f16f910Db84E3f9Ade7b99',
   tokensInStrategy: '0',
+  networkType: 'FTM',
 });
 export const GEIST: Bond = new Bond({
   id: 'GEIST',
@@ -53,6 +57,7 @@ export const TSHARE: Bond = new Bond({
   reserveContractAbi: StableReserveContract,
   bondAddress: '0xA2C549AA935bdD275429E02989b8888A68e47Bfc',
   tokensInStrategy: '0',
+  networkType: 'FTM',
 });
 export const MULTI: Bond = new Bond({
   id: 'MULTI',
@@ -63,6 +68,7 @@ export const MULTI: Bond = new Bond({
   reserveContractAbi: StableReserveContract,
   bondAddress: '0x534fD86683b1012745070bb1d78aE0907C43d5d9',
   tokensInStrategy: '0',
+  networkType: 'FTM',
 });
 export const BOO: Bond = new Bond({
   id: 'BOO',
@@ -73,6 +79,7 @@ export const BOO: Bond = new Bond({
   reserveContractAbi: StableReserveContract,
   bondAddress: '0xFDED6d63356d130b363BefF73F01d05Cc5B196AD',
   tokensInStrategy: '0',
+  networkType: 'FTM',
 });
 export const BIGwFTM: Bond = new Bond({
   id: 'BIGwFTM',
@@ -84,8 +91,58 @@ export const BIGwFTM: Bond = new Bond({
   bondAddress: '0xa0DEFC1F78C4bcCD402b8d0ED1089Ff9E2a58171',
   tokensInStrategy: '0',
   isLP: true,
+  networkType: 'FTM',
+});
+//-------------- POLYGON --------------
+export const wMATIC: Bond = new Bond({
+  id: 'wMATIC',
+  isWrap: true,
+  displayName: 'wMATIC',
+  bondToken: 'wMATIC',
+  bondIconSvg: tokensIcons.MATICIcon,
+  bondAddress: '0x9A7ebf612B6f254feaFA4f4249361132FCC39D51',
+  bondContractABI: StableBondContract,
+  reserveContractAbi: StableReserveContract,
+  tokensInStrategy: '0',
+  networkType: 'MATIC',
+});
+export const QUICK: Bond = new Bond({
+  id: 'QUICK',
+  displayName: 'QUICK',
+  bondToken: 'QUICK',
+  bondIconSvg: tokensIcons.AvaxIcon,
+  bondAddress: '0x7f0c0A8083567dDac545b043619F09351DBB55d1',
+  bondContractABI: StableBondContract,
+  reserveContractAbi: StableReserveContract,
+  tokensInStrategy: '0',
+  networkType: 'MATIC',
+});
+export const CRV: Bond = new Bond({
+  id: 'CRV',
+  displayName: 'CRV',
+  bondToken: 'CRV',
+  bondIconSvg: tokensIcons.AvaxIcon,
+  bondAddress: '0x8E5Ba462710FA01ecEFbaf28E91c4F312e013787',
+  bondContractABI: StableBondContract,
+  reserveContractAbi: StableReserveContract,
+  tokensInStrategy: '0',
+  networkType: 'MATIC',
+});
+export const USDCInPOLYGON: Bond = new Bond({
+  id: 'USDC',
+  displayName: 'USDC',
+  bondToken: 'USDC',
+  bondIconSvg: tokensIcons.USDCIcon,
+  bondAddress: '0x3F25ED5eF6C026d460DF78944c5d72db0e29EDd7',
+  bondContractABI: StableBondContract,
+  reserveContractAbi: StableReserveContract,
+  tokensInStrategy: '0',
+  networkType: 'MATIC',
 });
 
+const FTMBonds: Bond[] = [USDCInPOLYGON, wFTM, SCREAM, GEIST, TSHARE, MULTI, BOO, BIGwFTM];
+const POLYGONBonds: Bond[] = [USDCInFTM, wMATIC, QUICK, CRV];
+
 export default <(Bond)[]>[
-  wFTM, USDC, SCREAM, GEIST, TSHARE, MULTI, BOO, BIGwFTM
+  ...FTMBonds, ...POLYGONBonds,
 ];

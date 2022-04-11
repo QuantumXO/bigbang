@@ -20,7 +20,7 @@ export const getMarketPrice = async (
     // USDC per nativeCurrency
     result = nativeCurrencyInUSDC * bigPriceInNativeCurrency;
   } catch (e) {
-    console.error(e);
+    console.error('getMarketPrice(): ', e);
   }
   return result;
 }
@@ -31,7 +31,7 @@ export const getBigPriceInNativeCurrency = async (
 ): Promise<number> => {
   const { BIG_ADDRESS }: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
   const commonBigLPToken: IBlockchain.IToken | undefined = network().getCurrentNetworkCommonBIGLPToken;
-  let bigPriceInNativeCurrency: number; // in FTM
+  let bigPriceInNativeCurrency: number;
   
   if (commonBigLPToken) {
     const commonBigLPTokenAddress: string = getToken(commonBigLPToken.id, 'address');
@@ -62,6 +62,7 @@ export const getNativeCurrencyInUSDC = async (
 ): Promise<number> => {
   const uSDCNativeCurrencyLPToken: IBlockchain.IToken | undefined = network()
     .getCurrentNetworkUSDCNativeCurrencyLPToken;
+  
   if (uSDCNativeCurrencyLPToken) {
     const uSDCAddress: string = getToken('USDC', 'address');
     const uSDCNativeCurrencyLPAddress: string = getToken(uSDCNativeCurrencyLPToken.id, 'address');

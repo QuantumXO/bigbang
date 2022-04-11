@@ -11,7 +11,7 @@ import BOOIcon from "@assets/images/common/tokens/boo.png";
 import MATICIcon from "@assets/images/common/tokens/matic.svg";
 
 export const tokensIcons: Record<string, string> = {
-  AvaxIcon, FTMIcon, SCREAMIcon, GEISTIcon, USDCIcon, TSHAREIcon, MULTICHAINIcon, BOOIcon
+  AvaxIcon, FTMIcon, SCREAMIcon, GEISTIcon, USDCIcon, TSHAREIcon, MULTICHAINIcon, BOOIcon, MATICIcon,
 };
 
 export interface ITokenAsset extends Pick<
@@ -34,6 +34,13 @@ export const usdc: ITokenAsset = {
   name: 'USDC',
   isStable: true,
 };
+export const wusdc: ITokenAsset = {
+  id: "wUSDC",
+  icon: AvaxIcon,
+  decimals: 6,
+  name: 'wUSDC',
+  isWrap: true,
+};
 //-------------- FTM --------------
 export const wftm: ITokenAsset = {
   id: "wFTM",
@@ -49,13 +56,6 @@ export const usdcWftm: ITokenAsset = {
   name: 'USDCwFTM',
   isLP: true,
   isUSDCNativeCurrencyLP: true,
-};
-export const wusdc: ITokenAsset = {
-  id: "wUSDC",
-  icon: AvaxIcon,
-  decimals: 6,
-  name: 'wUSDC',
-  isWrap: true,
 };
 export const bigWftm: ITokenAsset = {
   id: "BIGwFTM",
@@ -95,7 +95,6 @@ export const boo: ITokenAsset = {
   decimals: 18,
   name: 'BOO',
 };
-
 //-------------- POLYGON --------------
 export const wMATIC: ITokenAsset = {
   id: "wMATIC",
@@ -120,9 +119,21 @@ export const usdcWmatic: ITokenAsset = {
   isLP: true,
   isUSDCNativeCurrencyLP: true,
 };
+export const quick: ITokenAsset = {
+  id: "QUICK",
+  icon: AvaxIcon,
+  decimals: 18,
+  name: 'QUICK',
+};
+export const crv: ITokenAsset = {
+  id: "CRV",
+  icon: AvaxIcon,
+  decimals: 18,
+  name: 'CRV',
+};
 
 const ftmTokens = [wftm, usdcWftm, bigWftm, scream, geist, tshare, multi, boo];
-const maticTokens = [wMATIC, bigWmatic, usdcWmatic];
+const maticTokens = [wMATIC, bigWmatic, usdcWmatic, quick, crv];
 
 export default <ITokenAsset[]>[
   usdc, ...ftmTokens, ...maticTokens

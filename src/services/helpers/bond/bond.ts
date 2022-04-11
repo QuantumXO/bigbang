@@ -20,6 +20,7 @@ export interface BondOpts {
   readonly lpUrl?: string;
   readonly isWrap?: boolean;
   readonly tokensInStrategy?: string;
+  readonly networkType?: IBlockchain.NetworkType;
 }
 
 export class Bond {
@@ -35,11 +36,12 @@ export class Bond {
   public readonly isLP?: boolean;
   public readonly lpUrl?: string;
   public readonly tokensInStrategy?: string;
+  public readonly networkType?: IBlockchain.NetworkType;
 
   constructor(bondOpts: BondOpts) {
     const {
       id, displayName, bondIconSvg, bondContractABI, bondToken, lpUrl, tokensInStrategy, isLP, isWrap,
-      bondAddress, reserveContractAbi
+      bondAddress, reserveContractAbi, networkType,
     } = bondOpts;
     this.id = id;
     this.displayName = displayName;
@@ -53,6 +55,7 @@ export class Bond {
     this.displayUnits = displayName;
     this.reserveContractAbi = reserveContractAbi;
     this.tokensInStrategy = tokensInStrategy;
+    this.networkType = networkType;
   }
   
   public async getTokenAmount(networkID: number, provider: StaticJsonRpcProvider): Promise<number> {
