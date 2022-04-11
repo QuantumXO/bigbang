@@ -31,13 +31,15 @@
       }
     }
     &__logo__wrap {
-      min-width: 120px;
+      min-width: 72px;
       display: inline-flex;
       align-items: center;
       justify-content: flex-start;
     }
     &__mint {
+      display: inline-flex;
       margin-left: 12px;
+      flex-direction: column;
     }
     &__text {
       opacity: .7;
@@ -47,6 +49,7 @@
     &__contract__link {
       margin-top: 16px;
       color: #5A5A5C;
+      text-decoration: none;
       font: 400 16px/16px $basic_font_family;
     }
     &__price {

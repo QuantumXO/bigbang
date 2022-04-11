@@ -19,7 +19,7 @@ export function BondTableRow({ bond }: IBondProps): ReactElement {
   return (
     <TableRow className="bond">
       <TableCell className="bond__col mint">
-        <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div className="bond__logo__wrap">
             <BondLogo bond={bond} iconSize={48} />
           </div>

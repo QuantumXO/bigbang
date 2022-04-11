@@ -52,13 +52,11 @@ export class Network {
     if (this.getIsEthereumAPIAvailable) {
       try {
         await this.switchChainRequest();
-        window.location.reload();
       } catch (error: any) {
         if (error.code === 4902) {
           try {
             await this.addChainRequest();
             await this.switchChainRequest();
-            window.location.reload();
           } catch (addError) {
             console.error(error);
           }
@@ -68,19 +66,19 @@ export class Network {
     }
   }
   
-  switchChainRequest = (): any => {
+  switchChainRequest = async (): Promise<any> => {
     const newNetwork: IBlockchain.INetwork  | undefined = ACTIVE_NETWORKS
       .find(({ id }: IBlockchain.INetwork) => id === this.newNetworkId);
     
     if (newNetwork) {
       const { hexadecimalChainId } = newNetwork;
-      
-      return window.ethereum.request({
+      await window.ethereum.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: hexadecimalChainId }]
       });
+      window.location.replace('/');
     } else {
-      //
+      throw new Error('switchChainRequest Error');
     }
   };
   

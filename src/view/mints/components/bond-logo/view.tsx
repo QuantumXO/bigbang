@@ -10,20 +10,15 @@ interface IBondLogoProps {
 }
 
 export function BondLogo(props: IBondLogoProps): ReactElement {
-  const { bond: { isLP, bondIconSvg }, iconSize = 24, iconLPSize = 24 } = props;
-  let style = { height: iconSize, width: iconSize };
-
-  if (isLP) {
-    style = { height: iconLPSize, width: iconLPSize * 2 };
-  }
+  const { bond: { bondIconSvg }, iconSize = 24 } = props;
+  const style = { height: iconSize, width: iconSize };
   
   return (
     <Box
       display="flex"
       alignItems="center"
-      justifyContent="center"
       style={{
-        marginLeft: isLP ? -iconLPSize : 0,
+        width: '100%',
       }}
     >
       <img src={bondIconSvg} style={style} alt="bond" />

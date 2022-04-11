@@ -102,7 +102,7 @@ export const SidebarContent = (): ReactElement => {
           <a
             target="_blank"
             className="wallet--link"
-            href={`https://cchain.explorer.avax.network/address/${address}`}
+            href={`https://blockscan.com/address/${address}`}
           >
             {shorten(address)}
           </a>
