@@ -1,16 +1,17 @@
-import { Contract, ethers } from 'ethers';
+import { Contract, ethers, Signer } from 'ethers';
 import { LpReserveContract } from '../abi';
-import { getBondAddresses } from '@services/helpers/get-bond-addresses';
+import { getBondAddresses } from '@services/helpers/bond/get-bond-addresses';
 import { IBlockchain } from '@models/blockchain';
 import { getToken } from '@services/helpers/get-token';
 import network from '@services/common/network';
-import { Bond } from '@services/helpers/bond/bond';
 import { IBond } from '@models/bond';
+import { getReserves } from '@services/helpers/get-reserves';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
 
 // #TODO check method
 export const getMarketPrice = async (
   networkID: number,
-  provider: ethers.Signer | ethers.providers.Provider
+  provider: StaticJsonRpcProvider | Signer
 ): Promise<number> =>  {
   let result: number = 0
   try {
@@ -27,24 +28,23 @@ export const getMarketPrice = async (
 
 export const getBigPriceInNativeCurrency = async (
   networkID: number,
-  provider: ethers.Signer | ethers.providers.Provider
+  provider: StaticJsonRpcProvider | Signer
 ): Promise<number> => {
   const { BIG_ADDRESS }: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
-  const commonBigLPToken: IBlockchain.IToken | undefined = network().getCurrentNetworkCommonBIGLPToken;
+  const bigNativeCurrencyLPToken: IBlockchain.IToken | undefined = network().getNetworkBigNativeCurrencyLPToken;
   let bigPriceInNativeCurrency: number;
   
-  if (commonBigLPToken) {
-    const commonBigLPTokenAddress: string = getToken(commonBigLPToken.id, 'address');
-    const commonBigLPContract: Contract = new Contract(commonBigLPTokenAddress, LpReserveContract, provider);
-    const [reserve0, reserve1] = await commonBigLPContract.getReserves();
-    const token0Address: string = await commonBigLPContract.token0();
-    const token1Address: string = await commonBigLPContract.token1();
-    const isBigToken0: boolean = token0Address.toLowerCase() === BIG_ADDRESS.toLowerCase();
-    const isBigToken1: boolean = token1Address.toLowerCase() === BIG_ADDRESS.toLowerCase();
+  if (bigNativeCurrencyLPToken) {
+    const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
+      contractAddress: bigNativeCurrencyLPToken.address,
+      contractABI: LpReserveContract,
+      provider,
+      comparedAddress: BIG_ADDRESS,
+    });
   
-    if (isBigToken1) {
+    if (comparedAddressInReserve === 1) {
       bigPriceInNativeCurrency = ((reserve0) / (reserve1 * Math.pow(10, 9)));
-    } else if (isBigToken0) {
+    } else if (comparedAddressInReserve === 0) {
       bigPriceInNativeCurrency = ((reserve1) / (reserve0 * Math.pow(10, 9)));
     } else {
       throw new Error('No exist BIG address');
@@ -58,25 +58,25 @@ export const getBigPriceInNativeCurrency = async (
 
 export const getNativeCurrencyInUSDC = async (
   networkID: number,
-  provider: ethers.Signer | ethers.providers.Provider
+  provider: StaticJsonRpcProvider | Signer,
 ): Promise<number> => {
   const uSDCNativeCurrencyLPToken: IBlockchain.IToken | undefined = network()
-    .getCurrentNetworkUSDCNativeCurrencyLPToken;
+    .getNetworkUSDCNativeCurrencyLPToken;
   
   if (uSDCNativeCurrencyLPToken) {
     const uSDCAddress: string = getToken('USDC', 'address');
-    const uSDCNativeCurrencyLPAddress: string = getToken(uSDCNativeCurrencyLPToken.id, 'address');
-    const uSDCNativeCurrencyLPContract: Contract = new Contract(uSDCNativeCurrencyLPAddress, LpReserveContract, provider);
-    const [reserve0, reserve1] = await uSDCNativeCurrencyLPContract.getReserves();
-    const token0Address: string = await uSDCNativeCurrencyLPContract.token0();
-    const token1Address: string = await uSDCNativeCurrencyLPContract.token1();
-    const isUSDCToken0: boolean = token0Address.toLowerCase() === uSDCAddress.toLowerCase();
-    const isUSDCToken1: boolean = token1Address.toLowerCase() === uSDCAddress.toLowerCase();
     let nativeCurrencyInUSDC: number; // in USDC
   
-    if (isUSDCToken0) {
+    const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
+      contractAddress: uSDCNativeCurrencyLPToken.address,
+      contractABI: LpReserveContract,
+      provider,
+      comparedAddress: uSDCAddress,
+    });
+  
+    if (comparedAddressInReserve === 0) {
       nativeCurrencyInUSDC = ((reserve0 * Math.pow(10, 18)) / reserve1) / Math.pow(10, 6);
-    } else if (isUSDCToken1) {
+    } else if (comparedAddressInReserve === 1) {
       nativeCurrencyInUSDC = ((reserve1 * Math.pow(10, 18)) / reserve0) / Math.pow(10, 6);
     } else {
       throw new Error('No exist USDC address');
@@ -91,23 +91,25 @@ export const getNativeCurrencyInUSDC = async (
 export const getTokenInNativeCurrency = async (
   bondId: IBond.IBondType,
   networkID: number,
-  provider: ethers.Signer | ethers.providers.Provider
+  provider: StaticJsonRpcProvider | Signer,
 ): Promise<number> => {
   const currentNetwork: IBlockchain.INetwork | undefined = network().getCurrentNetwork;
-  
   if (currentNetwork) {
     const tokenNativeCurrencyLPAddress: string = getToken(bondId, 'tokenNativeCurrencyLPAddress');
     const nativeCurrencyTokenId: IBlockchain.TokenType = currentNetwork.nativeCurrency.id;
     const nativeCurrencyTokenAddress: string = getToken(nativeCurrencyTokenId, 'address');
-    const contract: Contract = new Contract(tokenNativeCurrencyLPAddress, LpReserveContract, provider);
-    const [reserve0, reserve1] = await contract.getReserves();
-    const token0Address: string = (await contract.token0()).toLowerCase();
-    const token1Address: string = (await contract.token1()).toLowerCase();
     let result: number;
+  
+    const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
+      contractAddress: tokenNativeCurrencyLPAddress,
+      contractABI: LpReserveContract,
+      provider,
+      comparedAddress: nativeCurrencyTokenAddress,
+    });
     
-    if (token0Address === nativeCurrencyTokenAddress) {
+    if (comparedAddressInReserve === 0) {
       //
-    } else if (token1Address === nativeCurrencyTokenAddress) {
+    } else if (comparedAddressInReserve === 1) {
       //
     } else {
       //

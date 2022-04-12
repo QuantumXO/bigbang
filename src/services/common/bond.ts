@@ -5,8 +5,9 @@ import { getTokenPrice } from '@services/helpers/token-price';
 import { IBond } from '@models/bond';
 import { getToken } from '@services/helpers/get-token';
 import { getBondAddresses, getNativeCurrencyInUSDC, getTokenInNativeCurrency } from '@services/helpers';
-import { LPTokenContract, TokenContract } from '@services/abi';
+import { LpReserveContract, LPTokenContract, TokenContract } from '@services/abi';
 import network from '@services/common/network';
+import { getReserves } from '@services/helpers/get-reserves';
 
 export interface BondOpts {
   readonly id: IBond.IBondType; // Internal name used for references
@@ -66,55 +67,54 @@ export class Bond {
     return new Promise<number>(reserve => reserve(0));
   }
   
-  public async getTreasuryBalance(
-    networkID: number,
-    provider: StaticJsonRpcProvider,
-  ): Promise<number> {
-    let result: number = 0;
+  public async getTreasuryBalance(networkID: number, provider: StaticJsonRpcProvider): Promise<number> {
     const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
     const bondTokenAddress: string = getToken(this.id, 'address');
     const tokenContract: Contract = new Contract(bondTokenAddress, TokenContract, provider);
     const tokenBalanceOf = await tokenContract.balanceOf(addresses.TREASURY_ADDRESS);
+    const bigNativeCurrencyLPToken = network().getNetworkBigNativeCurrencyLPToken;
+    const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider);
+    let result: number = 0;
     
     if (this.id === 'USDC') {
       result = tokenBalanceOf / Math.pow(10, 6);
     } else if (this.isWrap) {
-      result = (tokenBalanceOf / Math.pow(10, 18)) * (await getNativeCurrencyInUSDC(networkID, provider));
+      result = (tokenBalanceOf / Math.pow(10, 18)) * nativeCurrencyInUSDC;
     } else if (this.isLP) {
-      const lpContractAddress: string = '0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F';
+      const lpContractAddress: string = bigNativeCurrencyLPToken?.address || 'unknown';
       const lpContract = new Contract(lpContractAddress, LPTokenContract, provider);
       const lpBalanceOf = await lpContract.balanceOf(addresses.TREASURY_ADDRESS);
+      const tokens: IBlockchain.IToken[] = network().getCurrentNetworkTokens || [];
+      const wrapTokenAddress: string | undefined = tokens
+        .find(({ isWrap }: IBlockchain.IToken) => isWrap)?.address;
+      const totalSupply: number = (await lpContract.totalSupply());
       
       let lpPriceInUSDC;
-      const [reserve0, reserve1] = await lpContract.getReserves();
-      const totalSupply: number = (await lpContract.totalSupply());
-      const lp0Address: string = (await lpContract.token0()).toLowerCase();
-      const lp1Address: string = (await lpContract.token1()).toLowerCase();
-      const tokens: IBlockchain.IToken[] = network().getCurrentNetworkTokens || [];
-      
-      const wrapTokenAddress: string | undefined = tokens
-        .find(({ isWrap }: IBlockchain.IToken) => isWrap)?.address.toLowerCase();
       
       if (wrapTokenAddress) {
-        if (lp0Address === wrapTokenAddress) {
-          lpPriceInUSDC = ((((reserve0 / Math.pow(10, 18)) * 2) * (await getNativeCurrencyInUSDC(networkID, provider))) / (totalSupply / Math.pow(10, 18)));
-        } else if (lp1Address === wrapTokenAddress) {
-          lpPriceInUSDC = ((((reserve1 / Math.pow(10, 18)) * 2) * (await getNativeCurrencyInUSDC(networkID, provider))) / (totalSupply / Math.pow(10, 18)));
-          
+        const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
+          contractAddress: lpContractAddress,
+          contractABI: LPTokenContract,
+          provider,
+          comparedAddress: wrapTokenAddress,
+        });
+        
+        if (comparedAddressInReserve === 0) {
+          lpPriceInUSDC = ((((reserve0 / Math.pow(10, 18)) * 2) * nativeCurrencyInUSDC) / (totalSupply / Math.pow(10, 18)));
+        } else if (comparedAddressInReserve === 1) {
+          lpPriceInUSDC = ((((reserve1 / Math.pow(10, 18)) * 2) * nativeCurrencyInUSDC) / (totalSupply / Math.pow(10, 18)));
         } else {
-          throw new Error('------ error');
+          throw new Error('No existed wrapTokenAddress in reserves');
         }
       } else {
-        throw new Error('00000 Error');
+        throw new Error('wrapTokenAddress Error');
       }
       result = (lpBalanceOf / Math.pow(10, 18)) * lpPriceInUSDC;
     } else {
-      const tokenPriceInUSDC: number = (await getTokenInNativeCurrency(this.id, networkID, provider)) * (await getNativeCurrencyInUSDC(networkID, provider));
+      const tokenPriceInUSDC: number = (await getTokenInNativeCurrency(this.id, networkID, provider)) * nativeCurrencyInUSDC;
       result = tokenBalanceOf / Math.pow(10, 18) * tokenPriceInUSDC
     }
-    
-    console.groupEnd();
-    
+
     return result;
   }
   

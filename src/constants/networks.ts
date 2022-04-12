@@ -162,7 +162,6 @@ export const BNB_NETWORK: IBlockchain.INetwork = {
   },
 }; */
 
-export const TOKEN_DECIMALS: number = 9;
 export const DEFAULT_NETWORK = FTM_NETWORK;
 export const NETWORKS: IBlockchain.INetwork[] = [FTM_NETWORK, MATIC_NETWORK];
 export const ACTIVE_NETWORKS: IBlockchain.INetwork[] = NETWORKS

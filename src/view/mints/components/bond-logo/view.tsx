@@ -1,5 +1,5 @@
 import { Box } from '@material-ui/core';
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond';
 import { CSSProperties, ReactElement } from 'react';
 
 interface IBondLogoProps {

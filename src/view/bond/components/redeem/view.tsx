@@ -14,6 +14,7 @@ import Togglers from '@view/bond/components/togglers';
 import "./styles.scss";
 import { IBond } from '@models/bond';
 import { IAccount } from '@models/account';
+import network from '@services/common/network';
 
 interface IBondRedeem {
   bond: IAllBondData;
@@ -22,7 +23,7 @@ interface IBondRedeem {
 
 export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement {
   const dispatch = useDispatch();
-  const { provider, address, chainID, getIsWrongNetwork } = useWeb3Context();
+  const { provider, address, chainID } = useWeb3Context();
 
   const isBondLoading: boolean = useSelector<IReduxState, boolean>(state => state.bonding.loading ?? true);
   const currentBlockTime: number = useSelector<IReduxState, number>(state => {
@@ -40,7 +41,7 @@ export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement
   });
 
   async function onRedeem(autostake: boolean) {
-    if (await getIsWrongNetwork()) return;
+    if (await network().getIsWrongNetwork) return;
     if (bond.interestDue === 0 || bond.pendingPayout === 0) {
       dispatch(warning({ text: messages.nothing_to_claim }));
       return;

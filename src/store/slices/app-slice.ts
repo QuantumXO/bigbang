@@ -6,7 +6,7 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { RootState } from "@store/store";
 import { BigNumberish } from '@ethersproject/bignumber';
 import { IBlockchain } from '@models/blockchain';
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond';
 import network from '@services/common/network';
 
 interface ILoadAppDetails {
@@ -56,6 +56,8 @@ export const loadAppDetails = createAsyncThunk(
       });
   
     const tokenBalances: number[] = await Promise.all(tokenBalPromises);
+  
+    console.log('tokenBalances: ', tokenBalances);
     
     const treasuryBalance: number = tokenBalances
       .reduce((tokenBalance0: number, tokenBalance1: number): number => tokenBalance0 + tokenBalance1, 0);

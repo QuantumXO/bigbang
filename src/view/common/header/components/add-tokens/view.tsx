@@ -1,9 +1,8 @@
 import React, { ReactElement } from 'react';
 import { IBlockchain } from '@models/blockchain';
 import { getTokenUrl } from '@services/helpers'
-import { getBondAddresses } from "@services/helpers/get-bond-addresses";
+import { getBondAddresses } from "@services/helpers/bond/get-bond-addresses";
 import { DEFAULT_NETWORK } from "@constants/networks";
-import { TOKEN_DECIMALS } from '@constants/networks';
 import network from '@services/common/network';
 import { useWeb3Context } from '@services/hooks';
 
@@ -22,7 +21,7 @@ const addTokenToWallet = (tokenId: IBlockchain.TokenType, tokenAddress: string) 
             address: tokenAddress,
             symbol: tokenId,
             image: tokenImage,
-            decimals: TOKEN_DECIMALS,
+            decimals: 18,
           },
         },
       });

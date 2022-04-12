@@ -1,12 +1,12 @@
 import { BigNumber, constants, ethers, Contract } from 'ethers';
-import { getMarketPrice, getTokenPrice, sleep, getBondAddresses, getNativeCurrencyInUSDC, getTokenInNativeCurrency } from '@services/helpers';
+import { getMarketPrice, sleep, getBondAddresses, getNativeCurrencyInUSDC, getTokenInNativeCurrency } from '@services/helpers';
 import { calculateUserBondDetails, fetchAccountSuccess, getBalances } from './account-slice';
 import { clearPendingTxn, fetchPendingTxns } from './pending-txns-slice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond';
 import { IBlockchain } from '@models/blockchain';
-import { getBondCalculator } from '@services/helpers/bond-calculator';
+import { getBondCalculator } from '@services/helpers/bond/get-bond-calculator';
 import { RootState } from '../store';
 import { error, info, success, warning } from '../slices/messages-slice';
 import { messages } from '@constants/messages';
@@ -14,6 +14,8 @@ import { getGasPrice } from '@services/helpers/get-gas-price';
 import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
 import { StableBondContract, wFTMReserveContract, LpReserveContract } from '@services/abi';
 import { getToken } from '@services/helpers/get-token';
+import { getBondPrice } from '@services/helpers/bond/get-bond-price';
+import network from '@services/common/network';
 
 interface IChangeApproval {
   bond: Bond;
@@ -107,90 +109,31 @@ export const calcBondDetails = createAsyncThunk(
     if (!value) {
       value = '0';
     }
-    
-    const amountInWei: BigNumber = ethers.utils.parseEther(value);
-    
-    let bondPriceInUSD: number = 0,
-        bondDiscount: number = 0,
-        valuation: number = 0,
-        bondQuote: number = 0;
-    let bondPrice: number = 0;
-    
+  
     const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
-    
-    // const bondContract: Contract = bond.getContractForBond(networkID, provider);
+    const amountInWei: BigNumber = ethers.utils.parseEther(value);
     const bondCalcContract: Contract = getBondCalculator(networkID, provider);
-    
-    // #TODO check
     const bondContract: Contract = new Contract(bond.bondAddress, StableBondContract, provider);
     const terms = await bondContract.terms();
     const maxBondPrice: number = (await bondContract.maxPayout()) / Math.pow(10, 9);
     const marketPrice: number = await getMarketPrice(networkID, provider);
     const minPurchase: number = await bondContract.minPayout() / Math.pow(10, 9);
-    const tokenPriceInUSDC = (await getTokenInNativeCurrency(bond.id, networkID, provider)) * (await getNativeCurrencyInUSDC(networkID, provider))
-    
-    try {
-      bondPriceInUSD = await bondContract.bondPriceInUSD();
-      
-      if (bond.id === 'USDC') {
-        bondPrice = bondPriceInUSD / Math.pow(10, 6);
-      } else if (bond.isWrap) {
-        bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * (await getNativeCurrencyInUSDC(networkID, provider)); // in bond token
-      } else if (bond.id === 'CRV') {
-        const crvPriceInWETHContract = new Contract('0x396E655C309676cAF0acf4607a868e0CDed876dB', LpReserveContract, provider);
-        const crvAddress: string = getToken('CRV', 'address')?.toLowerCase();
-        const [crvReserve0, crvReserve1] = await crvPriceInWETHContract.getReserves();
-        const srvToken0Address: string = (await crvPriceInWETHContract.token0()).toLowerCase();
-        const srvToken1Address: string = (await crvPriceInWETHContract.token1()).toLowerCase();
-        let crvPriceInWETH: number = 0;
-  
-        if (srvToken0Address === crvAddress) {
-          crvPriceInWETH = crvReserve1 / crvReserve0;
-        } else if (srvToken1Address === crvAddress) {
-          crvPriceInWETH = crvReserve0 / crvReserve1;
-        } else {
-          throw new Error('CRV error');
-        }
-  
-        const wethPriceInWMaticContract = new Contract('0xadbf1854e5883eb8aa7baf50705338739e558e5b', LpReserveContract, provider);
-  
-        const wMATICAddress: string = getToken('wMATIC', 'address')?.toLowerCase();
-        const wethPriceInWMatic0Address: string = (await wethPriceInWMaticContract.token0()).toLowerCase();
-        const wethPriceInWMatic1Address: string = (await wethPriceInWMaticContract.token1()).toLowerCase();
-        const [wethPriceInWMaticReserve0, wethPriceInWMaticReserve1] = await wethPriceInWMaticContract.getReserves();
-        let wethPriceInWMAtic: number = 0;
-  
-        if (wethPriceInWMatic0Address === wMATICAddress) {
-          wethPriceInWMAtic = wethPriceInWMaticReserve0 / wethPriceInWMaticReserve1;
-        } else if (wethPriceInWMatic1Address === wMATICAddress) {
-          wethPriceInWMAtic = wethPriceInWMaticReserve1 / wethPriceInWMaticReserve0;
-        } else {
-          throw new Error('wethPriceInWMatic error');
-        }
-  
-        const crvPriceInUSDC = crvPriceInWETH * wethPriceInWMAtic * (await getNativeCurrencyInUSDC(networkID, provider));
-  
-        bondPrice = crvPriceInUSDC * (bondPriceInUSD / Math.pow(10, 18));
-      } else {
-        // LP and tokens
-        bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * tokenPriceInUSDC; // in bond token
-      }
-      
-      bondDiscount = (marketPrice - bondPrice) / marketPrice;
-    } catch (e) {
-      console.log('error getting bondPriceInUSD', e);
-    }
-    
-    let maxBondPriceToken = 0;
     const maxBodValue = ethers.utils.parseEther('1');
+    const bondPrice: number = await getBondPrice({ bond, networkID, provider });
+    const bondDiscount: number = (marketPrice - bondPrice) / marketPrice;
+    
+    let valuation: number = 0;
+    let bondQuote: number = 0;
+    let maxBondPriceToken = 0;
     
     if (bond.isLP) {
-      // valuation = await bondCalcContract.valuation(bond.getAddressForReserve(networkID), amountInWei);
-      valuation = await bondCalcContract.valuation('0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F', amountInWei);
+      const bigNativeCurrencyLPToken: IBlockchain.IToken | undefined = network().getNetworkBigNativeCurrencyLPToken;
+      const bigNativeCurrencyLPTokenAddress: string = bigNativeCurrencyLPToken?.address || 'unknown';
+      valuation = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, amountInWei);
       bondQuote = await bondContract.payoutFor(valuation);
       bondQuote = bondQuote / Math.pow(10, 9);
       
-      const maxValuation = await bondCalcContract.valuation('0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F', maxBodValue);
+      const maxValuation = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, maxBodValue);
       const maxBondQuote = await bondContract.payoutFor(maxValuation);
       maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9));
     } else {
@@ -207,14 +150,12 @@ export const calcBondDetails = createAsyncThunk(
     }
     
     // Calculate bonds purchased
-    // const token: Contract = bond.getContractForReserve(networkID, provider);
     const token: Contract = new ethers.Contract(bond.getReserveAddress, wFTMReserveContract, provider);
     const tokenDecimals: number = await token.decimals();
     
     let purchased = await token.balanceOf(addresses.TREASURY_ADDRESS);
   
     if (bond.isLP) {
-      // const assetAddress: string = bond.getAddressForReserve(networkID);
       const assetAddress: string = '0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F';
       const markdown = await bondCalcContract.markdown(assetAddress);
       

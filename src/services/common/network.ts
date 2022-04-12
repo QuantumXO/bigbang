@@ -2,7 +2,7 @@ import { IBlockchain } from '@models/blockchain';
 import { messages } from '@constants/messages';
 import { SUPPORTED_NETWORKS_CHAIN_IDS, ACTIVE_NETWORKS } from '@constants/networks';
 import tokensAssets, { ITokenAsset } from '@constants/tokens';
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond';
 import allBonds from "@constants/bonds";
 
 interface INetworkArgs {
@@ -74,11 +74,15 @@ export class Network {
     
     if (newNetwork) {
       const { hexadecimalChainId } = newNetwork;
-      await window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: hexadecimalChainId }]
-      });
-      window.location.replace('/');
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: hexadecimalChainId }]
+        });
+        window.location.replace('/');
+      } catch (e) {
+        console.log(e);
+      }
     } else {
       throw new Error('switchChainRequest Error');
     }
@@ -90,7 +94,6 @@ export class Network {
     
     if (newNetwork) {
       const { rpcUrls, blockExplorerUrls, nativeCurrency, chainName, hexadecimalChainId } = newNetwork;
-      
       const param: IBlockchain.IAddEthereumChainParameter = {
         chainId: hexadecimalChainId,
         chainName,
@@ -98,11 +101,14 @@ export class Network {
         blockExplorerUrls,
         // nativeCurrency
       }
-  
-      return window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [param]
-      });
+      try {
+        return window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [param]
+        });
+      } catch (e) {
+        console.log(e);
+      }
     } else {
       //
     }
@@ -160,12 +166,12 @@ export class Network {
     return result;
   }
   
-  get getCurrentNetworkCommonBIGLPToken(): IBlockchain.IToken | undefined  {
+  get getNetworkBigNativeCurrencyLPToken(): IBlockchain.IToken | undefined  {
     const tokens: IBlockchain.IToken[] | undefined = this.getCurrentNetworkTokens;
     return tokens?.find(({ isBigNativeCurrencyLP }: IBlockchain.IToken) => isBigNativeCurrencyLP);
   }
   
-  get getCurrentNetworkUSDCNativeCurrencyLPToken(): IBlockchain.IToken | undefined  {
+  get getNetworkUSDCNativeCurrencyLPToken(): IBlockchain.IToken | undefined  {
     const tokens: IBlockchain.IToken[] | undefined = this.getCurrentNetworkTokens;
     return tokens?.find(({ isUSDCNativeCurrencyLP }: IBlockchain.IToken) => isUSDCNativeCurrencyLP);
   }
@@ -173,11 +179,9 @@ export class Network {
   get getCurrentNetworkBonds(): Bond[] {
     const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
     let result: Bond[] = [];
-    
     if (currentNetwork) {
       result = allBonds.filter(({ networkType }: Bond) => currentNetwork.id === networkType);
     }
-    
     return result;
   }
 }

@@ -17,6 +17,7 @@ import * as React from 'react';
 import cx from 'classnames';
 
 import "./styles.scss";
+import network from '@services/common/network';
 
 interface IBondPurchaseProps {
   bond: IAllBondData;
@@ -26,7 +27,7 @@ interface IBondPurchaseProps {
 
 export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps): ReactElement {
   const dispatch = useDispatch();
-  const { provider, address, chainID, getIsWrongNetwork } = useWeb3Context();
+  const { provider, address, chainID } = useWeb3Context();
 
   const [quantity, setQuantity] = useState<string>('');
   const [useNativeCurrency, setUseNativeCurrency] = useState<boolean>(false);
@@ -53,7 +54,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
   const vestingPeriod = (): string => prettifySeconds(bond.vestingTerm, 'day');
 
   async function onBond() {
-    if (await getIsWrongNetwork()) return;
+    if (await network().getIsWrongNetwork) return;
     
     if (quantity === '') {
       dispatch(warning({ text: messages.before_minting }));
@@ -109,7 +110,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
 
 
   const onSeekApproval = async () => {
-    if (!await getIsWrongNetwork()) {
+    if (!await network().getIsWrongNetwork) {
       dispatch(changeApproval({ address, bond, provider, networkID: chainID }));
     }
   };

@@ -15,7 +15,6 @@ type Web3ContextDataType = {
   disconnect: () => void;
   hasCachedProvider: () => boolean;
   connect: () => Promise<Web3Provider>;
-  getIsWrongNetwork: () => Promise<boolean>;
 };
 type Web3ContextType = Web3ContextDataType | null;
 
@@ -107,7 +106,6 @@ export const Web3ContextProvider: FC<{ children: ReactNode }> = ({ children }): 
     _initListeners(rawProvider);
     
     const connectedProvider: Web3Provider = new Web3Provider(rawProvider, "any");
-    
     const { chainId }: Network = await connectedProvider.getNetwork()
     const connectedAddress: string = await connectedProvider.getSigner().getAddress();
     
@@ -124,8 +122,6 @@ export const Web3ContextProvider: FC<{ children: ReactNode }> = ({ children }): 
     return connectedProvider;
   }, [provider, web3Modal, isConnected]);
   
-  const getIsWrongNetwork = async () => await network().getIsWrongNetwork;
-  
   const onDisconnect = useCallback((): void => {
     web3Modal.clearCachedProvider();
     setConnected(false);
@@ -141,7 +137,6 @@ export const Web3ContextProvider: FC<{ children: ReactNode }> = ({ children }): 
       chainID: Number(chainID),
       web3Modal,
       hasCachedProvider,
-      getIsWrongNetwork,
       connect: onConnect,
       disconnect: onDisconnect,
     }),

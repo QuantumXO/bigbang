@@ -1,4 +1,4 @@
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond';
 import { StableReserveContract, StableBondContract } from "@services/abi";
 
 import { tokensIcons } from '@constants/tokens';

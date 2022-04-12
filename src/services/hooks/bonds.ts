@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { Bond } from "../helpers/bond/bond";
+import { Bond } from "src/services/common/bond";
 import { IBondDetails, IBondSlice } from "@store/slices/bond-slice";
 import { IReduxState } from "@store/slices/state.interface";
 import { IAccount } from '@models/account';
