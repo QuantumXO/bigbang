@@ -38,10 +38,10 @@ export class Network {
     return (
       async (): Promise<boolean> => {
         if (!SUPPORTED_NETWORKS_CHAIN_IDS.includes(String(this.getCurrentChainId))) {
-          const shouldSwitch: boolean = window.confirm(messages.switch_to_ftm);
-          if (shouldSwitch) {
+          // const shouldSwitch: boolean = window.confirm(messages.switch_to_ftm);
+          /* if (shouldSwitch) {
             await network({ newNetworkId: 'FTM' }).switchNetwork();
-          }
+          } */
           result = true;
         }
         
