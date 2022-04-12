@@ -16,15 +16,16 @@ interface IMenuItem {
   label: string;
 }
 
+const menu: IMenuItem[] = [
+  { id: 'dashboard', url: '/', label: 'dashboard' },
+  { id: 'stake', url: linkUrl().get.stake(), label: 'stake' },
+  { id: 'mints', url: linkUrl().get.mints(), label: 'mint' },
+  { id: 'docs', url: linkUrl().get.docs(), label: 'docs' },
+];
+
 export const SidebarContent = (): ReactElement => {
   const address: string = useAddress();
   const { bonds } = useBonds();
-  const menu: IMenuItem[] = [
-    { id: 'dashboard', url: '/', label: 'dashboard' },
-    { id: 'stake', url: linkUrl().get.stake(), label: 'stake' },
-    { id: 'mints', url: linkUrl().get.mints(), label: 'mint' },
-    { id: 'docs', url: linkUrl().get.docs(), label: 'docs' },
-  ];
   
   const [isHiddenMints, handleHiddenMints] = useState<boolean>(false);
   
@@ -59,7 +60,6 @@ export const SidebarContent = (): ReactElement => {
                 </span>
                 <div className={cx('submenu', { hidden: isHiddenMints })}>
                   {bonds.map((item: IAllBondData): ReactElement => {
-                    console.log('item: ', item);
                     const { displayName, bond, id: bondId, bondDiscount } = item;
                     return (
                       <NavLink
@@ -73,7 +73,7 @@ export const SidebarContent = (): ReactElement => {
                             <div className="bond">
                               {displayName}
                               <span className="bond-pair-roi">
-                                {bondDiscount && trim(bondDiscount * 100, 2)}%
+                                {trim(bondDiscount * 100, 2)}%
                               </span>
                             </div>
                           )}

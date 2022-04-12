@@ -83,12 +83,12 @@ export const BOO: Bond = new Bond({
 });
 export const BIGwFTM: Bond = new Bond({
   id: 'BIGwFTM',
-  displayName: 'BIGwFTM',
+  displayName: 'BIG_wFTM',
   bondToken: 'BIGwFTM',
   bondIconSvg: tokensIcons.AvaxIcon,
   bondContractABI: StableBondContract,
   reserveContractAbi: StableReserveContract,
-  bondAddress: '0xa0DEFC1F78C4bcCD402b8d0ED1089Ff9E2a58171',
+  bondAddress: '0x13dA1FC51978FAB071eD28e65E7825Cf4860c9F8',
   tokensInStrategy: '0',
   isLP: true,
   networkType: 'FTM',

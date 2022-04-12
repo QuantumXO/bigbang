@@ -1,12 +1,22 @@
 import React from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 import './styles.scss';
 
 function Loader() {
   return (
-    <div className="wrap">
-      <CircularProgress size={120} color="inherit" />
+    <div className="loader-wrapper">
+      <div className="loader">
+        <div className="roller" />
+        <div className="roller" />
+      </div>
+      <div id="loader2" className="loader">
+        <div className="roller" />
+        <div className="roller" />
+      </div>
+      <div id="loader3" className="loader">
+        <div className="roller" />
+        <div className="roller" />
+      </div>
     </div>
   );
 }

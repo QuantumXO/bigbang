@@ -56,8 +56,6 @@ export const loadAppDetails = createAsyncThunk(
       });
   
     const tokenBalances: number[] = await Promise.all(tokenBalPromises);
-  
-    console.log('tokenBalances: ', tokenBalances);
     
     const treasuryBalance: number = tokenBalances
       .reduce((tokenBalance0: number, tokenBalance1: number): number => tokenBalance0 + tokenBalance1, 0);

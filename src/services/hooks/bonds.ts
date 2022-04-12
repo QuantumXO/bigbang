@@ -13,7 +13,7 @@ export interface IUseBondsReturn {
   loading: boolean;
 }
 
-const initialBondArray: (Bond)[] = network().getCurrentNetworkBonds;
+const initialBondArray: Bond[] = network().getCurrentNetworkBonds;
 
 // Slaps together bond data within the account & bonding states
 function useBonds(): IUseBondsReturn {

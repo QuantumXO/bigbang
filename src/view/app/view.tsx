@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, ReactElement } from 'react';
+import React, { useEffect, useState, useCallback, ReactElement, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAddress, useWeb3Context } from '@services/hooks';
 import { calcBondDetails } from '@store/slices/bond-slice';
@@ -17,7 +17,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 
 import '@assets/styles/index.scss';
 
-export function App(): ReactElement {
+export const App = memo(function(): ReactElement {
   const dispatch: Dispatch<any> = useDispatch();
   const { connect, provider, hasCachedProvider, chainID, isConnected } = useWeb3Context();
   const address: string = useAddress();
@@ -33,6 +33,7 @@ export function App(): ReactElement {
   useEffect((): void => {
     (async function() {
       await loadTokenPrices();
+      
       seIsLoadingTokensPrices(false);
   
       if (hasCachedProvider()) {
@@ -45,22 +46,14 @@ export function App(): ReactElement {
   }, []);
   
   useEffect((): void => {
-    if (walletChecked) {
+    // #TODO check && or ||
+    if (walletChecked && isConnected) {
       loadDetails('app');
       loadDetails('account');
       loadDetails('userBonds');
       loadDetails('userTokens');
     }
-  }, [walletChecked]);
-  
-  useEffect((): void => {
-    if (isConnected) {
-      loadDetails('app');
-      loadDetails('account');
-      loadDetails('userBonds');
-      loadDetails('userTokens');
-    }
-  }, [isConnected]);
+  }, [walletChecked, isConnected]);
 
   async function loadDetails(whichDetails: string): Promise<void> {
     const loadProvider: JsonRpcProvider = provider;
@@ -77,13 +70,13 @@ export function App(): ReactElement {
     }
 
     if (whichDetails === 'userBonds' && address && isConnected) {
-      bonds.map(bond => {
+      bonds.map((bond: IAllBondData): void => {
         dispatch(calculateUserBondDetails({ address, bond, networkID: chainID, provider }));
       });
     }
 
     if (whichDetails === 'userTokens' && address && isConnected) {
-      tokens.map((token: IAllTokenData) => {
+      tokens.map((token: IAllTokenData): void => {
         dispatch(calculateUserTokenDetails({ address, token, provider, networkID: chainID }));
       });
     }
@@ -92,11 +85,11 @@ export function App(): ReactElement {
   const loadApp = useCallback(
     (loadProvider: JsonRpcProvider): void => {
       dispatch(loadAppDetails({ networkID: chainID, provider: loadProvider }));
-      
+  
       bonds.map((bond: IAllBondData): void => {
         dispatch(calcBondDetails({ bond, value: null, provider: loadProvider, networkID: chainID }));
       });
-      
+
       tokens.map((token: IAllTokenData): void => {
         dispatch(calculateUserTokenDetails({ address: '', token, provider, networkID: chainID }));
       });
@@ -130,4 +123,4 @@ export function App(): ReactElement {
   }
 
   return layout;
-}
+});

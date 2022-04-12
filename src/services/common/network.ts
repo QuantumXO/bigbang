@@ -79,7 +79,7 @@ export class Network {
           method: "wallet_switchEthereumChain",
           params: [{ chainId: hexadecimalChainId }]
         });
-        window.location.replace('/');
+        window.location.replace('https://quantumxo.github.io/bigbang');
       } catch (e) {
         console.log(e);
       }

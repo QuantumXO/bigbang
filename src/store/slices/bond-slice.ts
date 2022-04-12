@@ -1,5 +1,5 @@
 import { BigNumber, constants, ethers, Contract } from 'ethers';
-import { getMarketPrice, sleep, getBondAddresses, getNativeCurrencyInUSDC, getTokenInNativeCurrency } from '@services/helpers';
+import { getMarketPrice, sleep, getBondAddresses } from '@services/helpers';
 import { calculateUserBondDetails, fetchAccountSuccess, getBalances } from './account-slice';
 import { clearPendingTxn, fetchPendingTxns } from './pending-txns-slice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -12,7 +12,7 @@ import { error, info, success, warning } from '../slices/messages-slice';
 import { messages } from '@constants/messages';
 import { getGasPrice } from '@services/helpers/get-gas-price';
 import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
-import { StableBondContract, wFTMReserveContract, LpReserveContract } from '@services/abi';
+import { StableBondContract, wFTMReserveContract } from '@services/abi';
 import { getToken } from '@services/helpers/get-token';
 import { getBondPrice } from '@services/helpers/bond/get-bond-price';
 import network from '@services/common/network';
@@ -59,7 +59,6 @@ export const changeApproval = createAsyncThunk(
     }
     
     const signer = provider.getSigner();
-    // const reserveContract: Contract = new Contract('0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', wFTMReserveContract, signer);
     const reserveContract: Contract = new Contract(bond.getReserveAddress, wFTMReserveContract, signer);
     
     let approveTx;
@@ -109,28 +108,32 @@ export const calcBondDetails = createAsyncThunk(
     if (!value) {
       value = '0';
     }
-  
     const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
     const amountInWei: BigNumber = ethers.utils.parseEther(value);
-    const bondCalcContract: Contract = getBondCalculator(networkID, provider);
+    const bondCalcContract: Contract = getBondCalculator(networkID, provider, bond);
     const bondContract: Contract = new Contract(bond.bondAddress, StableBondContract, provider);
     const terms = await bondContract.terms();
     const maxBondPrice: number = (await bondContract.maxPayout()) / Math.pow(10, 9);
     const marketPrice: number = await getMarketPrice(networkID, provider);
     const minPurchase: number = await bondContract.minPayout() / Math.pow(10, 9);
     const maxBodValue = ethers.utils.parseEther('1');
-    const bondPrice: number = await getBondPrice({ bond, networkID, provider });
-    const bondDiscount: number = (marketPrice - bondPrice) / marketPrice;
-
+    const bigNativeCurrencyLPToken: IBlockchain.IToken | undefined = network().getNetworkBigNativeCurrencyLPToken;
+    const bigNativeCurrencyLPTokenAddress: string = bigNativeCurrencyLPToken?.address || 'unknown';
     let valuation: number = 0;
     let bondQuote: number = 0;
-    let maxBondPriceToken = 0;
-
+    let maxBondPriceToken: number = 0;
+    
+    const bondPrice: number = await getBondPrice({ bond, networkID, provider });
+    const bondDiscount: number = (marketPrice - bondPrice) / marketPrice;
+    
     if (bond.isLP) {
-      const bigNativeCurrencyLPToken: IBlockchain.IToken | undefined = network().getNetworkBigNativeCurrencyLPToken;
-      const bigNativeCurrencyLPTokenAddress: string = bigNativeCurrencyLPToken?.address || 'unknown';
-      valuation = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, amountInWei);
-      bondQuote = await bondContract.payoutFor(valuation);
+      try {
+        valuation = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, amountInWei);
+        bondQuote = await bondContract.payoutFor(valuation);
+      } catch (e) {
+        console.log('valuation, payoutFor error: ', e);
+      }
+      
       bondQuote = bondQuote / Math.pow(10, 9);
   
       const maxValuation = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, maxBodValue);
@@ -156,10 +159,9 @@ export const calcBondDetails = createAsyncThunk(
     let purchased = await token.balanceOf(addresses.TREASURY_ADDRESS);
 
     if (bond.isLP) {
-      const assetAddress: string = '0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F';
-      const markdown = await bondCalcContract.markdown(assetAddress);
+      const markdown = await bondCalcContract.markdown(bigNativeCurrencyLPTokenAddress);
   
-      purchased = await bondCalcContract.valuation(assetAddress, purchased);
+      purchased = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, purchased);
       purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 9));
     } else {
       if (bond.tokensInStrategy) {
@@ -169,7 +171,9 @@ export const calcBondDetails = createAsyncThunk(
       // #TODO check
       purchased = purchased / Math.pow(10, tokenDecimals);
     }
-
+    
+    await sleep(0.1);
+    
     return {
       bond: bond.id,
       bondDiscount,
@@ -254,7 +258,6 @@ export const redeemBond = createAsyncThunk(
     }
     
     const signer = provider.getSigner();
-    // const bondContract = bond.getContractForBond(networkID, signer);
     const bondContract = new ethers.Contract(bond.bondAddress, StableBondContract, signer);
     
     let redeemTx;

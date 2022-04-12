@@ -1,4 +1,4 @@
-import { Contract, ethers, Signer } from 'ethers';
+import { Contract, Signer } from 'ethers';
 import { LpReserveContract } from '../abi';
 import { getBondAddresses } from '@services/helpers/bond/get-bond-addresses';
 import { IBlockchain } from '@models/blockchain';
@@ -132,6 +132,40 @@ export const getTokenInNativeCurrency = async (
     }
   } catch (e) {
     console.log('getTokenInNativeCurrency() error: ', e)
+  }
+  
+  return result;
+};
+
+export const getLPInNativeCurrency = async (
+  bondId: IBond.IBondType,
+  networkID: number,
+  provider: StaticJsonRpcProvider | Signer,
+): Promise<number> => {
+  const currentNetwork: IBlockchain.INetwork | undefined = network().getCurrentNetwork;
+  let result: number = 0;
+  
+  if (currentNetwork) {
+    const tokenNativeCurrencyLPAddress: string = getToken(bondId, 'tokenNativeCurrencyLPAddress');
+    const nativeCurrencyTokenId: IBlockchain.TokenType = currentNetwork.nativeCurrency.id;
+    const nativeCurrencyTokenAddress: string = getToken(nativeCurrencyTokenId, 'address');
+    const LPContract = new Contract(tokenNativeCurrencyLPAddress, LpReserveContract, provider);
+    const totalSupply: number = await LPContract.totalSupply();
+  
+    const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
+      contractAddress: tokenNativeCurrencyLPAddress,
+      contractABI: LpReserveContract,
+      provider,
+      comparedAddress: nativeCurrencyTokenAddress,
+    });
+    
+    if (comparedAddressInReserve === 0) {
+      result = ((reserve0 * 2) / totalSupply);
+    } else if (comparedAddressInReserve === 1) {
+      result = ((reserve1 * 2) / totalSupply);
+    } else {
+      throw new Error('error');
+    }
   }
   
   return result;

@@ -1,6 +1,6 @@
 import { Bond } from '@services/common/bond';
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { getNativeCurrencyInUSDC, getTokenInNativeCurrency } from '@services/helpers';
+import { getLPInNativeCurrency, getNativeCurrencyInUSDC, getTokenInNativeCurrency } from '@services/helpers';
 import { Contract } from 'ethers';
 import { LpReserveContract, StableBondContract } from '@services/abi';
 import { getToken } from '@services/helpers/get-token';
@@ -14,7 +14,7 @@ interface IProps {
 
 export const getBondPrice = async (props: IProps): Promise<number> => {
   const { bond, networkID, provider } = props;
-  const { bondAddress, id: bondId, isWrap: bondIsWrap } = bond;
+  const { bondAddress, id: bondId, isWrap: bondIsWrap, isLP: bondIsLP } = bond;
   const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider);
   let bondPrice: number = 0;
   let bondPriceInUSD: number = 0;
@@ -72,10 +72,15 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
       const crvPriceInUSDC = crvPriceInWETH * wethPriceInWMAtic * nativeCurrencyInUSDC;
   
       bondPrice = crvPriceInUSDC * (bondPriceInUSD / Math.pow(10, 18));
+    } else if (bondIsLP) {
+      // const lpPriceInUSDC = (await getLPInNativeCurrency(bond.id, networkID, provider)) * nativeCurrencyInUSDC
+      // bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * lpPriceInUSDC;
+      // #TODO check
+      bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * nativeCurrencyInUSDC;
     } else {
+      // Tokens
       const tokenPriceInUSDC = (await getTokenInNativeCurrency(bond.id, networkID, provider)) * nativeCurrencyInUSDC
-      // LP and tokens
-      bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * tokenPriceInUSDC; // in bond token
+      bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * tokenPriceInUSDC;
     }
   } catch (e) {
     throw new Error('getBondPrice() Error');

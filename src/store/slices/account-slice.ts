@@ -102,7 +102,6 @@ export const calculateUserBondDetails = createAsyncThunk(
         });
       });
     } else {
-      
       const bondContract: Contract = new ethers.Contract(bond.bondAddress, StableBondContract, provider);
       // #TODO check
       const reserveContract: Contract = new Contract(bond.getReserveAddress, wFTMReserveContract, provider);
@@ -112,7 +111,6 @@ export const calculateUserBondDetails = createAsyncThunk(
       const pendingPayout: BigNumber = await bondContract.pendingPayoutFor(address);
       let balance: string | number = "0";
   
-      // const allowance: BigNumber = await reserveContract.allowance(address, bond.getAddressForBond(networkID));
       const allowance: BigNumber = await reserveContract.allowance(address, bond.bondAddress);
       
       balance = await reserveContract.balanceOf(address);
@@ -120,7 +118,6 @@ export const calculateUserBondDetails = createAsyncThunk(
       const balanceVal: string = ethers.utils.formatEther(balance);
       const nativeCurrencyBalance = await provider.getSigner().getBalance();
       const nativeCurrencyVal = ethers.utils.formatEther(nativeCurrencyBalance);
-  
       const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, "gwei");
   
       // #TODO check
