@@ -59,6 +59,7 @@ export const SidebarContent = (): ReactElement => {
                 </span>
                 <div className={cx('submenu', { hidden: isHiddenMints })}>
                   {bonds.map((item: IAllBondData): ReactElement => {
+                    console.log('item: ', item);
                     const { displayName, bond, id: bondId, bondDiscount } = item;
                     return (
                       <NavLink

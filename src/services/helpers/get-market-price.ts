@@ -21,7 +21,7 @@ export const getMarketPrice = async (
     // USDC per nativeCurrency
     result = nativeCurrencyInUSDC * bigPriceInNativeCurrency;
   } catch (e) {
-    console.error('getMarketPrice(): ', e);
+    console.error('getMarketPrice() error: ', e);
   }
   return result;
 }
@@ -32,25 +32,29 @@ export const getBigPriceInNativeCurrency = async (
 ): Promise<number> => {
   const { BIG_ADDRESS }: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
   const bigNativeCurrencyLPToken: IBlockchain.IToken | undefined = network().getNetworkBigNativeCurrencyLPToken;
-  let bigPriceInNativeCurrency: number;
-  
+  let bigPriceInNativeCurrency: number = 0;
+
   if (bigNativeCurrencyLPToken) {
-    const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
-      contractAddress: bigNativeCurrencyLPToken.address,
-      contractABI: LpReserveContract,
-      provider,
-      comparedAddress: BIG_ADDRESS,
-    });
+    try {
+      const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
+        contractAddress: bigNativeCurrencyLPToken.address,
+        contractABI: LpReserveContract,
+        provider,
+        comparedAddress: BIG_ADDRESS,
+      });
   
-    if (comparedAddressInReserve === 1) {
-      bigPriceInNativeCurrency = ((reserve0) / (reserve1 * Math.pow(10, 9)));
-    } else if (comparedAddressInReserve === 0) {
-      bigPriceInNativeCurrency = ((reserve1) / (reserve0 * Math.pow(10, 9)));
-    } else {
-      throw new Error('No exist BIG address');
+      if (comparedAddressInReserve === 1) {
+        bigPriceInNativeCurrency = ((reserve0) / (reserve1 * Math.pow(10, 9)));
+      } else if (comparedAddressInReserve === 0) {
+        bigPriceInNativeCurrency = ((reserve1) / (reserve0 * Math.pow(10, 9)));
+      } else {
+        throw new Error('No exist BIG address');
+      }
+    } catch (e) {
+      console.error('getBigPriceInNativeCurrency() error: ', e);
     }
   } else {
-    throw new Error('getBigPriceInNativeCurrency error');
+    throw new Error('bigNativeCurrencyLPToken error');
   }
   
   return bigPriceInNativeCurrency;
@@ -62,30 +66,34 @@ export const getNativeCurrencyInUSDC = async (
 ): Promise<number> => {
   const uSDCNativeCurrencyLPToken: IBlockchain.IToken | undefined = network()
     .getNetworkUSDCNativeCurrencyLPToken;
+  let nativeCurrencyInUSDC: number = 0; // in USDC
   
-  if (uSDCNativeCurrencyLPToken) {
-    const uSDCAddress: string = getToken('USDC', 'address');
-    let nativeCurrencyInUSDC: number; // in USDC
-  
-    const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
-      contractAddress: uSDCNativeCurrencyLPToken.address,
-      contractABI: LpReserveContract,
-      provider,
-      comparedAddress: uSDCAddress,
-    });
-  
-    if (comparedAddressInReserve === 0) {
-      nativeCurrencyInUSDC = ((reserve0 * Math.pow(10, 18)) / reserve1) / Math.pow(10, 6);
-    } else if (comparedAddressInReserve === 1) {
-      nativeCurrencyInUSDC = ((reserve1 * Math.pow(10, 18)) / reserve0) / Math.pow(10, 6);
+  try {
+    if (uSDCNativeCurrencyLPToken) {
+      const uSDCAddress: string = getToken('USDC', 'address');
+    
+      const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
+        contractAddress: uSDCNativeCurrencyLPToken.address,
+        contractABI: LpReserveContract,
+        provider,
+        comparedAddress: uSDCAddress,
+      });
+    
+      if (comparedAddressInReserve === 0) {
+        nativeCurrencyInUSDC = ((reserve0 * Math.pow(10, 18)) / reserve1) / Math.pow(10, 6);
+      } else if (comparedAddressInReserve === 1) {
+        nativeCurrencyInUSDC = ((reserve1 * Math.pow(10, 18)) / reserve0) / Math.pow(10, 6);
+      } else {
+        throw new Error('No exist USDC address');
+      }
     } else {
-      throw new Error('No exist USDC address');
+      throw new Error('uSDCNativeCurrencyLPToken error');
     }
-  
-    return nativeCurrencyInUSDC;
-  } else {
-    throw new Error('getNativeCurrencyInUSDC error');
+  } catch (e) {
+    console.error('getNativeCurrencyInUSDC() error: ', e);
   }
+  
+  return nativeCurrencyInUSDC;
 };
 
 export const getTokenInNativeCurrency = async (
@@ -94,32 +102,37 @@ export const getTokenInNativeCurrency = async (
   provider: StaticJsonRpcProvider | Signer,
 ): Promise<number> => {
   const currentNetwork: IBlockchain.INetwork | undefined = network().getCurrentNetwork;
-  if (currentNetwork) {
-    const tokenNativeCurrencyLPAddress: string = getToken(bondId, 'tokenNativeCurrencyLPAddress');
-    const nativeCurrencyTokenId: IBlockchain.TokenType = currentNetwork.nativeCurrency.id;
-    const nativeCurrencyTokenAddress: string = getToken(nativeCurrencyTokenId, 'address');
-    let result: number;
+  let result: number = 0;
   
-    const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
-      contractAddress: tokenNativeCurrencyLPAddress,
-      contractABI: LpReserveContract,
-      provider,
-      comparedAddress: nativeCurrencyTokenAddress,
-    });
+  try {
+    if (currentNetwork) {
+      const tokenNativeCurrencyLPAddress: string = getToken(bondId, 'tokenNativeCurrencyLPAddress');
+      const nativeCurrencyTokenId: IBlockchain.TokenType = currentNetwork.nativeCurrency.id;
+      const nativeCurrencyTokenAddress: string = getToken(nativeCurrencyTokenId, 'address');
     
-    if (comparedAddressInReserve === 0) {
-      //
-    } else if (comparedAddressInReserve === 1) {
-      //
+      const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
+        contractAddress: tokenNativeCurrencyLPAddress,
+        contractABI: LpReserveContract,
+        provider,
+        comparedAddress: nativeCurrencyTokenAddress,
+      });
+    
+      if (comparedAddressInReserve === 0) {
+        //
+      } else if (comparedAddressInReserve === 1) {
+        //
+      } else {
+        //
+      }
+    
+      // eslint-disable-next-line prefer-const
+      result = reserve0 / reserve1;
     } else {
-      //
+      throw new Error('currentNetwork Error');
     }
-    
-    // eslint-disable-next-line prefer-const
-    result = reserve0 / reserve1;
-  
-    return result;
-  } else {
-    throw new Error('getTokenInNativeCurrency Error');
+  } catch (e) {
+    console.log('getTokenInNativeCurrency() error: ', e)
   }
+  
+  return result;
 };

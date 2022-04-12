@@ -121,44 +121,44 @@ export const calcBondDetails = createAsyncThunk(
     const maxBodValue = ethers.utils.parseEther('1');
     const bondPrice: number = await getBondPrice({ bond, networkID, provider });
     const bondDiscount: number = (marketPrice - bondPrice) / marketPrice;
-    
+
     let valuation: number = 0;
     let bondQuote: number = 0;
     let maxBondPriceToken = 0;
-    
+
     if (bond.isLP) {
       const bigNativeCurrencyLPToken: IBlockchain.IToken | undefined = network().getNetworkBigNativeCurrencyLPToken;
       const bigNativeCurrencyLPTokenAddress: string = bigNativeCurrencyLPToken?.address || 'unknown';
       valuation = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, amountInWei);
       bondQuote = await bondContract.payoutFor(valuation);
       bondQuote = bondQuote / Math.pow(10, 9);
-      
+  
       const maxValuation = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, maxBodValue);
       const maxBondQuote = await bondContract.payoutFor(maxValuation);
       maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9));
     } else {
       bondQuote = await bondContract.payoutFor(amountInWei);
-      
+  
       bondQuote = bondQuote / Math.pow(10, 18);
-      
+  
       const maxBondQuote = await bondContract.payoutFor(maxBodValue);
       maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -18));
     }
-    
+
     if (!!value && bondQuote > maxBondPrice) {
       dispatch(error({ text: messages.try_mint_more(maxBondPrice.toFixed(2).toString()) }));
     }
-    
+
     // Calculate bonds purchased
     const token: Contract = new ethers.Contract(bond.getReserveAddress, wFTMReserveContract, provider);
     const tokenDecimals: number = await token.decimals();
-    
+
     let purchased = await token.balanceOf(addresses.TREASURY_ADDRESS);
-  
+
     if (bond.isLP) {
       const assetAddress: string = '0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F';
       const markdown = await bondCalcContract.markdown(assetAddress);
-      
+  
       purchased = await bondCalcContract.valuation(assetAddress, purchased);
       purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 9));
     } else {
@@ -169,7 +169,7 @@ export const calcBondDetails = createAsyncThunk(
       // #TODO check
       purchased = purchased / Math.pow(10, tokenDecimals);
     }
-    
+
     return {
       bond: bond.id,
       bondDiscount,
@@ -324,6 +324,7 @@ const bondingSlice = createSlice({
     })
     .addCase(calcBondDetails.rejected, (state, { error }) => {
       state.loading = false;
+      console.log('calcBondDetails: ', error);
     });
   }
 });

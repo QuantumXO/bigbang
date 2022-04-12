@@ -4,6 +4,7 @@ import { getNativeCurrencyInUSDC, getTokenInNativeCurrency } from '@services/hel
 import { Contract } from 'ethers';
 import { LpReserveContract, StableBondContract } from '@services/abi';
 import { getToken } from '@services/helpers/get-token';
+import { getReserves } from '@services/helpers/get-reserves';
 
 interface IProps {
   bond: Bond;
@@ -27,32 +28,42 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
     } else if (bondIsWrap) {
       bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * nativeCurrencyInUSDC; // in bond token
     } else if (bondId === 'CRV') {
-      const crvPriceInWETHContract = new Contract('0x396E655C309676cAF0acf4607a868e0CDed876dB', LpReserveContract, provider);
       const crvAddress: string = getToken('CRV', 'address')?.toLowerCase();
-      const [crvReserve0, crvReserve1] = await crvPriceInWETHContract.getReserves();
-      const srvToken0Address: string = (await crvPriceInWETHContract.token0()).toLowerCase();
-      const srvToken1Address: string = (await crvPriceInWETHContract.token1()).toLowerCase();
+      const wMATICAddress: string = getToken('wMATIC', 'address')?.toLowerCase();
       let crvPriceInWETH: number = 0;
+      let wethPriceInWMAtic: number = 0;
   
-      if (srvToken0Address === crvAddress) {
+      const {
+        reserves: [crvReserve0, crvReserve1],
+        comparedAddressInReserve: crvComparedAddressInReserve
+      } = await getReserves({
+        contractAddress: '0x396E655C309676cAF0acf4607a868e0CDed876dB',
+        contractABI: LpReserveContract,
+        provider,
+        comparedAddress: crvAddress,
+      });
+  
+      if (crvComparedAddressInReserve === 0) {
         crvPriceInWETH = crvReserve1 / crvReserve0;
-      } else if (srvToken1Address === crvAddress) {
+      } else if (crvComparedAddressInReserve === 1) {
         crvPriceInWETH = crvReserve0 / crvReserve1;
       } else {
         throw new Error('CRV error');
       }
   
-      const wethPriceInWMaticContract = new Contract('0xadbf1854e5883eb8aa7baf50705338739e558e5b', LpReserveContract, provider);
+      const {
+        reserves: [wethPriceInWMaticReserve0, wethPriceInWMaticReserve1],
+        comparedAddressInReserve: wMATICComparedAddressInReserve
+      } = await getReserves({
+        contractAddress: '0xadbf1854e5883eb8aa7baf50705338739e558e5b',
+        contractABI: LpReserveContract,
+        provider,
+        comparedAddress: wMATICAddress,
+      });
   
-      const wMATICAddress: string = getToken('wMATIC', 'address')?.toLowerCase();
-      const wethPriceInWMatic0Address: string = (await wethPriceInWMaticContract.token0()).toLowerCase();
-      const wethPriceInWMatic1Address: string = (await wethPriceInWMaticContract.token1()).toLowerCase();
-      const [wethPriceInWMaticReserve0, wethPriceInWMaticReserve1] = await wethPriceInWMaticContract.getReserves();
-      let wethPriceInWMAtic: number = 0;
-  
-      if (wethPriceInWMatic0Address === wMATICAddress) {
+      if (wMATICComparedAddressInReserve === 0) {
         wethPriceInWMAtic = wethPriceInWMaticReserve0 / wethPriceInWMaticReserve1;
-      } else if (wethPriceInWMatic1Address === wMATICAddress) {
+      } else if (wMATICComparedAddressInReserve === 1) {
         wethPriceInWMAtic = wethPriceInWMaticReserve1 / wethPriceInWMaticReserve0;
       } else {
         throw new Error('wethPriceInWMatic error');
