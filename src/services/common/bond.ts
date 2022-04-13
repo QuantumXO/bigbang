@@ -4,29 +4,31 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { getTokenPrice } from '@services/helpers/token-price';
 import { IBond } from '@models/bond';
 import { getToken } from '@services/helpers/get-token';
-import { getBondAddresses, getNativeCurrencyInUSDC, getTokenInNativeCurrency } from '@services/helpers';
-import { LpReserveContract, LPTokenContract, TokenContract } from '@services/abi';
+import { getBondAddresses, sleep } from '@services/helpers';
+import { LPTokenContract, StableBondContract, StableReserveContract, TokenContract } from '@services/abi';
 import network from '@services/common/network';
 import { getReserves } from '@services/helpers/get-reserves';
+import { getNativeCurrencyInUSDC } from '@services/common/prices/get-native-currency-in-usdc'
+import { getTokenInNativeCurrency } from '@services/common/prices/get-token-in-native-currency'
+import getCrvTreasuryBalance from '@services/helpers/get-crv-treasury-balance';
 
 export interface BondOpts {
   readonly id: IBond.IBondType; // Internal name used for references
   readonly bondIconSvg: string; //  SVG path for icons
-  readonly bondContractABI: ContractInterface; // ABI for contract
-  readonly bondToken: IBlockchain.TokenType; // Unused, but native token to buy the bond.
   readonly bondAddress: string;
-  readonly displayName: string; // Displayname on UI
-  readonly reserveContractAbi: ContractInterface;
   readonly isLP?: boolean;
   readonly lpUrl?: string;
   readonly isWrap?: boolean;
   readonly tokensInStrategy?: string;
+  readonly displayName?: string; // Display name on UI
   readonly networkType?: IBlockchain.NetworkType;
+  readonly reserveContractAbi?: ContractInterface;
+  readonly bondContractABI?: ContractInterface; // ABI for contract
+  readonly bondToken?: IBlockchain.TokenType; // Unused, but native token to buy the bond.
 }
 
 export class Bond {
   public readonly id: IBond.IBondType;
-  public readonly displayName: string;
   public readonly bondIconSvg: string;
   public readonly bondContractABI: ContractInterface; // Bond ABI
   public readonly bondToken: IBlockchain.TokenType;
@@ -38,6 +40,7 @@ export class Bond {
   public readonly lpUrl?: string;
   public readonly tokensInStrategy?: string;
   public readonly networkType?: IBlockchain.NetworkType;
+  public readonly displayName?: string; // Display name on UI
 
   constructor(bondOpts: BondOpts) {
     const {
@@ -45,16 +48,16 @@ export class Bond {
       bondAddress, reserveContractAbi, networkType,
     } = bondOpts;
     this.id = id;
-    this.displayName = displayName;
+    this.displayName = displayName || id;
     this.bondIconSvg = bondIconSvg;
-    this.bondContractABI = bondContractABI;
-    this.bondToken = bondToken;
+    this.bondContractABI = bondContractABI || StableBondContract;
+    this.bondToken = bondToken || id;
     this.isWrap = isWrap;
     this.bondAddress = bondAddress;
     this.isLP = isLP;
     this.lpUrl = lpUrl;
-    this.displayUnits = displayName;
-    this.reserveContractAbi = reserveContractAbi;
+    this.displayUnits = displayName || id;
+    this.reserveContractAbi = reserveContractAbi || StableReserveContract;
     this.tokensInStrategy = tokensInStrategy;
     this.networkType = networkType;
   }
@@ -72,19 +75,19 @@ export class Bond {
     const bondTokenAddress: string = getToken(this.id, 'address');
     const tokenContract: Contract = new Contract(bondTokenAddress, TokenContract, provider);
     const tokenBalanceOf = await tokenContract.balanceOf(addresses.TREASURY_ADDRESS);
-    const bigNativeCurrencyLPToken = network().getNetworkBigNativeCurrencyLPToken;
+    const bigNativeCurrencyLPToken = network.getNetworkBigNativeCurrencyLPToken;
     const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider);
-    let result: number = 0;
+    let treasuryBalance: number = 0;
     
     if (this.id === 'USDC') {
-      result = tokenBalanceOf / Math.pow(10, 6);
+      treasuryBalance = tokenBalanceOf / Math.pow(10, 6);
     } else if (this.isWrap) {
-      result = (tokenBalanceOf / Math.pow(10, 18)) * nativeCurrencyInUSDC;
+      treasuryBalance = (tokenBalanceOf / Math.pow(10, 18)) * nativeCurrencyInUSDC;
     } else if (this.isLP) {
       const lpContractAddress: string = bigNativeCurrencyLPToken?.address || 'unknown';
       const lpContract = new Contract(lpContractAddress, LPTokenContract, provider);
       const lpBalanceOf = await lpContract.balanceOf(addresses.TREASURY_ADDRESS);
-      const tokens: IBlockchain.IToken[] = network().getCurrentNetworkTokens || [];
+      const tokens: IBlockchain.IToken[] = network.getCurrentNetworkTokens || [];
       const wrapTokenAddress: string | undefined = tokens
         .find(({ isWrap }: IBlockchain.IToken) => isWrap)?.address;
       const totalSupply: number = (await lpContract.totalSupply());
@@ -109,13 +112,18 @@ export class Bond {
       } else {
         throw new Error('wrapTokenAddress Error');
       }
-      result = (lpBalanceOf / Math.pow(10, 18)) * lpPriceInUSDC;
+      treasuryBalance = (lpBalanceOf / Math.pow(10, 18)) * lpPriceInUSDC;
+    } else if (this.id === 'CRV') {
+      treasuryBalance = await getCrvTreasuryBalance(networkID, provider, this.id);
     } else {
-      const tokenPriceInUSDC: number = (await getTokenInNativeCurrency(this.id, networkID, provider)) * nativeCurrencyInUSDC;
-      result = tokenBalanceOf / Math.pow(10, 18) * tokenPriceInUSDC
+      const tokenInNativeCurrency: number = await getTokenInNativeCurrency(this.id, networkID, provider);
+      const tokenPriceInUSDC: number = tokenInNativeCurrency * nativeCurrencyInUSDC;
+      treasuryBalance = tokenBalanceOf / Math.pow(10, 18) * tokenPriceInUSDC
     }
 
-    return result;
+    await sleep(0.01);
+    
+    return treasuryBalance;
   }
   
   protected getTokenPrice(): number {

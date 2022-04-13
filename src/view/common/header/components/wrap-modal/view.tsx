@@ -86,7 +86,7 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
   const getBalance = (): string => isWrap ? `${trimmedBangBalance} ${wrapBond}` : `${trimmedDYelBalance} ${unwrapBond}`;
   
   const handleOnWrap = async () => {
-    if (await network().getIsWrongNetwork) return;
+    if (await network.getIsWrongNetwork) return;
     
     if (value === '' || parseFloat(value) === 0) {
       dispatch(warning({ text: isWrap ? messages.before_wrap : messages.before_unwrap }));
@@ -97,7 +97,7 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
   };
   
   const onSeekApproval = async () => {
-    if (await network().getIsWrongNetwork) return;
+    if (await network.getIsWrongNetwork) return;
     await dispatch(changeApproval({ address, provider, networkID: chainID }));
   };
   

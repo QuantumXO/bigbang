@@ -10,11 +10,11 @@ import { warning } from '@store/slices/messages-slice';
 import React, { ReactElement } from 'react';
 import BondData from '@view/bond/components/bond-data';
 import Togglers from '@view/bond/components/togglers';
-
-import "./styles.scss";
 import { IBond } from '@models/bond';
 import { IAccount } from '@models/account';
 import network from '@services/common/network';
+
+import "./styles.scss";
 
 interface IBondRedeem {
   bond: IAllBondData;
@@ -41,7 +41,7 @@ export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement
   });
 
   async function onRedeem(autostake: boolean) {
-    if (await network().getIsWrongNetwork) return;
+    if (await network.getIsWrongNetwork) return;
     if (bond.interestDue === 0 || bond.pendingPayout === 0) {
       dispatch(warning({ text: messages.nothing_to_claim }));
       return;

@@ -6,7 +6,6 @@ import CommonRoute from '@view/router/components/common-route';
 
 export const Router: FC = (): ReactElement => {
   const { bonds } = useBonds();
-  
   return (
     <HashRouter>
       <Routes>

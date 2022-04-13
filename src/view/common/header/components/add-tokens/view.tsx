@@ -11,7 +11,7 @@ import "./styles.scss";
 const addTokenToWallet = (tokenId: IBlockchain.TokenType, tokenAddress: string) => async () => {
   const tokenImage: string = getTokenUrl(tokenId);
   
-  if (network().getIsEthereumAPIAvailable) {
+  if (network.getIsEthereumAPIAvailable) {
     try {
       await window.ethereum.request({
         method: "wallet_watchAsset",

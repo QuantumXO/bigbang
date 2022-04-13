@@ -1,4 +1,4 @@
-import React, { FC, ReactElement } from 'react';
+import React, { FC, memo, ReactElement } from 'react';
 import { Drawer } from '@material-ui/core';
 import { Hidden, makeStyles } from '@material-ui/core';
 import { DRAWER_WIDTH } from '@constants/style';
@@ -10,7 +10,7 @@ export interface IProps {
   handleDrawerToggle: () => void;
 }
 
-export const Sidebar: FC<IProps> = ({ mobileOpen, handleDrawerToggle }: IProps): ReactElement => {
+export const Sidebar: FC<IProps> = memo(({ mobileOpen, handleDrawerToggle }: IProps): ReactElement => {
   const classes = useSidebarStyles();
   return (
     <div className={cx(classes.drawer, 'sidebar__wrapper')}>
@@ -18,7 +18,7 @@ export const Sidebar: FC<IProps> = ({ mobileOpen, handleDrawerToggle }: IProps):
       <CommonSidebar />
     </div>
   );
-};
+});
 
 const useSidebarStyles = makeStyles(theme => ({
   drawer: {

@@ -12,7 +12,7 @@ export interface IUseTokensReturn {
   loading: boolean;
 }
 
-const initialTokenArray: IBlockchain.IToken[] = network().getCurrentNetworkTokens || [];
+const initialTokenArray: IBlockchain.IToken[] = network.getCurrentNetworkTokens || [];
 
 function useTokens(): IUseTokensReturn {
   const accountLoading: boolean = useSelector<IReduxState, boolean>(state => state.account.loading);
@@ -24,7 +24,7 @@ function useTokens(): IUseTokensReturn {
   
   useEffect((): void => {
     //@ts-ignore
-    const tokenDetails: IAllTokenData[] = (network().getCurrentNetworkTokens || [])
+    const tokenDetails: IAllTokenData[] = (network.getCurrentNetworkTokens || [])
       .flatMap((token: IBlockchain.IToken) => {
         if (accountTokensState[token.id]) {
           return Object.assign(token, accountTokensState[token.id]);

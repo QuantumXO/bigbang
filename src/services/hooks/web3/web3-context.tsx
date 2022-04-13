@@ -1,9 +1,13 @@
-import React, { Context, ReactElement, useCallback, useContext, useMemo, useState, createContext, FC, ReactNode } from 'react';
+import
+  React,
+{ Context, ReactElement, useCallback, useContext, useMemo, useState, createContext, FC, ReactNode, useEffect }
+  from 'react';
 import Web3Modal from "web3modal";
 import { JsonRpcProvider, Network, StaticJsonRpcProvider, Web3Provider } from '@ethersproject/providers';
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { DEFAULT_NETWORK } from "@constants/networks";
 import network from "@services/common/network";
+import { loadTokenPrices } from '@services/helpers';
 
 type Web3ContextDataType = {
   provider: JsonRpcProvider;
@@ -12,11 +16,16 @@ type Web3ContextDataType = {
   web3Modal: Web3Modal;
   chainID: number;
   web3?: any;
+  isLoadingTokensPrices: boolean,
   disconnect: () => void;
   hasCachedProvider: () => boolean;
   connect: () => Promise<Web3Provider>;
 };
 type Web3ContextType = Web3ContextDataType | null;
+
+interface IWeb3ContextProviderProps {
+  children: ReactNode
+}
 
 const Web3Context: Context<Web3ContextType> = createContext<Web3ContextType>(null);
 
@@ -39,15 +48,24 @@ export const useAddress = (): string => {
   return address;
 };
 
-export const Web3ContextProvider: FC<{ children: ReactNode }> = ({ children }): ReactElement => {
+export const Web3ContextProvider: FC<IWeb3ContextProviderProps> = ({ children }: IWeb3ContextProviderProps): ReactElement => {
   const { chainId: DEFAULT_CHAIN_ID, rpcUrls: DEFAULT_RPC_URLS = [] } = DEFAULT_NETWORK;
   
   const [isConnected, setConnected] = useState<boolean>(false);
-  const [chainID, setChainID] = useState<string>(network().getCurrentChainId || DEFAULT_CHAIN_ID);
+  const [chainID, setChainID] = useState<string>(network.getCurrentChainId || DEFAULT_CHAIN_ID);
   const [address, setAddress] = useState<string>('');
   const [provider, setProvider] = useState<JsonRpcProvider>(
-    new StaticJsonRpcProvider(network().getMainnetRpcURI || DEFAULT_RPC_URLS[0])
+    new StaticJsonRpcProvider(network.getMainnetRpcURI || DEFAULT_RPC_URLS[0])
   );
+  const [isLoadingTokensPrices, setIsLoadingTokensPrices] = useState<boolean>(true);
+  
+  useEffect((): void => {
+    (async function() {
+      await loadTokenPrices();
+  
+      setIsLoadingTokensPrices(false);
+    })()
+  }, []);
   
   const [web3Modal] = useState<Web3Modal>(
     new Web3Modal({
@@ -58,7 +76,7 @@ export const Web3ContextProvider: FC<{ children: ReactNode }> = ({ children }): 
           options: {
             rpc: {
               // #TODO check
-              [chainID]: network().getMainnetRpcURI,
+              [chainID]: network.getMainnetRpcURI,
             }
           }
         }
@@ -98,6 +116,8 @@ export const Web3ContextProvider: FC<{ children: ReactNode }> = ({ children }): 
   const onHandleNetworkChange = async (hexChainId: number): Promise<void> => {
     // from hex to decimal
     setChainID(String(parseInt(String(hexChainId), 16)));
+  
+    network.setCurrentChainId(network.getCurrentChainId);
   };
   
   const onConnect = useCallback(async (): Promise<Web3Provider> => {
@@ -113,7 +133,7 @@ export const Web3ContextProvider: FC<{ children: ReactNode }> = ({ children }): 
     
     setChainID(String(chainId));
   
-    if (!await network().getIsWrongNetwork) {
+    if (!await network.getIsWrongNetwork) {
       setProvider(connectedProvider);
     }
     
@@ -139,8 +159,12 @@ export const Web3ContextProvider: FC<{ children: ReactNode }> = ({ children }): 
       hasCachedProvider,
       connect: onConnect,
       disconnect: onDisconnect,
+      isLoadingTokensPrices,
     }),
-    [onConnect, onDisconnect, hasCachedProvider, provider, isConnected, address, chainID, web3Modal]
+    [
+      onConnect, onDisconnect, hasCachedProvider, provider, isConnected, address, chainID, web3Modal,
+      isLoadingTokensPrices
+    ]
   );
   
   return <Web3Context.Provider value={contextValue}>{children}</Web3Context.Provider>;

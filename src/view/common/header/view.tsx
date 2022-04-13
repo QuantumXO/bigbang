@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { FC, memo, ReactElement } from 'react';
 import { AppBar, Toolbar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ConnectButton from './components/connect-button';
@@ -9,7 +9,7 @@ import TokenButton from '@view/common/header/components/token-button';
 
 import './styles.scss';
 
-interface IHeader {
+interface IProps {
   drawe: boolean;
   handleSidebarToggle: () => void;
 }
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export function Header({ drawe, handleSidebarToggle }: IHeader): ReactElement {
+export const Header: FC<IProps> = memo(({ drawe, handleSidebarToggle }: IProps): ReactElement => {
   const classes = useStyles();
   return (
     <div
@@ -64,4 +64,4 @@ export function Header({ drawe, handleSidebarToggle }: IHeader): ReactElement {
       </AppBar>
     </div>
   );
-}
+});

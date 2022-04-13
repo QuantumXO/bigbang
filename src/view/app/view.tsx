@@ -1,14 +1,12 @@
-import React, { useEffect, useState, useCallback, ReactElement, memo } from 'react';
+import React, { useEffect, useState, useCallback, ReactElement, FC, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAddress, useWeb3Context } from '@services/hooks';
 import { calcBondDetails } from '@store/slices/bond-slice';
 import { loadAppDetails } from '@store/slices/app-slice';
 import { loadAccountDetails, calculateUserBondDetails, calculateUserTokenDetails } from '@store/slices/account-slice';
 import { IReduxState } from '@store/slices/state.interface';
-import Loader from '@view/common/loader';
 import useBonds, { IAllBondData } from '@services/hooks/bonds';
 import useTokens, { IAllTokenData } from '@services/hooks/tokens';
-import { loadTokenPrices } from '@services/helpers';
 import SnackMessage from '@view/common/messages/snackbar';
 import { SnackbarProvider } from 'notistack';
 import Router from '@view/router';
@@ -17,25 +15,18 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 
 import '@assets/styles/index.scss';
 
-export const App = memo(function(): ReactElement {
+export const App: FC = memo((): ReactElement => {
   const dispatch: Dispatch<any> = useDispatch();
   const { connect, provider, hasCachedProvider, chainID, isConnected } = useWeb3Context();
   const address: string = useAddress();
   const { bonds } = useBonds();
   const { tokens } = useTokens();
-  const isAppLoading: boolean = useSelector<IReduxState, boolean>(state => state.app.loading);
   const isAppLoaded: boolean = useSelector<IReduxState, boolean>(state => !Boolean(state.app.marketPrice));
-  let layout: ReactElement;
   
   const [walletChecked, setWalletChecked] = useState<boolean>(false);
-  const [isLoadingTokensPrices, seIsLoadingTokensPrices] = useState<boolean>(true);
   
   useEffect((): void => {
     (async function() {
-      await loadTokenPrices();
-      
-      seIsLoadingTokensPrices(false);
-  
       if (hasCachedProvider()) {
         await connect();
         setWalletChecked(true);
@@ -81,7 +72,7 @@ export const App = memo(function(): ReactElement {
       });
     }
   }
-
+  
   const loadApp = useCallback(
     (loadProvider: JsonRpcProvider): void => {
       dispatch(loadAppDetails({ networkID: chainID, provider: loadProvider }));
@@ -104,23 +95,17 @@ export const App = memo(function(): ReactElement {
     [isConnected],
   );
 
-  if (isAppLoading || isLoadingTokensPrices) {
-    layout = <Loader />;
-  } else {
-    layout = (
-      <SnackbarProvider
-        maxSnack={4}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        content={(key, message: string) => <SnackMessage id={key} message={JSON.parse(message)} />}
-        autoHideDuration={10000}
-      >
-        <Router />
-      </SnackbarProvider>
-    );
-  }
-
-  return layout;
+  return (
+    <SnackbarProvider
+      maxSnack={4}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'right',
+      }}
+      content={(key, message: string) => <SnackMessage id={key} message={JSON.parse(message)} />}
+      autoHideDuration={10000}
+    >
+      <Router />
+    </SnackbarProvider>
+  );
 });

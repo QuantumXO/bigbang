@@ -48,7 +48,7 @@ export const loadAppDetails = createAsyncThunk(
     const circSupply: number = (await bangContract.circulatingSupply()) / Math.pow(10, 9);
     const stakingTVL: number = circSupply * marketPrice;
     const marketCap: number = totalSupply * marketPrice;
-    const currentNetworkBonds: Bond[] = network().getCurrentNetworkBonds;
+    const currentNetworkBonds: Bond[] = network.getCurrentNetworkBonds;
     
     const tokenBalPromises: Promise<number>[] = currentNetworkBonds
       .map(async (bond: Bond): Promise<number> => {

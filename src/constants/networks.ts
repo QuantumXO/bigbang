@@ -18,14 +18,18 @@ export const FTM_NETWORK: IBlockchain.INetwork = {
     address: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
   },
   tokens: [
-    { id: 'USDC', address: '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75' },
-    { id: 'USDCwFTM', address: '0x2b4C76d0dc16BE1C31D4C1DC53bF9B45987Fc75c' },
-    { id: 'BIGwFTM', address: '0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F', tokenNativeCurrencyLPAddress: '0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F' },
+    { id: 'USDC', address: '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75', tokenNativeCurrencyLPAddress: '0x2b4C76d0dc16BE1C31D4C1DC53bF9B45987Fc75c' },
     { id: 'SCREAM', address: '0xe0654C8e6fd4D733349ac7E09f6f23DA256bF475', tokenNativeCurrencyLPAddress: '0x30872e4fc4edbfd7a352bfc2463eb4fae9c09086' },
     { id: 'GEIST', address: '0xd8321AA83Fb0a4ECd6348D4577431310A6E0814d', tokenNativeCurrencyLPAddress: '0x668ae94d0870230ac007a01b471d02b2c94ddcb9' },
     { id: 'TSHARE', address: '0x4cdF39285D7Ca8eB3f090fDA0C069ba5F4145B37', tokenNativeCurrencyLPAddress: '0x4733bc45ef91cf7ccecaeedb794727075fb209f2' },
     { id: 'MULTI', address: '0x9Fb9a33956351cf4fa040f65A13b835A3C8764E3', tokenNativeCurrencyLPAddress: '0x297c8990134bf1ee08ae5d8805042fbac8781201' },
     { id: 'BOO', address: '0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE', tokenNativeCurrencyLPAddress: '0xec7178f4c41f346b2721907f5cf7628e388a7a58' },
+    { id: 'YEL', address: '0xd3b71117e6c1558c1553305b44988cd944e97300', tokenNativeCurrencyLPAddress: '0x8bab87ecf28bf45507bd745bc70532e968b5c2de' },
+    { id: 'BEETS', address: '0xf24bcf4d1e507740041c9cfd2dddb29585adce1e', tokenNativeCurrencyLPAddress: '0x648a7452da25b4fb4bdb79badf374a8f8a5ea2b5' },
+    { id: 'YFI', address: '0x29b0da86e484e1c0029b56e817912d778ac0ec69', tokenNativeCurrencyLPAddress: '0x4fc38a2735c7da1d71ccabf6dec235a7da4ec52c' },
+    { id: 'LINK', address: '0xb3654dc3D10Ea7645f8319668E8F54d2574FBdC8', tokenNativeCurrencyLPAddress: '0x89d9bC2F2d091CfBFc31e333D6Dc555dDBc2fd29' },
+    { id: 'SPIRIT', address: '0x5cc61a78f164885776aa610fb0fe1257df78e59b', tokenNativeCurrencyLPAddress: '0x30748322B6E34545DBe0788C421886AEB5297789' },
+    { id: 'BIGwFTM', address: '0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F', tokenNativeCurrencyLPAddress: '0x659BB25B9308bfA16F5ea8d452b9a2BbaE84F60F' },
   ],
   rpcUrls: ['https://rpc.ftm.tools/'],
   blockExplorerUrls: ['https://ftmscan.com'],
@@ -39,9 +43,7 @@ export const FTM_NETWORK: IBlockchain.INetwork = {
     TREASURY_ADDRESS: '0xaa4F0516e0899B6F8a97ee237cAbb3ec5aba0E95',
     DISTRIBUTOR_ADDRESS: '0xc021EaB1Cb5a0B4119C75fF4254e7802fA332C74',
     BONDING_CALC_ADDRESS: '0xD4Ff1551bb7F9Eb2d7dd931bE2cbA581e5F43FaD',
-    /////
     ZAPIN_ADDRESS: '0x0000000000000000000000000000000000000000',
-    /////
   },
 };
 
@@ -59,16 +61,21 @@ export const MATIC_NETWORK: IBlockchain.INetwork = {
     address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
   },
   tokens: [
-    { id: 'USDC', address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174' },
-    { id: 'USDCwMATIC', address: '0x6e7a5fafcec6bb1e78bae2a1f0b612012bf14827' },
+    { id: 'USDC', address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', tokenNativeCurrencyLPAddress: '0x6e7a5fafcec6bb1e78bae2a1f0b612012bf14827' },
     { id: 'QUICK', address: '0x831753DD7087CaC61aB5644b308642cc1c33Dc13', tokenNativeCurrencyLPAddress: '0x019ba0325f1988213d448b3472fa1cf8d07618d7' },
-    { id: 'CRV', address: '0x172370d5Cd63279eFa6d502DAB29171933a610AF', tokenNativeCurrencyLPAddress: '0x369582d2010b6ed950b571f4101e3bb9b554876f' },
-    { id: 'SAND', address: '0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683' },
-    // { id: 'MANA', address: '0xA1c57f48F0Deb89f569dFbE6E2B7f46D33606fD4' },
-    { id: 'WETH', address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619' },
-    { id: 'BIGwMATIC', address: '0xe0Ff4a185724F19a3D94c66fF35BaC77a8891399' },
+    { id: 'CRV', address: '0x172370d5Cd63279eFa6d502DAB29171933a610AF', tokenNativeCurrencyLPAddress: '0x172370d5Cd63279eFa6d502DAB29171933a610AF' },
+    { id: 'SAND', address: '0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683', tokenNativeCurrencyLPAddress: '0x369582d2010b6ed950b571f4101e3bb9b554876f' },
+    { id: 'ORBS', address: '0x614389EaAE0A6821DC49062D56BDA3d9d45Fa2ff', tokenNativeCurrencyLPAddress: '0xb2b6d423e535b57aad06e9866803b95fb66152ea' },
+    { id: 'YEL', address: '0xD3b71117E6C1558c1553305b44988cd944e97300', tokenNativeCurrencyLPAddress: '0x8BFf7b8B6a14e576a3634d6c0466A19A6E9b170a' },
+    { id: 'QI', address: '0x580a84c73811e1839f75d86d75d88cca0c241ff4', tokenNativeCurrencyLPAddress: '0x9a8b2601760814019b7e6ee0052e25f1c623d1e6' },
+    { id: 'BIGwMATIC', address: '0xe0Ff4a185724F19a3D94c66fF35BaC77a8891399', tokenNativeCurrencyLPAddress: '0xe0Ff4a185724F19a3D94c66fF35BaC77a8891399' },
   ],
-  rpcUrls: ['https://polygon-rpc.com/'],
+  rpcUrls: [
+    'https://polygon-rpc.com/',
+    'https://matic-mainnet.chainstacklabs.com',
+    'https://matic-mainnet-full-rpc.bwarelabs.com',
+    'https://poly-rpc.gateway.pokt.network',
+  ],
   blockExplorerUrls: ['https://polygonscan.com/'],
   bondAddresses: {
     BIG_ADDRESS: '0x762Dbb1f8cf2f136F1bEfbaB43ca2157A342086c',
@@ -80,9 +87,7 @@ export const MATIC_NETWORK: IBlockchain.INetwork = {
     TREASURY_ADDRESS: '0x19690ffB3d94F012f6E7D5705D6EA82b70A831a8',
     DISTRIBUTOR_ADDRESS: '0x36C475903Afa25D333EE969C562236d439Bb7Fd7',
     BONDING_CALC_ADDRESS: '0xb1CE0c1efcf139cc79b9c8727A7ECD015fe46d31',
-    /////
     ZAPIN_ADDRESS: '0x0000000000000000000000000000000000000000',
-    /////
   },
 };
 

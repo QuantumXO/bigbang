@@ -1,5 +1,6 @@
 import { BigNumber, constants, ethers, Contract } from 'ethers';
-import { getMarketPrice, sleep, getBondAddresses } from '@services/helpers';
+import { sleep, getBondAddresses } from '@services/helpers';
+import { getMarketPrice } from '@services/common/prices/get-market-price'
 import { calculateUserBondDetails, fetchAccountSuccess, getBalances } from './account-slice';
 import { clearPendingTxn, fetchPendingTxns } from './pending-txns-slice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -69,7 +70,7 @@ export const changeApproval = createAsyncThunk(
       dispatch(
         fetchPendingTxns({
           txnHash: approveTx.hash,
-          text: 'Approving ' + bond.displayName,
+          text: 'Approving ' + String(bond.displayName),
           type: 'approve_' + String(bond.id)
         })
       );
@@ -117,7 +118,7 @@ export const calcBondDetails = createAsyncThunk(
     const marketPrice: number = await getMarketPrice(networkID, provider);
     const minPurchase: number = await bondContract.minPayout() / Math.pow(10, 9);
     const maxBodValue = ethers.utils.parseEther('1');
-    const bigNativeCurrencyLPToken: IBlockchain.IToken | undefined = network().getNetworkBigNativeCurrencyLPToken;
+    const bigNativeCurrencyLPToken: IBlockchain.IToken | undefined = network.getNetworkBigNativeCurrencyLPToken;
     const bigNativeCurrencyLPTokenAddress: string = bigNativeCurrencyLPToken?.address || 'unknown';
     let valuation: number = 0;
     let bondQuote: number = 0;
@@ -172,8 +173,6 @@ export const calcBondDetails = createAsyncThunk(
       purchased = purchased / Math.pow(10, tokenDecimals);
     }
     
-    await sleep(0.1);
-    
     return {
       bond: bond.id,
       bondDiscount,
@@ -227,7 +226,7 @@ export const bondAsset = createAsyncThunk(
       dispatch(
         fetchPendingTxns({
           txnHash: bondTx.hash,
-          text: 'Bonding ' + bond.displayName,
+          text: 'Bonding ' + String(bond.displayName),
           type: 'bond_' + String(bond.id)
         })
       );
@@ -269,7 +268,7 @@ export const redeemBond = createAsyncThunk(
       dispatch(
         fetchPendingTxns({
           txnHash: redeemTx.hash,
-          text: 'Redeeming ' + bond.displayName,
+          text: 'Redeeming ' + String(bond.displayName),
           type: pendingTxnType
         })
       );

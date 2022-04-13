@@ -13,7 +13,7 @@ export interface IUseBondsReturn {
   loading: boolean;
 }
 
-const initialBondArray: Bond[] = network().getCurrentNetworkBonds;
+const initialBondArray: Bond[] = network.getCurrentNetworkBonds;
 
 // Slaps together bond data within the account & bonding states
 function useBonds(): IUseBondsReturn {
@@ -25,7 +25,7 @@ function useBonds(): IUseBondsReturn {
   const [bonds, setBonds] = useState<IAllBondData[]>(initialBondArray);
   
   useEffect((): void => {
-    const bondDetails: IAllBondData[] = network().getCurrentNetworkBonds
+    const bondDetails: IAllBondData[] = network.getCurrentNetworkBonds
       .flatMap((bond) => {
         if (bondState[bond.id] && bondState[bond.id].bondDiscount) {
           return Object.assign(bond, bondState[bond.id]); // Keeps the object type

@@ -33,7 +33,7 @@ export function ConnectMenu() {
   if (isConnected && (!SUPPORTED_NETWORKS_CHAIN_IDS.includes(String(chainID)))) {
     buttonText = 'Wrong network';
     btnClasses = 'error';
-    clickFunc = () => network().getIsWrongNetwork;
+    clickFunc = () => network.getIsWrongNetwork;
   }
   
   return (

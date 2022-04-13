@@ -79,13 +79,13 @@ export function Stake(): ReactElement {
   };
   
   const onSeekApproval = async (token: 'big' | 'bang'): Promise<void> => {
-    if (await network().getIsWrongNetwork) return;
+    if (await network.getIsWrongNetwork) return;
     
     await dispatch(changeApproval({ address, token, provider, networkID: chainID }));
   };
   
   const onChangeStake = async (action: string): Promise<void> => {
-    if (await network().getIsWrongNetwork) return;
+    if (await network.getIsWrongNetwork) return;
     if (quantity === '' || parseFloat(quantity) === 0) {
       dispatch(warning({ text: action === 'stake' ? messages.before_stake : messages.before_unstake }));
     } else {

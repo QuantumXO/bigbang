@@ -124,6 +124,7 @@ export const calculateUserBondDetails = createAsyncThunk(
       balance = (bond.id !== 'USDC')
         ? Number(balanceVal)
         : Number(balanceVal) * Math.pow(10, 12);
+      
       return {
         bond: bond.id,
         displayName: bond.displayName,

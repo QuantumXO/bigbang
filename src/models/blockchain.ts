@@ -67,6 +67,19 @@ export namespace IBlockchain {
     isUSDCNativeCurrencyLP?: boolean;
     tokenNativeCurrencyLPAddress?: string;
   }
+  export interface ITokenAsset extends Pick<
+    IToken,
+    'id' | 'icon' | 'decimals' | 'name' | 'isWrap' | 'isLP' | 'isStable' | 'isBigNativeCurrencyLP'
+    | 'isUSDCNativeCurrencyLP'
+  > {
+    id: IBlockchain.TokenType;
+    icon: string;
+    decimals: number;
+    name: IBlockchain.TokenNameType;
+    isWrap?: boolean;
+    isLP?: boolean;
+    isStable?: boolean;
+  }
   export type StableCommonTokenType = 'USDC';
   export type StableWrapCommonTokenType = 'wUSDC';
   export type FTMNativeCurrencyType = 'wFTM';
@@ -80,8 +93,11 @@ export namespace IBlockchain {
     | 'MULTI'
     | 'BOO'
     | 'BIGwFTM'
-    // | 'YEL_dYEL'
-    | 'USDCwFTM';
+    | 'YEL'
+    | 'BEETS'
+    | 'LINK'
+    | 'SPIRIT'
+    | 'YFI'
   export type StableMATICTokenType = StableCommonTokenType;
   export type MATICNativeCurrencyType = 'wMATIC';
   export type MATICTokenType =
@@ -92,8 +108,9 @@ export namespace IBlockchain {
     | 'SAND'
     | 'MANA'
     | 'WETH'
+    | 'ORBS'
+    | 'QI'
     | 'BIGwMATIC'
-    | 'USDCwMATIC';
   export type StableTokenType = StableFTMTokenType | StableMATICTokenType;
   export type TokenType = OurTokenType | FTMTokenType | MATICTokenType | StableWrapCommonTokenType;
   export type TokenNameType = TokenType;

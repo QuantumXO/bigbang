@@ -29,7 +29,7 @@ export const NetworkButton = (): ReactElement => {
       .find(({ id: networkId }: IBlockchain.INetwork) => networkId === String(id));
   
     if (newNetwork) {
-      await network({ newNetworkId: newNetwork.id }).switchNetwork();
+      await network.switchNetwork(newNetwork.id);
     }
   };
   

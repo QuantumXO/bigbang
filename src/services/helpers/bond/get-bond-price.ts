@@ -1,6 +1,8 @@
 import { Bond } from '@services/common/bond';
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { getLPInNativeCurrency, getNativeCurrencyInUSDC, getTokenInNativeCurrency } from '@services/helpers';
+import { sleep } from '@services/helpers';
+import { getNativeCurrencyInUSDC } from '@services/common/prices/get-native-currency-in-usdc'
+import { getTokenInNativeCurrency } from '@services/common/prices/get-token-in-native-currency'
 import { Contract } from 'ethers';
 import { LpReserveContract, StableBondContract } from '@services/abi';
 import { getToken } from '@services/helpers/get-token';
@@ -27,6 +29,28 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
       bondPrice = bondPriceInUSD / Math.pow(10, 6);
     } else if (bondIsWrap) {
       bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * nativeCurrencyInUSDC; // in bond token
+    } else if (bondId === 'ORBS') {
+      const usdcAddress: string = getToken('USDC', 'address');
+      const orbsLPAddress: string = getToken('ORBS', 'tokenNativeCurrencyLPAddress');
+  
+      const {
+        reserves: [reserve0, reserve1],
+        comparedAddressInReserve
+      } = await getReserves({
+        contractAddress: orbsLPAddress,
+        contractABI: LpReserveContract,
+        provider,
+        comparedAddress: usdcAddress,
+      });
+      let orbsPriceInUSDC: number = 0;
+  
+      if (comparedAddressInReserve === 0) {
+        orbsPriceInUSDC = (reserve0 / Math.pow(10, 6)) / (reserve1 / Math.pow(10, 18));
+      } else if (comparedAddressInReserve === 1) {
+        orbsPriceInUSDC = (reserve1 / Math.pow(10, 18)) / (reserve0 / Math.pow(10, 6));
+      }
+      
+      bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * orbsPriceInUSDC;
     } else if (bondId === 'CRV') {
       const crvAddress: string = getToken('CRV', 'address')?.toLowerCase();
       const wMATICAddress: string = getToken('wMATIC', 'address')?.toLowerCase();
@@ -69,7 +93,7 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
         throw new Error('wethPriceInWMatic error');
       }
   
-      const crvPriceInUSDC = crvPriceInWETH * wethPriceInWMAtic * nativeCurrencyInUSDC;
+      const crvPriceInUSDC: number = crvPriceInWETH * wethPriceInWMAtic * nativeCurrencyInUSDC;
   
       bondPrice = crvPriceInUSDC * (bondPriceInUSD / Math.pow(10, 18));
     } else if (bondIsLP) {
@@ -79,12 +103,15 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
       bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * nativeCurrencyInUSDC;
     } else {
       // Tokens
-      const tokenPriceInUSDC = (await getTokenInNativeCurrency(bond.id, networkID, provider)) * nativeCurrencyInUSDC
+      const tokenInNativeCurrency: number = await getTokenInNativeCurrency(bondId, networkID, provider);
+      const tokenPriceInUSDC = tokenInNativeCurrency * nativeCurrencyInUSDC
       bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * tokenPriceInUSDC;
     }
   } catch (e) {
     throw new Error('getBondPrice() Error');
   }
+  
+  await sleep(0.01);
   
   return bondPrice;
 };

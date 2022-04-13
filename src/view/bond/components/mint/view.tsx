@@ -54,7 +54,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
   const vestingPeriod = (): string => prettifySeconds(bond.vestingTerm, 'day');
 
   async function onBond() {
-    if (await network().getIsWrongNetwork) return;
+    if (await network.getIsWrongNetwork) return;
     
     if (quantity === '') {
       dispatch(warning({ text: messages.before_minting }));
@@ -110,7 +110,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
 
 
   const onSeekApproval = async () => {
-    if (!await network().getIsWrongNetwork) {
+    if (!await network.getIsWrongNetwork) {
       dispatch(changeApproval({ address, bond, provider, networkID: chainID }));
     }
   };

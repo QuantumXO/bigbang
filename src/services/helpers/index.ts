@@ -1,4 +1,4 @@
-export * from "./get-market-price";
+export * from "@services/common/prices/get-market-price";
 export * from "./shorten";
 export * from "./trim";
 export * from "./seconds-until-block";

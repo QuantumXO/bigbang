@@ -1,27 +1,48 @@
 import { IBlockchain } from '@models/blockchain';
-import { messages } from '@constants/messages';
 import { SUPPORTED_NETWORKS_CHAIN_IDS, ACTIVE_NETWORKS } from '@constants/networks';
-import tokensAssets, { ITokenAsset } from '@constants/tokens';
+import tokensAssets from '@constants/tokens';
 import { Bond } from '@services/common/bond';
 import allBonds from "@constants/bonds";
 
-interface INetworkArgs {
-  newNetworkId?: IBlockchain.NetworkType
+interface ICache {
+  bonds: Bond[];
+  tokens: IBlockchain.IToken[];
+}
+
+let fromCache: number = 0;
+let fromFunc: number = 0;
+
+const initialCache: ICache = {
+  bonds: [],
+  tokens: [],
+};
+
+const cache: ICache = initialCache;
+
+const setCache = (field: keyof ICache, value: any): void => cache[field] = value;
+
+const getCache = (field: keyof ICache): any => cache[field];
+
+const clearCache = (): void => {
+  cache.bonds = [];
+  cache.tokens = [];
 }
 
 export class Network {
   currentChainId: string | undefined;
-  newNetworkId: IBlockchain.NetworkType | undefined;
   
-  constructor(props: INetworkArgs = {}) {
-    const { newNetworkId } = props;
-    
-    this.setCurrentChainId();
-    this.newNetworkId = newNetworkId;
+  constructor() {
+    this.setCurrentChainId(this.getCurrentChainId)
+    this.setCacheBonds(this.getCurrentNetworkBonds)
+    this.setCacheTokens(this.getCurrentNetworkTokens)
   }
   
-  setCurrentChainId(): void {
-    this.currentChainId = this.getCurrentChainId;
+  setCacheBonds = (bonds: Bond[] = []): void => setCache('bonds', bonds);
+  
+  setCacheTokens = (tokens: IBlockchain.IToken[] = []): void => setCache('tokens', tokens);
+  
+  setCurrentChainId = (chainId: string | undefined): string | undefined => {
+    return this.currentChainId = chainId;
   }
   
   get getCurrentChainId(): string | undefined {
@@ -50,15 +71,15 @@ export class Network {
     )();
   }
   
-  switchNetwork = async (): Promise<void> => {
+  switchNetwork = async (newNetworkId: IBlockchain.NetworkType): Promise<void> => {
     if (this.getIsEthereumAPIAvailable) {
       try {
-        await this.switchChainRequest();
+        await this.switchChainRequest(newNetworkId);
       } catch (error: any) {
         if (error.code === 4902) {
           try {
-            await this.addChainRequest();
-            await this.switchChainRequest();
+            await this.addChainRequest(newNetworkId);
+            await this.switchChainRequest(newNetworkId);
           } catch (addError) {
             console.error(error);
           }
@@ -68,18 +89,23 @@ export class Network {
     }
   }
   
-  switchChainRequest = async (): Promise<any> => {
+  switchChainRequest = async (newNetworkId: IBlockchain.NetworkType): Promise<any> => {
     const newNetwork: IBlockchain.INetwork  | undefined = ACTIVE_NETWORKS
-      .find(({ id }: IBlockchain.INetwork) => id === this.newNetworkId);
+      .find(({ id }: IBlockchain.INetwork) => id === newNetworkId);
     
     if (newNetwork) {
-      const { hexadecimalChainId } = newNetwork;
+      const { hexadecimalChainId, chainId } = newNetwork;
       try {
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: hexadecimalChainId }]
         });
-        window.location.replace('https://quantumxo.github.io/bigbang');
+        
+        clearCache();
+        
+        (process.env.NODE_ENV === 'development')
+          ? window.location.replace('/')
+          : window.location.replace('https://quantumxo.github.io/bigbang');
       } catch (e) {
         console.log(e);
       }
@@ -88,9 +114,9 @@ export class Network {
     }
   };
   
-  addChainRequest = (): any => {
+  addChainRequest = (newNetworkId: IBlockchain.NetworkType): any => {
     const newNetwork: IBlockchain.INetwork  | undefined = ACTIVE_NETWORKS
-      .find(({ id }: IBlockchain.INetwork) => id === this.newNetworkId);
+      .find(({ id }: IBlockchain.INetwork) => id === newNetworkId);
     
     if (newNetwork) {
       const { rpcUrls, blockExplorerUrls, nativeCurrency, chainName, hexadecimalChainId } = newNetwork;
@@ -128,40 +154,49 @@ export class Network {
   }
   
   get getCurrentNetworkTokens(): IBlockchain.IToken[] | undefined {
-    const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
-    let result: IBlockchain.IToken[] | undefined;
+    const tokens: IBlockchain.IToken[] = getCache('tokens') || [];
+    let result: IBlockchain.IToken[] = tokens;
     
-    if (currentNetwork) {
-      const { tokens, nativeCurrency } = currentNetwork;
-      result = tokens
-        .map(({ id, address, tokenNativeCurrencyLPAddress }: IBlockchain.INetworkToken): IBlockchain.IToken | undefined => {
-          const tokenAsset: ITokenAsset | undefined = tokensAssets
-            .find(({ id: tokenAssetId }: ITokenAsset) => tokenAssetId === id);
-          if (tokenAsset) {
-            return {
-              ...tokenAsset,
-              id,
-              address,
-              tokenNativeCurrencyLPAddress,
-            };
-          }
-        })
-        .filter((item: IBlockchain.INetworkToken | undefined) => !!item) as IBlockchain.IToken[];
-      
-      const nativeCurrencyAsset: ITokenAsset | undefined = tokensAssets
-        .find(({ id: tokenAssetId }: ITokenAsset) => tokenAssetId === nativeCurrency.id);
-      
-      if (nativeCurrencyAsset) {
-        const { id, address } = nativeCurrency;
-        const nativeCurrencyToken: IBlockchain.IToken = {
-          ...nativeCurrencyAsset,
-          id,
-          address,
-          isNativeCurrency: true,
-        };
-        result.push(nativeCurrencyToken);
+    if (!tokens.length) {
+      fromFunc = ++fromFunc;
+      const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
+  
+      if (currentNetwork) {
+        const { tokens, nativeCurrency } = currentNetwork;
+        result = tokens
+          .map(({ id, address, tokenNativeCurrencyLPAddress }: IBlockchain.INetworkToken): IBlockchain.IToken | undefined => {
+            const tokenAsset: IBlockchain.ITokenAsset | undefined = tokensAssets
+              .find(({ id: tokenAssetId }: IBlockchain.ITokenAsset) => tokenAssetId === id);
+            if (tokenAsset) {
+              return {
+                ...tokenAsset,
+                id,
+                address,
+                tokenNativeCurrencyLPAddress,
+              };
+            }
+          })
+          .filter((item: IBlockchain.INetworkToken | undefined) => !!item) as IBlockchain.IToken[];
+    
+        const nativeCurrencyAsset: IBlockchain.ITokenAsset | undefined = tokensAssets
+          .find(({ id: tokenAssetId }: IBlockchain.ITokenAsset) => tokenAssetId === nativeCurrency.id);
+    
+        if (nativeCurrencyAsset) {
+          const { id, address } = nativeCurrency;
+          const nativeCurrencyToken: IBlockchain.IToken = {
+            ...nativeCurrencyAsset,
+            id,
+            address,
+            isNativeCurrency: true,
+          };
+          result.push(nativeCurrencyToken);
+        }
       }
+    } else {
+      fromCache = ++fromCache;
     }
+  
+    // console.log('fromCache, fromFunc: ', fromCache, fromFunc);
     
     return result;
   }
@@ -177,15 +212,41 @@ export class Network {
   }
   
   get getCurrentNetworkBonds(): Bond[] {
-    const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
-    let result: Bond[] = [];
-    if (currentNetwork) {
-      result = allBonds.filter(({ networkType }: Bond) => currentNetwork.id === networkType);
+    const bonds: Bond[] = getCache('bonds') || [];
+    let result: Bond[] = bonds;
+    
+    if (!bonds.length) {
+      const currentNetwork: IBlockchain.INetwork | undefined = this.getCurrentNetwork;
+      if (currentNetwork) {
+        result = allBonds.filter((bond: Bond) => {
+          const { networkType } = bond;
+          return this.getIsValidBond(bond) && currentNetwork.id === networkType
+        });
+      }
     }
+   
+    return result;
+  }
+  
+  getIsValidBond(bond: Bond): boolean {
+    const { id: bondId, bondAddress } = bond;
+    const bondToken: IBlockchain.IToken | undefined = this.getCurrentNetworkTokens
+      ?.find(({ id: tokenId }: IBlockchain.IToken) => tokenId === bondId);
+    let result: boolean = true;
+    
+    if (
+      !bondAddress
+      || !bondToken
+      || !bondToken.address
+      || !bondToken.tokenNativeCurrencyLPAddress
+    ) {
+      result = false;
+    }
+    
     return result;
   }
 }
 
-const network = (args?: INetworkArgs) => new Network(args);
+const network: Network = new Network();
 
 export default network;
