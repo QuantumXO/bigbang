@@ -10,7 +10,7 @@ interface IBondLogoProps {
 }
 
 export function BondLogo(props: IBondLogoProps): ReactElement {
-  const { bond: { bondIconSvg }, iconSize = 24 } = props;
+  const { bond: { bondIcon }, iconSize = 24 } = props;
   const style = { height: iconSize, width: iconSize };
   
   return (
@@ -21,7 +21,7 @@ export function BondLogo(props: IBondLogoProps): ReactElement {
         width: '100%',
       }}
     >
-      <img src={bondIconSvg} style={style} alt="bond" />
+      <img src={bondIcon} style={style} alt="bond" />
     </Box>
   )
 }

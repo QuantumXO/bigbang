@@ -91,7 +91,7 @@ export const calculateUserBondDetails = createAsyncThunk(
         resolve({
           bond: "",
           displayName: "",
-          bondIconSvg: "",
+          bondIcon: "",
           isLP: false,
           allowance: 0,
           balance: 0,
@@ -128,7 +128,7 @@ export const calculateUserBondDetails = createAsyncThunk(
       return {
         bond: bond.id,
         displayName: bond.displayName,
-        bondIconSvg: bond.bondIconSvg,
+        bondIcon: bond.bondIcon,
         isLP: bond.isLP,
         allowance: Number(allowance),
         balance,
@@ -172,7 +172,6 @@ export const calculateUserTokenDetails = createAsyncThunk(
         };
       } else {
         if (token.address) {
-          
           const addresses = getBondAddresses(networkID);
           const tokenContract: Contract = new Contract(token.address, TokenContract, provider);
           const balance = await tokenContract.balanceOf(address);

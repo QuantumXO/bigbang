@@ -3,9 +3,9 @@ $basic_font_family: Ubuntu, Montserrat, SemiBold, Verdana;
 $content_max_width: 1045px;
 $brand_color: #AD00FE;
 $mobile: 360px;
-$tablet: 769px;
-$desktop: 1025px;
-$mobile-media: media (min-width: $mobile) and (max-);
+$tablet: 768px;
+$desktop: 1024px;
+$sidebar_width: 280px;
 
 @mixin desktop() {
   @media (min-width: $desktop) {

@@ -11,11 +11,12 @@ import { IReduxState } from '@store/slices/state.interface';
 import { messages } from '@constants/messages';
 import cx from 'classnames';
 import { warning } from '@store/slices/messages-slice';
-
-import './styles.scss';
+import { Mark } from '@material-ui/core/Slider/Slider';
 import network from '@services/common/network';
 
-const stakeSliderMarks = [
+import './styles.scss';
+
+const stakeSliderMarks: Mark[] = [
   { value: 0, label: '0%' },
   { value: 25, label: '25%' },
   { value: 50, label: '50%' },

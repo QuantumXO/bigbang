@@ -3,14 +3,14 @@ import tokensIcons from '@constants/icons';
 
 export const wMATIC: IBlockchain.ITokenAsset = {
   id: "wMATIC",
-  icon: tokensIcons.MATICIcon,
+  icon: tokensIcons.MATIC,
   decimals: 18,
   name: 'wMATIC',
   isWrap: true,
 };
 export const bigWmatic: IBlockchain.ITokenAsset = {
   id: "BIGwMATIC",
-  icon: tokensIcons.AvaxIcon,
+  icon: tokensIcons.Avax,
   decimals: 18,
   name: 'BIGwMATIC',
   isLP: true,
@@ -18,37 +18,37 @@ export const bigWmatic: IBlockchain.ITokenAsset = {
 };
 export const quick: IBlockchain.ITokenAsset = {
   id: "QUICK",
-  icon: tokensIcons.AvaxIcon,
+  icon: tokensIcons.Avax,
   decimals: 18,
   name: 'QUICK',
 };
 export const crv: IBlockchain.ITokenAsset = {
   id: "CRV",
-  icon: tokensIcons.AvaxIcon,
+  icon: tokensIcons.Avax,
   decimals: 18,
   name: 'CRV',
 };
 export const sand: IBlockchain.ITokenAsset = {
   id: "SAND",
-  icon: tokensIcons.AvaxIcon,
+  icon: tokensIcons.Avax,
   decimals: 18,
   name: 'SAND',
 };
 export const orbs: IBlockchain.ITokenAsset = {
   id: "ORBS",
-  icon: tokensIcons.AvaxIcon,
+  icon: tokensIcons.Avax,
   decimals: 18,
   name: 'ORBS',
 };
 export const yel: IBlockchain.ITokenAsset = {
   id: "YEL",
-  icon: tokensIcons.AvaxIcon,
+  icon: tokensIcons.Avax,
   decimals: 18,
   name: 'YEL',
 };
 export const qi: IBlockchain.ITokenAsset = {
   id: "QI",
-  icon: tokensIcons.AvaxIcon,
+  icon: tokensIcons.Avax,
   decimals: 18,
   name: 'QI',
 };

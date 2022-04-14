@@ -14,7 +14,7 @@ import getCrvTreasuryBalance from '@services/helpers/get-crv-treasury-balance';
 
 export interface BondOpts {
   readonly id: IBond.IBondType; // Internal name used for references
-  readonly bondIconSvg: string; //  SVG path for icons
+  readonly bondIcon: string; //  SVG path for icons
   readonly bondAddress: string;
   readonly isLP?: boolean;
   readonly lpUrl?: string;
@@ -29,7 +29,7 @@ export interface BondOpts {
 
 export class Bond {
   public readonly id: IBond.IBondType;
-  public readonly bondIconSvg: string;
+  public readonly bondIcon: string;
   public readonly bondContractABI: ContractInterface; // Bond ABI
   public readonly bondToken: IBlockchain.TokenType;
   public readonly bondAddress: string;
@@ -44,12 +44,12 @@ export class Bond {
 
   constructor(bondOpts: BondOpts) {
     const {
-      id, displayName, bondIconSvg, bondContractABI, bondToken, lpUrl, tokensInStrategy, isLP, isWrap,
+      id, displayName, bondIcon, bondContractABI, bondToken, lpUrl, tokensInStrategy, isLP, isWrap,
       bondAddress, reserveContractAbi, networkType,
     } = bondOpts;
     this.id = id;
     this.displayName = displayName || id;
-    this.bondIconSvg = bondIconSvg;
+    this.bondIcon = bondIcon;
     this.bondContractABI = bondContractABI || StableBondContract;
     this.bondToken = bondToken || id;
     this.isWrap = isWrap;

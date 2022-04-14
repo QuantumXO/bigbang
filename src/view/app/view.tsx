@@ -38,7 +38,7 @@ export const App: FC = memo((): ReactElement => {
   
   useEffect((): void => {
     // #TODO check && or ||
-    if (walletChecked && isConnected) {
+    if (walletChecked || isConnected) {
       loadDetails('app');
       loadDetails('account');
       loadDetails('userBonds');

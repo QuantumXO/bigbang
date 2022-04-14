@@ -12,11 +12,13 @@
         background: #F2F3F7;
         box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, 0.7);
         @include desktop {
-          max-width: 445px;
+          width: 100%;
+          max-width: 48.3%;
           margin-bottom: 30px;
         }
         @include noDesktop {
-          margin-bottom: 10px;
+          max-width: 49%;
+          margin-bottom: 16px;
         }
         &.welcome {
           .dashboard__card__inner {

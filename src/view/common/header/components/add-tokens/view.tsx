@@ -41,11 +41,11 @@ export const AddTokens = (): ReactElement => {
   
   return (
     <div className="add--tokens card card--custom">
-      <div className="header">{'ADD TOKEN TO WALLET'}</div>
+      <div className="title">{'ADD TOKEN TO WALLET'}</div>
       <div className="tabs">
         <div className="tab" onClick={addTokenToWallet('BIG', BIG_ADDRESS)}>{'BIG'}</div>
         <div className="tab" onClick={addTokenToWallet('BANG', BANG_ADDRESS)}>{'BANG'}</div>
-        <div className="tab" onClick={addTokenToWallet('dYEL', DYEL_ADDRESS)}>{'dYEL'}</div>
+        <div className="tab" onClick={addTokenToWallet('dYel', DYEL_ADDRESS)}>{'dYel'}</div>
       </div>
     </div>
   );

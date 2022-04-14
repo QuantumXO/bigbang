@@ -1,15 +1,18 @@
 @import "./src/assets/styles/basic/variables";
 
 .stake.page {
-  width: 100%;
   .header__cards__grid {
+    align-items: stretch;
     .card {
       @include desktop {
         max-width: 445px;
       }
+      @include noDesktop {
+        max-width: 49%;
+      }
       &.welcome {
         @include noDesktop {
-          margin-bottom: 10px;
+          //margin-bottom: 10px;
         }
       }
     }
@@ -20,7 +23,7 @@
         margin-top: 30px;
       }
       @include noDesktop {
-        margin-top: 10px;
+        margin-top: 16px;
       }
     }
     &__metrics {

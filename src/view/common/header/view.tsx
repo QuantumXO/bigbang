@@ -20,7 +20,6 @@ const useStyles = makeStyles(theme => ({
       easing: theme.transitions.easing.sharp,
       duration: TRANSITION_DURATION,
     }),
-    marginLeft: DRAWER_WIDTH,
   },
   appBar: {
     justifyContent: 'flex-end',

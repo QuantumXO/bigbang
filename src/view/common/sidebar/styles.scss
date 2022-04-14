@@ -7,6 +7,11 @@
   padding-bottom: 47px;
   overflow-y: auto;
   flex-direction: column;
+  &__wrapper {
+    &.mobile {
+
+    }
+  }
   &__drawer__paper {
     box-shadow: -10px -10px 30px #FFFFFF, 10px 10px 40px rgba(201, 208, 225, .7) !important;
     z-index: 9!important;

@@ -2,6 +2,9 @@
 
 .header {
   max-width: #{$content_max_width};
+  @include desktop {
+    margin-left: $sidebar_width;
+  }
   .toolbar {
     width: 100%;
     margin: auto;

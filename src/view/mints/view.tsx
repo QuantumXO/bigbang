@@ -13,7 +13,7 @@ import './styles.scss';
 
 export function Mints(): ReactElement {
   const { bonds } = useBonds();
-  const isSmallScreen: boolean = useMediaQuery('(max-width: 1024px)'); // change to breakpoint query
+  const isSmallScreen: boolean = useMediaQuery('(max-width: 1165px)'); // change to breakpoint query
   
   const isAppLoading: boolean = useSelector<IReduxState, boolean>(state => state.app.loading);
   const marketPrice: number = useSelector<IReduxState, number>(state => {
@@ -132,9 +132,9 @@ export function Mints(): ReactElement {
   
     if (isSmallScreen) {
       layout = (
-        <Grid container item spacing={2}>
+        <Grid className="bonds__grid mobile" container item spacing={2}>
           {bonds.map((bond) => (
-            <Grid item xs={12} key={bond.id}>
+            <Grid className="bond__card__wrapper" item xs={12} key={bond.id}>
               <BondDataCard key={bond.id} bond={bond} />
             </Grid>
           ))}

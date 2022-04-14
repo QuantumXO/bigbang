@@ -144,7 +144,7 @@ export function Dashboard(): ReactElement {
     <div className="dashboard page">
       <div className="dashboard--cards">
         <Zoom in={true}>
-          <Grid container spacing={0} justifyContent="space-between">
+          <Grid className="dashboard--cards__grid" container spacing={0} justifyContent="space-between">
             <Grid item lg={6} md={6} sm={6} xs={12} className="dashboard__card__wrapper welcome">
               <div className="dashboard__card__inner">
                 <p className="card__title">{'Dashboard'}</p>

@@ -14,7 +14,12 @@
         padding-right: 32px;
       }
       &.mint {
-        width: 256px;
+        @media (min-width: 1200px) {
+          width: 256px;
+        }
+        @media (max-width: 1199px) {
+          width: 226px;
+        }
       }
       &.price {
         width: 119px;

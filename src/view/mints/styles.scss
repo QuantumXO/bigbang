@@ -8,15 +8,22 @@
   .mints {
     &__wrapper {
       width: 100%;
+      .bonds__grid.mobile {
+        align-items: stretch;
+        .bond__card__wrapper {
+          max-width: 50%;
+        }
+      }
     }
     &__main--cards {
       .card {
-        width: 100%;
         @include desktop {
+          width: 100%;
           max-width: 445px;
           margin-bottom: 30px;
         }
         @include noDesktop {
+          max-width: 48.9%;
           margin-bottom: 10px;
         }
         &__inner {

@@ -25,7 +25,10 @@
     position: relative;
     background-repeat: no-repeat;
     @include desktop {
-      padding: 84px 0 50px 125px;
+      display: flex;
+      margin-left: $sidebar_width;
+      padding: 84px 0 50px 10px;
+      justify-content: flex-end;
     }
     @include noDesktop {
       width: 100%;

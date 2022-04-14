@@ -20,12 +20,6 @@ export const getTokenInNativeCurrency = async (
       const tokenNativeCurrencyLPAddress: string = getToken(bondId, 'tokenNativeCurrencyLPAddress');
       const nativeCurrencyTokenId: IBlockchain.TokenType = currentNetwork.nativeCurrency.id;
       const nativeCurrencyTokenAddress: string = getToken(nativeCurrencyTokenId, 'address');
-  
-      if (bondId === 'YEL') {
-        console.log('currentNetwork: ', currentNetwork);
-        console.log('nativeCurrencyTokenId: ', nativeCurrencyTokenId);
-        console.log('nativeCurrencyTokenAddress: ', nativeCurrencyTokenAddress);
-      }
       
       const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
         contractAddress: tokenNativeCurrencyLPAddress,

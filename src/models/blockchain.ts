@@ -50,8 +50,7 @@ export namespace IBlockchain {
     STAKING_WARMUP_ADDRESS: string;
     ZAPIN_ADDRESS: string;
   }
-  export type OurTokenType = 'BIG' | 'BANG' | 'dYEL';
-  export type OurTokenNameType = 'big' | 'bang' | 'dYEL';
+  export type OurTokenType = 'BIG' | 'BANG' | 'dYel';
   export interface IToken {
     id: TokenType;
     address: string;
@@ -73,7 +72,6 @@ export namespace IBlockchain {
     | 'isUSDCNativeCurrencyLP'
   > {
     id: IBlockchain.TokenType;
-    icon: string;
     decimals: number;
     name: IBlockchain.TokenNameType;
     isWrap?: boolean;
@@ -111,7 +109,53 @@ export namespace IBlockchain {
     | 'ORBS'
     | 'QI'
     | 'BIGwMATIC'
-  export type StableTokenType = StableFTMTokenType | StableMATICTokenType;
-  export type TokenType = OurTokenType | FTMTokenType | MATICTokenType | StableWrapCommonTokenType;
+  export type BSCNativeCurrencyType = 'BNB';
+  export type BSCTokenType =
+    | StableMATICTokenType
+    | BSCNativeCurrencyType
+    | 'CAKE'
+    | 'BIFI'
+    | 'UNI'
+    | 'MBOX'
+    | 'ALPACA'
+    | 'STG'
+    | 'YEL'
+  export type ETHNativeCurrencyType = 'wETH';
+  export type ETHTokenType =
+    | StableMATICTokenType
+    | ETHNativeCurrencyType
+    | 'SUSHI'
+    | 'CVX'
+    | 'YFI'
+    | 'ALCX'
+    | 'AAVE'
+    | 'UNI'
+    | 'MKR'
+    | 'COMP'
+    | 'SPELL'
+    | 'YEL'
+    | 'CRV'
+    | 'FARM'
+    | 'BAL'
+  export type AVALANCHENativeCurrencyType = 'wAVAX';
+  export type AVALANCHETokenType =
+    | StableMATICTokenType
+    | AVALANCHENativeCurrencyType
+    | 'AVAX'
+    | 'JOE'
+    | 'LINK.e'
+    | 'PTP'
+    | 'SPELL'
+    | 'AAVE'
+    | 'wMEMO'
+    | 'YEL'
+  export type TokenType =
+    | StableWrapCommonTokenType
+    | OurTokenType
+    | FTMTokenType
+    | MATICTokenType
+    | BSCTokenType
+    | ETHTokenType
+    | AVALANCHETokenType;
   export type TokenNameType = TokenType;
 }

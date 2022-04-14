@@ -88,6 +88,7 @@ export const loadAppDetails = createAsyncThunk(
     
     const treasuryRunway: number = rfvTreasury / circSupply;
     const runway: number = Math.log(treasuryRunway) / Math.log(1 + stakingRebase) / 3;
+  
     
     return {
       currentIndex: String(Number(ethers.utils.formatUnits(currentIndex, "gwei")) / 4.5),

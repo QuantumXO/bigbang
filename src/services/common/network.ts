@@ -154,6 +154,7 @@ export class Network {
   }
   
   get getCurrentNetworkTokens(): IBlockchain.IToken[] | undefined {
+    const bonds: Bond[] = getCache('bonds') || [];
     const tokens: IBlockchain.IToken[] = getCache('tokens') || [];
     let result: IBlockchain.IToken[] = tokens;
     
@@ -167,9 +168,11 @@ export class Network {
           .map(({ id, address, tokenNativeCurrencyLPAddress }: IBlockchain.INetworkToken): IBlockchain.IToken | undefined => {
             const tokenAsset: IBlockchain.ITokenAsset | undefined = tokensAssets
               .find(({ id: tokenAssetId }: IBlockchain.ITokenAsset) => tokenAssetId === id);
+            const bondIcon: string | undefined = bonds.find(({ id: bondId }: Bond) => bondId === id)?.bondIcon;
             if (tokenAsset) {
               return {
                 ...tokenAsset,
+                icon: bondIcon,
                 id,
                 address,
                 tokenNativeCurrencyLPAddress,
@@ -180,11 +183,14 @@ export class Network {
     
         const nativeCurrencyAsset: IBlockchain.ITokenAsset | undefined = tokensAssets
           .find(({ id: tokenAssetId }: IBlockchain.ITokenAsset) => tokenAssetId === nativeCurrency.id);
+        const nativeCurrencyBondIcon: string | undefined = bonds
+          .find(({ id: bondId }: Bond) => bondId === nativeCurrency.id)?.bondIcon;
     
         if (nativeCurrencyAsset) {
           const { id, address } = nativeCurrency;
           const nativeCurrencyToken: IBlockchain.IToken = {
             ...nativeCurrencyAsset,
+            icon: nativeCurrencyBondIcon,
             id,
             address,
             isNativeCurrency: true,
