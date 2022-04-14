@@ -1,20 +1,19 @@
 import { IBlockchain } from '@models/blockchain';
 
-// import ethNetworkIcon from '@assets/images/common/networks/eth_mainnet.svg';
-// import binanceNetworkIcon from '@assets/images/common/networks/binance.svg';
 import fantomNetworkIcon from '@assets/images/common/networks/fantom.svg';
 import maticNetworkIcon from '@assets/images/common/networks/polygon_MATIC.svg';
 
 export const FTM_NETWORK: IBlockchain.INetwork = {
   id: 'FTM',
   chainId: '250',
-  chainName: 'FTM',
+  chainName: 'Fantom',
   name: 'Fantom',
   icon: fantomNetworkIcon,
-  chainNetwork: 'mainnet',
   hexadecimalChainId: '0xFA',
   nativeCurrency: {
     id: 'wFTM',
+    symbol: 'wFTM',
+    decimals: 18,
     address: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
   },
   tokens: [
@@ -51,13 +50,14 @@ export const FTM_NETWORK: IBlockchain.INetwork = {
 export const MATIC_NETWORK: IBlockchain.INetwork = {
   id: 'MATIC',
   chainId: '137',
-  chainName: 'FTM',
-  name: 'Matic',
+  chainName: 'Polygon',
+  name: 'Polygon',
   icon: maticNetworkIcon,
-  chainNetwork: 'mainnet',
   hexadecimalChainId: '0x89',
   nativeCurrency: {
     id: 'wMATIC',
+    decimals: 18,
+    symbol: 'wMATIC',
     address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
   },
   tokens: [
@@ -66,7 +66,7 @@ export const MATIC_NETWORK: IBlockchain.INetwork = {
     { id: 'CRV', address: '0x172370d5Cd63279eFa6d502DAB29171933a610AF', tokenNativeCurrencyLPAddress: '0x172370d5Cd63279eFa6d502DAB29171933a610AF' },
     { id: 'SAND', address: '0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683', tokenNativeCurrencyLPAddress: '0x369582d2010b6ed950b571f4101e3bb9b554876f' },
     { id: 'ORBS', address: '0x614389EaAE0A6821DC49062D56BDA3d9d45Fa2ff', tokenNativeCurrencyLPAddress: '0xb2b6d423e535b57aad06e9866803b95fb66152ea' },
-    { id: 'YEL', address: '0xD3b71117E6C1558c1553305b44988cd944e97300', tokenNativeCurrencyLPAddress: '0x8bab87ecf28bf45507bd745bc70532e968b5c2de' },
+    { id: 'YEL', address: '0xd3b71117e6c1558c1553305b44988cd944e97300', tokenNativeCurrencyLPAddress: '0x8bab87ecf28bf45507bd745bc70532e968b5c2de' },
     { id: 'QI', address: '0x580a84c73811e1839f75d86d75d88cca0c241ff4', tokenNativeCurrencyLPAddress: '0x9a8b2601760814019b7e6ee0052e25f1c623d1e6' },
     { id: 'BIGwMATIC', address: '0xe0Ff4a185724F19a3D94c66fF35BaC77a8891399', tokenNativeCurrencyLPAddress: '0xe0Ff4a185724F19a3D94c66fF35BaC77a8891399' },
   ],

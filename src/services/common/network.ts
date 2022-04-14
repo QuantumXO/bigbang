@@ -94,7 +94,7 @@ export class Network {
       .find(({ id }: IBlockchain.INetwork) => id === newNetworkId);
     
     if (newNetwork) {
-      const { hexadecimalChainId, chainId } = newNetwork;
+      const { hexadecimalChainId } = newNetwork;
       try {
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
@@ -107,7 +107,7 @@ export class Network {
           ? window.location.replace('/')
           : window.location.replace('https://quantumxo.github.io/bigbang');
       } catch (e) {
-        console.log(e);
+        console.log('switchChainRequest() e: ', e);
       }
     } else {
       throw new Error('switchChainRequest Error');
@@ -120,12 +120,17 @@ export class Network {
     
     if (newNetwork) {
       const { rpcUrls, blockExplorerUrls, nativeCurrency, chainName, hexadecimalChainId } = newNetwork;
+      const { symbol, decimals, id } = nativeCurrency;
       const param: IBlockchain.IAddEthereumChainParameter = {
-        chainId: hexadecimalChainId,
+        chainId: hexadecimalChainId, // hex
         chainName,
         rpcUrls,
         blockExplorerUrls,
-        // nativeCurrency
+        nativeCurrency: {
+          name: id,
+          decimals,
+          symbol,
+        }
       }
       try {
         return window.ethereum.request({

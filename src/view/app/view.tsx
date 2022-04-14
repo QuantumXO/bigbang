@@ -17,34 +17,21 @@ import '@assets/styles/index.scss';
 
 export const App: FC = memo((): ReactElement => {
   const dispatch: Dispatch<any> = useDispatch();
-  const { connect, provider, hasCachedProvider, chainID, isConnected } = useWeb3Context();
+  const { provider, chainID, isConnected, isCheckedWallet } = useWeb3Context();
   const address: string = useAddress();
   const { bonds } = useBonds();
   const { tokens } = useTokens();
   const isAppLoaded: boolean = useSelector<IReduxState, boolean>(state => !Boolean(state.app.marketPrice));
   
-  const [walletChecked, setWalletChecked] = useState<boolean>(false);
-  
-  useEffect((): void => {
-    (async function() {
-      if (hasCachedProvider()) {
-        await connect();
-        setWalletChecked(true);
-      } else {
-        setWalletChecked(true);
-      }
-    })()
-  }, []);
-  
   useEffect((): void => {
     // #TODO check && or ||
-    if (walletChecked || isConnected) {
+    if (isCheckedWallet || isConnected) {
       loadDetails('app');
       loadDetails('account');
       loadDetails('userBonds');
       loadDetails('userTokens');
     }
-  }, [walletChecked, isConnected]);
+  }, [isCheckedWallet, isConnected]);
 
   async function loadDetails(whichDetails: string): Promise<void> {
     const loadProvider: JsonRpcProvider = provider;

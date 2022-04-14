@@ -1,31 +1,35 @@
 export namespace IBlockchain {
-  export type NetworkType = 'ETH' | 'FTM' | 'BNB' | 'MATIC';
+  export type NetworkType = 'ETH' | 'FTM' | 'BNB' | 'MATIC' | 'BSC';
+  export interface INativeCurrency {
+    id: TokenType;
+    symbol: string;
+    decimals: number;
+    address: string;
+  }
   export interface INetwork {
     id: NetworkType;
     name: string;
     chainId: string;
     hexadecimalChainId: string;
     icon?: string;
-    chainName?: string;
+    chainName?: 'Polygon' | 'Fantom' | 'Ethereum' | 'Avalanche' | 'Binance Smart Chain';
     iconUrls?: string[];
     isDisabled?: boolean;
-    chainNetwork?: 'mainnet';
     blockExplorerUrls?: string[];
-    nativeCurrency: INetworkToken;
+    nativeCurrency: INativeCurrency;
     rpcUrls?: string[];
     bondAddresses: IBondMainnetAddresses,
     tokens: INetworkToken[];
   }
   export interface INetworkToken extends Pick<IToken, 'id' | 'address' | 'tokenNativeCurrencyLPAddress'> { }
   export interface IAddEthereumChainParameter {
-    chainId: string;
-    chainNetwork?: 'mainnet';
+    chainId: string; // hex
     blockExplorerUrls?: string[];
     chainName?: string;
     iconUrls?: string[];
     nativeCurrency?: {
-      id: string;
       name: string;
+      symbol: string;
       decimals: number;
     };
     rpcUrls?: string[];

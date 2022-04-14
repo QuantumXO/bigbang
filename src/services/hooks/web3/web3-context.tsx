@@ -8,6 +8,8 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import { DEFAULT_NETWORK } from "@constants/networks";
 import network from "@services/common/network";
 import { loadTokenPrices } from '@services/helpers';
+import { useSelector } from 'react-redux';
+import { IReduxState } from '@store/slices/state.interface';
 
 type Web3ContextDataType = {
   provider: JsonRpcProvider;
@@ -15,7 +17,8 @@ type Web3ContextDataType = {
   isConnected: boolean;
   chainID: number;
   web3?: any;
-  isLoadingTokensPrices: boolean,
+  isCheckedWallet: boolean;
+  isLoadingTokensPrices: boolean;
   disconnect: () => void;
   hasCachedProvider: () => boolean;
   connect: () => Promise<Web3Provider | void>;
@@ -47,9 +50,9 @@ export const useAddress = (): string => {
   return address;
 };
 
+const { chainId: DEFAULT_CHAIN_ID, rpcUrls: DEFAULT_RPC_URLS = [] } = DEFAULT_NETWORK;
+
 export const Web3ContextProvider: FC<IWeb3ContextProviderProps> = ({ children }: IWeb3ContextProviderProps): ReactElement => {
-  const { chainId: DEFAULT_CHAIN_ID, rpcUrls: DEFAULT_RPC_URLS = [] } = DEFAULT_NETWORK;
-  
   const [isConnected, setConnected] = useState<boolean>(false);
   const [chainID, setChainID] = useState<string>(network.getCurrentChainId || DEFAULT_CHAIN_ID);
   const [address, setAddress] = useState<string>('');
@@ -58,9 +61,19 @@ export const Web3ContextProvider: FC<IWeb3ContextProviderProps> = ({ children }:
   );
   const [isLoadingTokensPrices, setIsLoadingTokensPrices] = useState<boolean>(true);
   const [web3Modal, setWeb3Modal] = useState<Web3Modal | null>(null);
+  const [isCheckedWallet, setIsCheckedWallet] = useState<boolean>(false);
+  
+  const hasCachedProvider = (): boolean => !!web3Modal?.cachedProvider;
   
   useEffect((): void => {
     (async function() {
+      if (hasCachedProvider()) {
+        await onConnect();
+        setIsCheckedWallet(true);
+      } else {
+        setIsCheckedWallet(true);
+      }
+      
       await loadTokenPrices();
   
       setIsLoadingTokensPrices(false);
@@ -68,7 +81,6 @@ export const Web3ContextProvider: FC<IWeb3ContextProviderProps> = ({ children }:
   }, []);
   
   useEffect((): void => {
-    console.log('chainID: ', chainID);
     setWeb3Modal(
       new Web3Modal({
         cacheProvider: true,
@@ -86,12 +98,6 @@ export const Web3ContextProvider: FC<IWeb3ContextProviderProps> = ({ children }:
       })
     );
   }, [chainID]);
-  
-  const hasCachedProvider = (): boolean => {
-    if (!web3Modal) return false;
-    else if (!web3Modal.cachedProvider) return false;
-    return true;
-  };
 
   const _initListeners = useCallback(
     (rawProvider: JsonRpcProvider) => {
@@ -106,9 +112,12 @@ export const Web3ContextProvider: FC<IWeb3ContextProviderProps> = ({ children }:
       
       rawProvider.on("chainChanged", async (chainId: number): Promise<void> => {
         await onHandleNetworkChange(chainId);
+  
+        console.log('chainChanged(): ', chainId);
       });
       
-      rawProvider.on("network", (_newNetwork, oldNetwork) => {
+      rawProvider.on("network", (_newNetwork, oldNetwork): void => {
+        console.log('network: ', _newNetwork, oldNetwork);
         if (!oldNetwork) return;
         window.location.reload();
       });
@@ -121,9 +130,13 @@ export const Web3ContextProvider: FC<IWeb3ContextProviderProps> = ({ children }:
     setChainID(String(parseInt(String(hexChainId), 16)));
   
     network.setCurrentChainId(network.getCurrentChainId);
+  
+    console.log('network.getCurrentChainId: ', network.getCurrentChainId);
   };
   
   const onConnect = useCallback(async (): Promise<Web3Provider | void> => {
+    console.log('onConnect()');
+    
     if (web3Modal) {
       const rawProvider: any = await web3Modal?.connect();
   
@@ -165,6 +178,7 @@ export const Web3ContextProvider: FC<IWeb3ContextProviderProps> = ({ children }:
       connect: onConnect,
       disconnect: onDisconnect,
       isLoadingTokensPrices,
+      isCheckedWallet
     }),
     [
       onConnect, onDisconnect, hasCachedProvider, provider, isConnected, address, chainID, isLoadingTokensPrices
