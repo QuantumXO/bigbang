@@ -224,7 +224,7 @@ export const CommonContextProvider: FC<INetworkContextProviderProps> = ({ childr
         
         (process.env.NODE_ENV === 'development')
           ? window.location.replace('/')
-          : window.location.replace('https://quantumxo.github.io/bigbang');
+          : window.location.replace('/');
       } catch (e) {
         console.log('switchChainRequest() e: ', e);
       }

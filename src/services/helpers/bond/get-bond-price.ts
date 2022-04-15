@@ -104,6 +104,8 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
       // bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * lpPriceInUSDC;
       // #TODO check
       bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * nativeCurrencyInUSDC;
+    } else if (bondId === 'YFI' || bondId === 'BIFI') {
+      bondPrice = bondPriceInUSD / Math.pow(10, 18);
     } else {
       // Tokens
       const tokenInNativeCurrency: number = await getTokenInNativeCurrency(networkID, provider, bondId, tokens);
