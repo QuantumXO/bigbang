@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.4.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 200 200" style="enable-background:new 0 0 200 200;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#F0B90B;}
+	.st1{fill:#FFFFFF;}
+</style>
+<g>
+	<path class="st0" d="M100,0c55.2,0,100,44.8,100,100s-44.8,100-100,100S0,155.2,0,100S44.8,0,100,0L100,0z"/>
+	<path class="st1" d="M55,100l0.1,26.4l22.5,13.2v15.5l-35.6-20.9v-42L55,100L55,100z M55,73.6V89l-13.1-7.7V65.8L55,58.1l13.1,7.7
+		L55,73.6L55,73.6z M86.9,65.8l13.1-7.7l13.1,7.7L100,73.6L86.9,65.8L86.9,65.8z"/>
+	<path class="st1" d="M64.4,121v-15.5l13.1,7.7v15.4L64.4,121L64.4,121z M86.9,145.2l13.1,7.7l13.1-7.7v15.4l-13.1,7.7l-13.1-7.7
+		V145.2L86.9,145.2z M131.9,65.8l13.1-7.7l13.1,7.7v15.4L145,89V73.6L131.9,65.8L131.9,65.8L131.9,65.8z M145,126.4L145,100
+		l13.1-7.7v42l-35.6,20.9v-15.5L145,126.4L145,126.4L145,126.4z"/>
+	<polygon class="st1" points="135.6,121 122.5,128.6 122.5,113.2 135.6,105.5 	"/>
+	<path class="st1" d="M135.6,79l0.1,15.5l-22.5,13.2v26.5l-13.1,7.7L87,134.2v-26.5L64.4,94.5V79l13.1-7.7L100,84.6l22.5-13.3
+		L135.6,79L135.6,79L135.6,79z M64.4,52.6l35.6-21l35.6,21l-13.1,7.7L100,47.1L77.5,60.3L64.4,52.6L64.4,52.6z"/>
+</g>
+</svg>
