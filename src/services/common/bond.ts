@@ -1,15 +1,9 @@
 import { IBlockchain } from '@models/blockchain';
-import { Contract, ContractInterface } from 'ethers';
+import { ContractInterface } from 'ethers';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { getTokenPrice } from '@services/helpers/token-price';
 import { IBond } from '@models/bond';
 import { getToken } from '@services/helpers/get-token';
-import { getBondAddresses, sleep } from '@services/helpers';
-import { LPTokenContract, StableBondContract, StableReserveContract, TokenContract } from '@services/abi';
-import { getReserves } from '@services/helpers/get-reserves';
-import { getNativeCurrencyInUSDC } from '@services/common/prices/get-native-currency-in-usdc'
-import { getTokenInNativeCurrency } from '@services/common/prices/get-token-in-native-currency'
-import getCrvTreasuryBalance from '@services/helpers/get-crv-treasury-balance';
+import { StableBondContract, StableReserveContract } from '@services/abi';
 
 export interface BondOpts {
   readonly id: IBond.IBondType; // Internal name used for references
@@ -18,6 +12,7 @@ export interface BondOpts {
   readonly isLP?: boolean;
   readonly lpUrl?: string;
   readonly isWrap?: boolean;
+  readonly bondLPIcon?: string;
   readonly tokensInStrategy?: string;
   readonly displayName?: string; // Display name on UI
   readonly networkType?: IBlockchain.NetworkType;
@@ -34,17 +29,18 @@ export class Bond {
   public readonly bondAddress: string;
   public readonly reserveContractAbi: ContractInterface;
   public readonly displayUnits: string;
+  public readonly displayName: string; // Display name on UI
   public readonly isWrap?: boolean;
   public readonly isLP?: boolean;
   public readonly lpUrl?: string;
+  public readonly bondLPIcon?: string;
   public readonly tokensInStrategy?: string;
   public readonly networkType?: IBlockchain.NetworkType;
-  public readonly displayName?: string; // Display name on UI
 
   constructor(bondOpts: BondOpts) {
     const {
       id, displayName, bondIcon, bondContractABI, bondToken, lpUrl, tokensInStrategy, isLP, isWrap,
-      bondAddress, reserveContractAbi, networkType,
+      bondAddress, reserveContractAbi, networkType, bondLPIcon
     } = bondOpts;
     this.id = id;
     this.displayName = displayName || id;
@@ -59,6 +55,7 @@ export class Bond {
     this.reserveContractAbi = reserveContractAbi || StableReserveContract;
     this.tokensInStrategy = tokensInStrategy;
     this.networkType = networkType;
+    this.bondLPIcon = bondLPIcon;
   }
   
   public getBigAmount(networkID: number, provider: StaticJsonRpcProvider): Promise<number> {

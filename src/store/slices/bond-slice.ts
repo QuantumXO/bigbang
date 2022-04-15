@@ -1,4 +1,4 @@
-import { BigNumber, constants, ethers, Contract } from 'ethers';
+import { BigNumber, constants, ethers, Contract, ContractInterface } from 'ethers';
 import { sleep, getBondAddresses } from '@services/helpers';
 import { getMarketPrice } from '@services/common/prices/get-market-price'
 import { calculateUserBondDetails, fetchAccountSuccess, getBalances } from './account-slice';
@@ -13,10 +13,9 @@ import { error, info, success, warning } from '../slices/messages-slice';
 import { messages } from '@constants/messages';
 import { getGasPrice } from '@services/helpers/get-gas-price';
 import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
-import { StableBondContract, wFTMReserveContract } from '@services/abi';
+import { StableBondContract, wFTMReserveContract, YFI_TSHAREBondContract } from '@services/abi';
 import { getToken } from '@services/helpers/get-token';
 import { getBondPrice } from '@services/helpers/bond/get-bond-price';
-import { useCommonContext } from '@services/hooks/network';
 import { useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 
@@ -113,13 +112,20 @@ export const calcBondDetails = createAsyncThunk(
     if (!value) {
       value = '0';
     }
-    
     try {
+      const { id: bondId } = bond;
       const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
       const amountInWei: BigNumber = ethers.utils.parseEther(value);
       const bondCalcContract: Contract = getBondCalculator(networkID, provider, bond);
-      const bondContract: Contract = new Contract(bond.bondAddress, StableBondContract, provider);
+      let contractAbi: ContractInterface = StableBondContract;
+      
+      if (bondId === 'TSHARE' || bondId === 'YFI') {
+        contractAbi = YFI_TSHAREBondContract;
+      }
+      
+      const bondContract: Contract = new Contract(bond.bondAddress, contractAbi, provider);
       const terms = await bondContract.terms();
+      
       const maxBondPrice: number = (await bondContract.maxPayout()) / Math.pow(10, 9);
       const marketPrice: number = await getMarketPrice(networkID, provider, tokens);
       const minPurchase: number = await bondContract.minPayout() / Math.pow(10, 9);

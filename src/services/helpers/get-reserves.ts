@@ -26,6 +26,8 @@ export const getReserves = async (props: IProps): Promise<IGetReserves> => {
     comparedAddressInReserve = 0;
   } else if (token1 === comparedAddressInLowerCase) {
     comparedAddressInReserve = 1;
+  } else {
+    (process.env.NODE_ENV === 'development') && console.log('getReserves() comparedAddress not found');
   }
   
   return {

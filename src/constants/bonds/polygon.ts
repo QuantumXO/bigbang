@@ -19,7 +19,8 @@ export const wMATIC: Bond = new Bond({
 export const BIGwMATIC: Bond = new Bond({
   id: 'BIGwMATIC',
   displayName: 'BIG_wMATIC',
-  bondIcon: tokensIcons.AVAX,
+  bondIcon: tokensIcons.BIG,
+  bondLPIcon: tokensIcons.wMATIC,
   bondAddress: '0xF85eDa4ecfD47C459Ae24c873592b85aF55Db910',
   tokensInStrategy: '0',
   networkType: 'MATIC',

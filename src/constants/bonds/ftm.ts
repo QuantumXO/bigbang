@@ -19,7 +19,8 @@ export const wFTM: Bond = new Bond({
 export const BIGwFTM: Bond = new Bond({
   id: 'BIGwFTM',
   displayName: 'BIG_wFTM',
-  bondIcon: tokensIcons.AVAX,
+  bondIcon: tokensIcons.BIG,
+  bondLPIcon: tokensIcons.wFTM,
   bondAddress: '0x13dA1FC51978FAB071eD28e65E7825Cf4860c9F8',
   tokensInStrategy: '0',
   networkType: 'FTM',

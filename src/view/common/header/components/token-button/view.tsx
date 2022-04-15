@@ -14,8 +14,13 @@ export function TokenButton(): ReactElement {
   const [anchorEl, setAnchorEl] = useState<null | ReferenceObject | (() => ReferenceObject)>(null);
   
   const onToggleModal = (event: MouseEvent<HTMLDivElement>, active: boolean): void => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
+    setAnchorEl(event.currentTarget);
     toggleModal(active);
+  };
+  
+  const onClose = (): void => {
+    setAnchorEl(null)
+    toggleModal(false);
   };
   
   return (
@@ -43,7 +48,7 @@ export function TokenButton(): ReactElement {
           </Fade>
         )}
       </Popper>
-      <WrapModal />
+      <WrapModal onClose={onClose} />
     </div>
   );
 }

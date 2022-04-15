@@ -1,6 +1,6 @@
 import { IBond } from '@models/bond';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Signer } from 'ethers';
+import { Contract, Signer } from 'ethers';
 import { IBlockchain } from '@models/blockchain';
 import { getToken } from '@services/helpers/get-token';
 import { getReserves } from '@services/helpers/get-reserves';
@@ -19,9 +19,8 @@ export const getTokenInNativeCurrency = async (
   try {
     if (currentNetwork) {
       const tokenNativeCurrencyLPAddress: string = getToken(tokens, bondId, 'tokenNativeCurrencyLPAddress');
-      const nativeCurrencyTokenId: IBlockchain.TokenType = currentNetwork.nativeCurrency.id;
-      const nativeCurrencyTokenAddress: string = getToken(tokens, nativeCurrencyTokenId, 'address');
-      
+      const nativeCurrencyTokenAddress: string = currentNetwork.nativeCurrency.address
+  
       const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
         contractAddress: tokenNativeCurrencyLPAddress,
         contractABI: LpReserveContract,
@@ -34,7 +33,7 @@ export const getTokenInNativeCurrency = async (
       } else if (comparedAddressInReserve === 1) {
         //
       } else {
-        console.log('nativeCurrencyTokenAddress error');
+        (process.env.NODE_ENV === 'development') && console.log('nativeCurrencyTokenAddress error');
       }
       
       // eslint-disable-next-line prefer-const

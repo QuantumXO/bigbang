@@ -14,6 +14,7 @@ interface IBondProps {
 }
 
 export function BondTableRow({ bond }: IBondProps): ReactElement {
+  const { bondLPIcon, bondIcon } = bond;
   const isBondLoading: boolean = !bond.bondPrice ?? true;
   
   return (
@@ -21,7 +22,8 @@ export function BondTableRow({ bond }: IBondProps): ReactElement {
       <TableCell className="bond__col mint">
         <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div className="bond__logo__wrap">
-            <BondLogo bond={bond} iconSize={48} />
+            <BondLogo bondIcon={bondIcon} iconSize={48} />
+            {bondLPIcon && <BondLogo isLP bondIcon={bondLPIcon} iconSize={48} />}
           </div>
           <div className="bond__mint">
             <span className="bond__text">{bond.displayName}</span>

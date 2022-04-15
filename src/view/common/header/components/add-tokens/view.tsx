@@ -2,17 +2,16 @@ import React, { ReactElement } from 'react';
 import { IBlockchain } from '@models/blockchain';
 import { getTokenUrl } from '@services/helpers'
 import { getBondAddresses } from "@services/helpers/bond/get-bond-addresses";
-import { DEFAULT_NETWORK } from "@constants/networks";
-
-import "./styles.scss";
 import { useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 import { useCommonContext } from '@services/hooks/network';
 
+import "./styles.scss";
+
 export const AddTokens = (): ReactElement => {
   const { getIsEthereumAPIAvailable } = useCommonContext();
   const { chainId } = useSelector((state: IReduxState) => state.network);
-  const networkID: number = Number(chainId || DEFAULT_NETWORK.chainId);
+  const networkID: number = Number(chainId);
   const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
   const { BIG_ADDRESS, BANG_ADDRESS, DYEL_ADDRESS } = addresses;
   

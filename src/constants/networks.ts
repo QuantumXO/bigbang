@@ -23,7 +23,7 @@ export const FTM_NETWORK: IBlockchain.INetwork = {
     { id: 'TSHARE', address: '0x4cdF39285D7Ca8eB3f090fDA0C069ba5F4145B37', tokenNativeCurrencyLPAddress: '0x4733bc45ef91cf7ccecaeedb794727075fb209f2' },
     { id: 'MULTI', address: '0x9Fb9a33956351cf4fa040f65A13b835A3C8764E3', tokenNativeCurrencyLPAddress: '0x297c8990134bf1ee08ae5d8805042fbac8781201' },
     { id: 'BOO', address: '0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE', tokenNativeCurrencyLPAddress: '0xec7178f4c41f346b2721907f5cf7628e388a7a58' },
-    { id: 'YEL', address: '0xd3b71117e6c1558c1553305b44988cd944e97300', tokenNativeCurrencyLPAddress: '0x8bab87ecf28bf45507bd745bc70532e968b5c2de' },
+    { id: 'YEL', address: '0xd3b71117e6c1558c1553305b44988cd944e97300', tokenNativeCurrencyLPAddress: '0x8bff7b8b6a14e576a3634d6c0466a19a6e9b170a' },
     { id: 'BEETS', address: '0xf24bcf4d1e507740041c9cfd2dddb29585adce1e', tokenNativeCurrencyLPAddress: '0x648a7452da25b4fb4bdb79badf374a8f8a5ea2b5' },
     { id: 'YFI', address: '0x29b0da86e484e1c0029b56e817912d778ac0ec69', tokenNativeCurrencyLPAddress: '0x4fc38a2735c7da1d71ccabf6dec235a7da4ec52c' },
     { id: 'LINK', address: '0xb3654dc3D10Ea7645f8319668E8F54d2574FBdC8', tokenNativeCurrencyLPAddress: '0x89d9bC2F2d091CfBFc31e333D6Dc555dDBc2fd29' },

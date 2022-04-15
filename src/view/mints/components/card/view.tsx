@@ -21,7 +21,7 @@ export function BondDataCard({ bond }: IBondProps): ReactElement {
     <Slide direction="up" in={true}>
       <div className="card bond__card">
         <div className="name">
-          <BondLogo bond={bond} iconSize={36} />
+          <BondLogo bondIcon={bond.bondIcon} iconSize={36} />
           <div className="inner">
             <span className="label">{bond.displayName}</span>
             {bond.isLP && (

@@ -14,7 +14,11 @@ import { useCommonContext } from '@services/hooks/network';
 
 import './styles.scss';
 
-export function WrapModal(): ReactElement {
+interface IProps {
+  onClose?: () => void;
+}
+
+export function WrapModal({ onClose }: IProps): ReactElement {
   const dispatch = useDispatch();
   const { chainId } = useSelector((state: IReduxState) => state.network);
   const { getIsWrongNetwork, provider, address, isActiveWrapModal, toggleWrapModal } = useCommonContext();
@@ -68,7 +72,9 @@ export function WrapModal(): ReactElement {
     setValue(value);
   };
   
-  const onClose = (): void => {
+  const onHandleClose = (): void => {
+    onClose && onClose();
+    
     setValue('');
     setIsWrap(true);
     setIsWrapPrice(true);
@@ -144,7 +150,7 @@ export function WrapModal(): ReactElement {
           background: 'none'
         }
       }}
-      onClose={onClose}
+      onClose={onHandleClose}
     >
       <Paper className="wrapper">
         <div className="modal__header">
@@ -166,7 +172,7 @@ export function WrapModal(): ReactElement {
             component={XIcon}
             fontSize="small"
             className="close__btn"
-            onClick={onClose}
+            onClick={onHandleClose}
           />
         </div>
         

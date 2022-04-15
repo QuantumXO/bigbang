@@ -3,11 +3,11 @@ import { IBlockchain } from '@models/blockchain';
 import wFTM from '@assets/images/common/tokens/ftm.svg';
 import SCREAM from '@assets/images/common/tokens/SCREAM.svg';
 import GEIST from '@assets/images/common/tokens/GEIST.svg';
-import USDC from '@assets/images/common/tokens/usdc.svg';
-import TSHARE from '@assets/images/common/tokens/tshare.svg';
+import USDC from '@assets/images/common/tokens/USDC.svg';
+import TSHARE from '@assets/images/common/tokens/TSHARE.svg';
 import MULTI from '@assets/images/common/tokens/MULTI.svg';
 import BOO from '@assets/images/common/tokens/BOO.svg';
-import wMATIC from '@assets/images/common/tokens/matic.svg';
+import wMATIC from '@assets/images/common/tokens/MATIC.svg';
 import dYel from '@assets/images/common/tokens/dYel.png';
 import BEETS from '@assets/images/common/tokens/BEETS.svg';
 import YFI from '@assets/images/common/tokens/YFI.svg';
@@ -40,11 +40,12 @@ import MKR from '@assets/images/common/tokens/MKR.svg';
 import COMP from '@assets/images/common/tokens/COMP.svg';
 import FARM from '@assets/images/common/tokens/FARM.svg';
 import BAL from '@assets/images/common/tokens/BAL.svg';
+import BIG from '@assets/images/common/tokens/big.png';
 
 const tokens: Record<IBlockchain.TokenType | string, any> = {
   wFTM, SCREAM, GEIST, USDC, TSHARE, MULTI, BOO, wMATIC, BEETS, YFI, LINK, SPELL, SPIRIT, QUICK, CRV, SUSHI, CVX, ALCX,
   SAND, ORBS, YEL, QI, BNB, CAKE, BIFI, UNI, MBOX, ALPACA, STG, AVAX, JOE, dYel, PTP, AAVE, wMEMO, wETH, MKR, COMP,
-  FARM, BAL
+  FARM, BAL, BIG
 };
 
 export default tokens;

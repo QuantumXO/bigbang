@@ -1,17 +1,17 @@
 import { Box } from '@material-ui/core';
-import { Bond } from '@services/common/bond';
 import { CSSProperties, ReactElement } from 'react';
 
 interface IBondLogoProps {
-  bond: Bond;
+  bondIcon: string;
+  isLP?: boolean;
   iconSize?: number;
   iconLPSize?: number;
   styles?: CSSProperties;
 }
 
 export function BondLogo(props: IBondLogoProps): ReactElement {
-  const { bond: { bondIcon }, iconSize = 24 } = props;
-  const style = { height: iconSize, width: iconSize };
+  const { bondIcon, iconSize = 24, isLP } = props;
+  const style: CSSProperties = { height: iconSize, width: iconSize };
   
   return (
     <Box
@@ -19,6 +19,8 @@ export function BondLogo(props: IBondLogoProps): ReactElement {
       alignItems="center"
       style={{
         width: '100%',
+        marginLeft: isLP ? '-24px' : 0,
+        zIndex: isLP ? 1 : 0,
       }}
     >
       <img src={bondIcon} style={style} alt="bond" />
