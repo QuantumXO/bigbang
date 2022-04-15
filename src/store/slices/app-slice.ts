@@ -109,7 +109,6 @@ export const loadAppDetails = createAsyncThunk(
         dYelPrice
       };
     } catch (e) {
-      console.log('loadAppDetails: e', networkID, bonds);
       throw new Error('loadAppDetails() Error');
     }
   }

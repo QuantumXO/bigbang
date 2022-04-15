@@ -5,12 +5,13 @@ import { IPendingTxn } from '@store/slices/pending-txns-slice';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import cx from 'classnames';
 import { useCommonContext } from '@services/hooks/network';
+import { ReactElement } from 'react';
 
 import './styles.scss';
 
-export function ConnectMenu() {
+export function ConnectMenu(): ReactElement {
   const { chainId } = useSelector((state: IReduxState) => state.network);
-  const { getIsWrongNetwork, onConnect, onDisconnect, isConnected } = useCommonContext();
+  const { onConnect, onDisconnect, isConnected } = useCommonContext();
   
   const pendingTransactions = useSelector<IReduxState, IPendingTxn[]>((state) => {
     return state.pendingTransactions;
@@ -33,7 +34,7 @@ export function ConnectMenu() {
   if (isConnected && (!SUPPORTED_NETWORKS_CHAIN_IDS.includes(String(chainId)))) {
     buttonText = 'Wrong network';
     btnClasses = 'error';
-    clickFunc = () => getIsWrongNetwork;
+    clickFunc = () => null;
   }
   
   return (

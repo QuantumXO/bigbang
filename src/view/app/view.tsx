@@ -17,7 +17,7 @@ import '@assets/styles/index.scss';
 
 export const App: FC = memo((): ReactElement => {
   const dispatch: Dispatch<any> = useDispatch();
-  const { provider, isConnected, isCheckedWallet } = useCommonContext();
+  const { provider, isConnected, isCheckedWallet, getIsWrongNetwork } = useCommonContext();
   const address: string = useAddress();
   const { bonds } = useBonds();
   const { tokens } = useTokens();
@@ -50,13 +50,23 @@ export const App: FC = memo((): ReactElement => {
       loadApp(loadProvider);
     }
 
-    if (whichDetails === 'userBonds' && address && isConnected) {
+    if (
+      whichDetails === 'userBonds'
+      && address
+      && isConnected
+      && !getIsWrongNetwork()
+    ) {
       bonds.forEach((bond: IAllBondData): void => {
         dispatch(calculateUserBondDetails({ address, bond, tokens, provider }));
       });
     }
 
-    if (whichDetails === 'userTokens' && address && isConnected) {
+    if (
+      whichDetails === 'userTokens'
+      && address
+      && isConnected
+      && !getIsWrongNetwork()
+    ) {
       tokens.forEach((token: IAllTokenData): void => {
         dispatch(calculateUserTokenDetails({ address, token, provider, networkID }));
       });
@@ -66,16 +76,18 @@ export const App: FC = memo((): ReactElement => {
   const loadApp = useCallback(
     (loadProvider: JsonRpcProvider): void => {
       dispatch(loadAppDetails({ networkID, provider: loadProvider, bonds, tokens }));
-  
-      bonds.forEach((bond: IAllBondData): void => {
-        dispatch(calcBondDetails({ bond, value: null, provider: loadProvider, networkID, tokens }));
-      });
       
-      tokens.forEach((token: IAllTokenData): void => {
-        dispatch(calculateUserTokenDetails({ address: '', token, provider, networkID }));
-      });
+      if (!getIsWrongNetwork()) {
+        bonds.forEach((bond: IAllBondData): void => {
+          dispatch(calcBondDetails({ bond, value: null, provider: loadProvider, networkID, tokens }));
+        });
+  
+        tokens.forEach((token: IAllTokenData): void => {
+          dispatch(calculateUserTokenDetails({ address: '', token, provider, networkID }));
+        });
+      }
     },
-    [isConnected, tokens, bonds],
+    [isConnected, tokens, bonds, getIsWrongNetwork],
   );
 
   const loadAccount = useCallback(
