@@ -13,7 +13,7 @@ import { IBond } from '@models/bond';
 import { IAccount } from '@models/account';
 
 import "./styles.scss";
-import { useNetworkContext } from '@services/hooks/network';
+import { useCommonContext } from '@services/hooks/network';
 
 interface IBondRedeem {
   bond: IAllBondData;
@@ -23,7 +23,7 @@ interface IBondRedeem {
 export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement {
   const dispatch = useDispatch();
   const { chainId } = useSelector((state: IReduxState) => state.network);
-  const { getIsWrongNetwork, provider, address } = useNetworkContext();
+  const { getIsWrongNetwork, provider, address } = useCommonContext();
 
   const isBondLoading: boolean = useSelector<IReduxState, boolean>(state => state.bonding.loading ?? true);
   const currentBlockTime: number = useSelector<IReduxState, number>(state => {

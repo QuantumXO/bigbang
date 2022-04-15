@@ -13,7 +13,7 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import { onSetChainID, onSetBonds, onSetTokens } from '@store/slices/network';
 import { Dispatch } from 'redux';
 
-type NetworkContextDataType = {
+type CommonContextDataType = {
   switchNetwork: (newChainId: string) => Promise<void>
   getIsEthereumAPIAvailable: () => boolean;
   getIsWrongNetwork: () => boolean;
@@ -22,47 +22,51 @@ type NetworkContextDataType = {
   isConnected: boolean;
   chainId: number;
   web3?: any;
+  isActiveWrapModal: boolean;
   isCheckedWallet: boolean;
   isLoadingTokensPrices: boolean;
+  toggleWrapModal: (isActive: boolean) => void;
   onDisconnect: () => void;
   hasCachedProvider: () => boolean;
   onConnect: () => Promise<Web3Provider | void>;
 };
-type NetworkContextType = NetworkContextDataType | null;
+type CommonContextType = CommonContextDataType | null;
 
 interface INetworkContextProviderProps {
   children: ReactNode;
 }
 
-const NetworkContext: Context<NetworkContextType> = createContext<NetworkContextType>(null);
+const CommonContext: Context<CommonContextType> = createContext<CommonContextType>(null);
 
-export const useNetworkContext = (): NetworkContextDataType => {
-  const networkContext: NetworkContextType = useContext(NetworkContext);
+export const useCommonContext = (): CommonContextDataType => {
+  const commonContext: CommonContextType = useContext(CommonContext);
   
-  if (!networkContext) {
+  if (!commonContext) {
     throw new Error(
-      "useWeb3Context() can only be used inside of <NetworkContextProvider />, " + "please declare it at a higher level."
+      "useWeb3Context() can only be used inside of <CommonContextProvider />, " + "please declare it at a higher level."
     );
   }
   
-  return useMemo((): NetworkContextDataType => {
-    return networkContext;
-  }, [networkContext]);
+  return useMemo((): CommonContextDataType => {
+    return commonContext;
+  }, [commonContext]);
 };
 
-export const useAddress = (): string => useNetworkContext().address;
+export const useAddress = (): string => useCommonContext().address;
 
 const { rpcUrls: DEFAULT_RPC_URLS = [] } = DEFAULT_NETWORK;
 
-export const NetworkContextProvider: FC<INetworkContextProviderProps> = ({ children }: INetworkContextProviderProps): ReactElement => {
+export const CommonContextProvider: FC<INetworkContextProviderProps> = ({ children }: INetworkContextProviderProps): ReactElement => {
   const { chainId } = useSelector((state: IReduxState) => state.network);
+  const dispatch: Dispatch<any> = useDispatch();
+  
   const [isConnected, setConnected] = useState<boolean>(false);
   const [address, setAddress] = useState<string>('');
   const [provider, setProvider] = useState<JsonRpcProvider>(new StaticJsonRpcProvider(DEFAULT_RPC_URLS[0]));
   const [isLoadingTokensPrices, setIsLoadingTokensPrices] = useState<boolean>(true);
   const [web3Modal, setWeb3Modal] = useState<Web3Modal | null>(null);
   const [isCheckedWallet, setIsCheckedWallet] = useState<boolean>(false);
-  const dispatch: Dispatch<any> = useDispatch();
+  const [isActiveWrapModal, toggleWrapModal] = useState<boolean>(false);
   
   const hasCachedProvider = (): boolean => !!web3Modal?.cachedProvider;
   
@@ -267,8 +271,8 @@ export const NetworkContextProvider: FC<INetworkContextProviderProps> = ({ child
     }
   }
   
-  const contextValue: NetworkContextDataType = useMemo(
-    (): NetworkContextDataType => ({
+  const contextValue: CommonContextDataType = useMemo(
+    (): CommonContextDataType => ({
       switchNetwork,
       getIsWrongNetwork,
       getIsEthereumAPIAvailable,
@@ -280,13 +284,15 @@ export const NetworkContextProvider: FC<INetworkContextProviderProps> = ({ child
       onConnect,
       onDisconnect,
       isLoadingTokensPrices,
-      isCheckedWallet
+      isCheckedWallet,
+      isActiveWrapModal,
+      toggleWrapModal,
     }),
     [
       getIsWrongNetwork, switchNetwork, getIsEthereumAPIAvailable, onConnect, onDisconnect, hasCachedProvider,
-      provider, isConnected, address, chainId, isLoadingTokensPrices
+      provider, isConnected, address, chainId, isLoadingTokensPrices, toggleWrapModal, isActiveWrapModal
     ]
   );
   
-  return <NetworkContext.Provider value={contextValue}>{children}</NetworkContext.Provider>;
+  return <CommonContext.Provider value={contextValue}>{children}</CommonContext.Provider>;
 }

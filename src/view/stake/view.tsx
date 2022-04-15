@@ -11,7 +11,7 @@ import { messages } from '@constants/messages';
 import cx from 'classnames';
 import { warning } from '@store/slices/messages-slice';
 import { Mark } from '@material-ui/core/Slider/Slider';
-import { useNetworkContext } from '@services/hooks/network';
+import { useCommonContext } from '@services/hooks/network';
 
 import './styles.scss';
 
@@ -25,7 +25,7 @@ const stakeSliderMarks: Mark[] = [
 
 export function Stake(): ReactElement {
   const dispatch = useDispatch();
-  const { getIsWrongNetwork, provider, address, onConnect } = useNetworkContext();
+  const { getIsWrongNetwork, provider, address, onConnect } = useCommonContext();
   
   const [view, setView] = useState(0);
   const [quantity, setQuantity] = useState<string>('');

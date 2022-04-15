@@ -11,13 +11,13 @@ import { SnackbarProvider } from 'notistack';
 import Router from '@view/router';
 import { Dispatch } from 'redux';
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { useAddress, useNetworkContext } from '@services/hooks/network';
+import { useAddress, useCommonContext } from '@services/hooks/network';
 
 import '@assets/styles/index.scss';
 
 export const App: FC = memo((): ReactElement => {
   const dispatch: Dispatch<any> = useDispatch();
-  const { provider, isConnected, isCheckedWallet } = useNetworkContext();
+  const { provider, isConnected, isCheckedWallet } = useCommonContext();
   const address: string = useAddress();
   const { bonds } = useBonds();
   const { tokens } = useTokens();
@@ -65,7 +65,6 @@ export const App: FC = memo((): ReactElement => {
   
   const loadApp = useCallback(
     (loadProvider: JsonRpcProvider): void => {
-      console.log('loadApp()', isConnected, tokens, bonds);
       dispatch(loadAppDetails({ networkID, provider: loadProvider, bonds, tokens }));
   
       bonds.forEach((bond: IAllBondData): void => {

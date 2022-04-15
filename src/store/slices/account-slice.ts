@@ -6,7 +6,7 @@ import { IBlockchain } from "@models/blockchain";
 import { RootState } from "../store";
 import { BigNumberish } from '@ethersproject/bignumber';
 import { IAccount } from '@models/account';
-import { useNetworkContext } from '@services/hooks/network';
+import { useCommonContext } from '@services/hooks/network';
 import { useSelector } from 'react-redux';
 
 export const getBalances = createAsyncThunk(

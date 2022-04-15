@@ -5,13 +5,13 @@ import { IBlockchain } from '@models/blockchain';
 import { Fade, Popper } from '@material-ui/core';
 
 import './styles.scss';
-import { useNetworkContext } from '@services/hooks/network';
+import { useCommonContext } from '@services/hooks/network';
 import { useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 
 export const NetworkButton = (): ReactElement => {
   const { chainId } = useSelector((state: IReduxState) => state.network);
-  const { switchNetwork } = useNetworkContext();
+  const { switchNetwork } = useCommonContext();
   const filteredNetworks: IBlockchain.INetwork[] = ACTIVE_NETWORKS
     .filter(({ chainId: networkChainId }: IBlockchain.INetwork) => networkChainId !== String(chainId));
   

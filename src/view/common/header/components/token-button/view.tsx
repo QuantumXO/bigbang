@@ -10,30 +10,24 @@ import AddTokens from '@view/common/header/components/add-tokens';
 import './styles.scss';
 
 export function TokenButton(): ReactElement {
+  const [isActive, toggleModal] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<null | ReferenceObject | (() => ReferenceObject)>(null);
-  const [isOpenWrapModal, toggleWrapModal] = useState<boolean>(false);
   
-  const isOpen: boolean = Boolean(anchorEl);
-  
-  const handleClick = (event: MouseEvent<HTMLDivElement>): void => {
+  const onToggleModal = (event: MouseEvent<HTMLDivElement>, active: boolean): void => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
-  };
-  
-  const onOpenWrapModal = (): void => {
-    toggleWrapModal(true);
-    setAnchorEl(null);
+    toggleModal(active);
   };
   
   return (
     <div
-      className={cx('header__token__btn', { active: isOpen })}
-      onMouseEnter={(e: MouseEvent<HTMLDivElement> ): void => handleClick(e)}
-      onMouseLeave={(e: MouseEvent<HTMLDivElement> ): void => handleClick(e)}
+      className={cx('header__token__btn', { active: isActive })}
+      onMouseEnter={(e: MouseEvent<HTMLDivElement>): void => onToggleModal(e, true)}
+      onMouseLeave={(e: MouseEvent<HTMLDivElement>): void => onToggleModal(e, false)}
     >
       <div className="btn__label">{'dYEL'}</div>
       <Popper
         transition
-        open={isOpen}
+        open={isActive}
         anchorEl={anchorEl}
         className="header__side__btn__popper"
       >
@@ -42,14 +36,14 @@ export function TokenButton(): ReactElement {
             <>
               <div className="card main card--custom">
                 <Link to="/" className="buy--link">{'Buy on Lorem Ipsum'} </Link>
-                <WrapButton openWrapModal={onOpenWrapModal}/>
+                <WrapButton />
               </div>
               <AddTokens />
             </>
           </Fade>
         )}
       </Popper>
-      <WrapModal isOpen={isOpenWrapModal} closeWrapModal={() => toggleWrapModal(false)}/>
+      <WrapModal />
     </div>
   );
 }

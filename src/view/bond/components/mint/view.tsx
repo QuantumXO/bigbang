@@ -14,7 +14,7 @@ import Togglers from '@view/bond/components/togglers';
 import { IBond } from '@models/bond';
 import * as React from 'react';
 import cx from 'classnames';
-import { useNetworkContext } from '@services/hooks/network';
+import { useCommonContext } from '@services/hooks/network';
 
 import "./styles.scss";
 
@@ -27,7 +27,7 @@ interface IBondPurchaseProps {
 export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps): ReactElement {
   const { chainId, tokens } = useSelector((state: IReduxState) => state.network);
   const dispatch = useDispatch();
-  const { getIsWrongNetwork, provider, address } = useNetworkContext();
+  const { getIsWrongNetwork, provider, address } = useCommonContext();
 
   const [quantity, setQuantity] = useState<string>('');
   const [useNativeCurrency, setUseNativeCurrency] = useState<boolean>(false);

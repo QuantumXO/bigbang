@@ -16,7 +16,7 @@ import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
 import { StableBondContract, wFTMReserveContract } from '@services/abi';
 import { getToken } from '@services/helpers/get-token';
 import { getBondPrice } from '@services/helpers/bond/get-bond-price';
-import { useNetworkContext } from '@services/hooks/network';
+import { useCommonContext } from '@services/hooks/network';
 import { useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 

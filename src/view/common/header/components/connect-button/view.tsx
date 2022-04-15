@@ -4,13 +4,13 @@ import { IReduxState } from '@store/slices/state.interface';
 import { IPendingTxn } from '@store/slices/pending-txns-slice';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import cx from 'classnames';
-import { useNetworkContext } from '@services/hooks/network';
+import { useCommonContext } from '@services/hooks/network';
 
 import './styles.scss';
 
 export function ConnectMenu() {
   const { chainId } = useSelector((state: IReduxState) => state.network);
-  const { getIsWrongNetwork, onConnect, onDisconnect, isConnected } = useNetworkContext();
+  const { getIsWrongNetwork, onConnect, onDisconnect, isConnected } = useCommonContext();
   
   const pendingTransactions = useSelector<IReduxState, IPendingTxn[]>((state) => {
     return state.pendingTransactions;

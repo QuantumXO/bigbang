@@ -6,9 +6,10 @@ import linkUrl from '@services/common/get-link-url';
 import Socials from '@view/common/sidebar/components/socials';
 import useBonds, { IAllBondData } from '@services/hooks/bonds';
 import { Skeleton } from '@material-ui/lab';
+import { useAddress } from '@services/hooks/network';
+import WrapButton from '@view/common/header/components/wrap-button';
 
 import '@view/common/sidebar/styles.scss';
-import { useAddress } from '@services/hooks/network';
 
 interface IMenuItem {
   id: string;
@@ -91,6 +92,8 @@ export const SidebarContent = (): ReactElement => {
             </Fragment>
           );
         })}
+  
+        <WrapButton styles={{ width: 'auto', padding: '0 25px', margin: '15px auto 0' }}/>
       </div>
     );
   };

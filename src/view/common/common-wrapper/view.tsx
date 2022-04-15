@@ -10,7 +10,7 @@ import '@view/common/common-wrapper/styles.scss';
 import { useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 import Loader from '@view/common/loader';
-import { useNetworkContext } from '@services/hooks/network';
+import { useCommonContext } from '@services/hooks/network';
 
 interface IProps {
   children: React.ReactNode;
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const CommonWrapper: FC<IProps> = memo(({ children }: IProps): ReactElement  => {
   const isAppLoading: boolean = useSelector<IReduxState, boolean>(state => state.app.loading);
-  const { isLoadingTokensPrices } = useNetworkContext();
+  const { isLoadingTokensPrices } = useCommonContext();
   const classes = useStyles();
   const isSmallerScreen = useMediaQuery('(max-width: 960px)');
   

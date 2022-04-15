@@ -1,7 +1,7 @@
 import { Modal, Paper, SvgIcon, IconButton, Input, OutlinedInput, InputAdornment } from '@material-ui/core';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
-import { ReactComponent as XIcon } from '@assets/images/icons/x.svg';
-import { ReactComponent as ArrowsIcon } from '@assets/images/icons/arrows.svg';
+import { ReactComponent as XIcon } from '@assets/images/common/icons/x.svg';
+import { ReactComponent as ArrowsIcon } from '@assets/images/common/icons/arrows.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 import { trim } from '@services/helpers';
@@ -10,19 +10,14 @@ import { warning } from '@store/slices/messages-slice';
 import { messages } from '@constants/messages';
 import { IPendingTxn, isPendingTxn, txnButtonText } from '@store/slices/pending-txns-slice';
 import React from 'react';
+import { useCommonContext } from '@services/hooks/network';
 
 import './styles.scss';
-import { useNetworkContext } from '@services/hooks/network';
 
-interface IProps {
-  isOpen: boolean;
-  closeWrapModal: () => void;
-}
-
-export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
+export function WrapModal(): ReactElement {
   const dispatch = useDispatch();
   const { chainId } = useSelector((state: IReduxState) => state.network);
-  const { getIsWrongNetwork, provider, address } = useNetworkContext();
+  const { getIsWrongNetwork, provider, address, isActiveWrapModal, toggleWrapModal } = useCommonContext();
   const wrapBond: string = 'BANG'
   const unwrapBond: string = 'dYEL'
   
@@ -78,7 +73,7 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
     setIsWrap(true);
     setIsWrapPrice(true);
     dispatch(calcWrapDetails({ isWrap, provider, value: '', networkID }));
-    closeWrapModal();
+    toggleWrapModal(false);
   };
   
   const trimmedBangBalance: string = trim(Number(bangBalance), 6);
@@ -142,7 +137,7 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
   return (
     <Modal
       id="hades"
-      open={isOpen}
+      open={isActiveWrapModal}
       className="modal wrap"
       BackdropProps={{
         style: {

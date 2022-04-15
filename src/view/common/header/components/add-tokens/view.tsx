@@ -7,10 +7,10 @@ import { DEFAULT_NETWORK } from "@constants/networks";
 import "./styles.scss";
 import { useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
-import { useNetworkContext } from '@services/hooks/network';
+import { useCommonContext } from '@services/hooks/network';
 
 export const AddTokens = (): ReactElement => {
-  const { getIsEthereumAPIAvailable } = useNetworkContext();
+  const { getIsEthereumAPIAvailable } = useCommonContext();
   const { chainId } = useSelector((state: IReduxState) => state.network);
   const networkID: number = Number(chainId || DEFAULT_NETWORK.chainId);
   const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
