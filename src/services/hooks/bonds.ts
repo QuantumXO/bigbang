@@ -4,7 +4,6 @@ import { Bond } from "src/services/common/bond";
 import { IBondDetails, IBondSlice } from "@store/slices/bond-slice";
 import { IReduxState } from "@store/slices/state.interface";
 import { IAccount } from '@models/account';
-import network from '@services/common/network';
 
 // Smash all the interfaces together to get the BondData Type
 export interface IAllBondData extends Bond, IBondDetails, IAccount.IUserBondDetails { }
@@ -13,19 +12,18 @@ export interface IUseBondsReturn {
   loading: boolean;
 }
 
-const initialBondArray: Bond[] = network.getCurrentNetworkBonds;
-
 // Slaps together bond data within the account & bonding states
 function useBonds(): IUseBondsReturn {
   const bondLoading: boolean = useSelector<IReduxState, boolean>(state => state.bonding.loading);
   const bondState: IBondSlice = useSelector<IReduxState, IBondSlice>(state => state.bonding);
   const accountBondsState =
     useSelector<IReduxState, { [key: string]: IAccount.IUserBondDetails }>(state => state.account.bonds);
+  const { bonds: bondsFromStore } = useSelector((state: IReduxState) => state.network);
   // @ts-ignore
-  const [bonds, setBonds] = useState<IAllBondData[]>(initialBondArray);
+  const [bonds, setBonds] = useState<IAllBondData[]>(bondsFromStore);
   
   useEffect((): void => {
-    const bondDetails: IAllBondData[] = network.getCurrentNetworkBonds
+    const bondDetails: IAllBondData[] = bondsFromStore
       .flatMap((bond) => {
         if (bondState[bond.id] && bondState[bond.id].bondDiscount) {
           return Object.assign(bond, bondState[bond.id]); // Keeps the object type
@@ -46,7 +44,7 @@ function useBonds(): IUseBondsReturn {
       });
     
     setBonds(mostProfitableBonds);
-  }, [bondState, accountBondsState, bondLoading]);
+  }, [bondState, accountBondsState, bondLoading, bondsFromStore]);
   
   return { bonds, loading: bondLoading };
 }

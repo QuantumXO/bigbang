@@ -4,6 +4,7 @@ import { IBondSlice } from "./bond-slice";
 import { IMessagesState } from "./messages-slice";
 import { IWrapSlice } from "./wrap-slice";
 import { IAccount } from '@models/account';
+import { INetworkState } from '@store/slices/network';
 
 export interface IReduxState {
   pendingTransactions: IPendingTxn[];
@@ -12,4 +13,5 @@ export interface IReduxState {
   bonding: IBondSlice;
   messages: IMessagesState;
   wrapping: IWrapSlice;
+  network: INetworkState;
 }

@@ -1,7 +1,6 @@
 import  React, { ReactElement, Fragment, useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { shorten, trim } from '@services/helpers';
-import { useAddress } from '@services/hooks';
 import cx from 'classnames';
 import linkUrl from '@services/common/get-link-url';
 import Socials from '@view/common/sidebar/components/socials';
@@ -9,6 +8,7 @@ import useBonds, { IAllBondData } from '@services/hooks/bonds';
 import { Skeleton } from '@material-ui/lab';
 
 import '@view/common/sidebar/styles.scss';
+import { useAddress } from '@services/hooks/network';
 
 interface IMenuItem {
   id: string;

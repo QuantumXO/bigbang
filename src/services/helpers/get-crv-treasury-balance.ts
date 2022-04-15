@@ -7,14 +7,20 @@ import { Contract } from 'ethers';
 import { IBlockchain } from '@models/blockchain';
 import { getBondAddresses } from '@services/helpers/bond/get-bond-addresses';
 
-export default async (networkID: number, provider: StaticJsonRpcProvider, bondId: IBlockchain.TokenType): Promise<number> => {
+export default async (
+  networkID: number,
+  provider: StaticJsonRpcProvider,
+  bondId: IBlockchain.TokenType,
+  tokens: IBlockchain.IToken[],
+): Promise<number> => {
   const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
-  const bondTokenAddress: string = getToken(bondId, 'address');
+  const bondTokenAddress: string = getToken(tokens, bondId, 'address');
   const tokenContract: Contract = new Contract(bondTokenAddress, TokenContract, provider);
   const tokenBalanceOf = await tokenContract.balanceOf(addresses.TREASURY_ADDRESS);
-  const crvAddress: string = getToken('CRV', 'address')?.toLowerCase();
-  const wMATICAddress: string = getToken('wMATIC', 'address')?.toLowerCase();
-  const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider);
+  const crvAddress: string = getToken(tokens, 'CRV', 'address')?.toLowerCase();
+  const wMATICAddress: string = getToken(tokens, 'wMATIC', 'address')?.toLowerCase();
+  const uSDCNativeCurrencyLPToken = tokens.find(({ isUSDCNativeCurrencyLP }: IBlockchain.IToken) => isUSDCNativeCurrencyLP);
+  const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider, tokens, uSDCNativeCurrencyLPToken);
   let crvPriceInWETH: number = 0;
   let wethPriceInWMAtic: number = 0;
   let treasuryBalance: number = 0;

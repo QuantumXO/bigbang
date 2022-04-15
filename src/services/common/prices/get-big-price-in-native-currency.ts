@@ -2,16 +2,15 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Signer } from 'ethers';
 import { IBlockchain } from '@models/blockchain';
 import { getBondAddresses } from '@services/helpers';
-import network from '@services/common/network';
 import { getReserves } from '@services/helpers/get-reserves';
 import { LpReserveContract } from '@services/abi';
 
 export const getBigPriceInNativeCurrency = async (
   networkID: number,
-  provider: StaticJsonRpcProvider | Signer
+  provider: StaticJsonRpcProvider | Signer,
+  bigNativeCurrencyLPToken: IBlockchain.IToken | undefined,
 ): Promise<number> => {
   const { BIG_ADDRESS }: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
-  const bigNativeCurrencyLPToken: IBlockchain.IToken | undefined = network.getNetworkBigNativeCurrencyLPToken;
   let bigPriceInNativeCurrency: number = 0;
   
   if (bigNativeCurrencyLPToken) {

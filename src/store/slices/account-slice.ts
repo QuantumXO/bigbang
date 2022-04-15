@@ -6,6 +6,8 @@ import { IBlockchain } from "@models/blockchain";
 import { RootState } from "../store";
 import { BigNumberish } from '@ethersproject/bignumber';
 import { IAccount } from '@models/account';
+import { useNetworkContext } from '@services/hooks/network';
+import { useSelector } from 'react-redux';
 
 export const getBalances = createAsyncThunk(
   "account/getBalances",
@@ -83,7 +85,7 @@ export const calculateUserBondDetails = createAsyncThunk(
   async ({
     address,
     bond,
-    networkID,
+    tokens,
     provider
   }: IAccount.ICalcUserBondDetails) => {
     if (!address) {
@@ -102,41 +104,45 @@ export const calculateUserBondDetails = createAsyncThunk(
         });
       });
     } else {
-      const bondContract: Contract = new ethers.Contract(bond.bondAddress, StableBondContract, provider);
-      // #TODO check
-      const reserveContract: Contract = new Contract(bond.getReserveAddress, wFTMReserveContract, provider);
-      const bondDetails = await bondContract.bondInfo(address);
-      const interestDue: number = bondDetails.payout / Math.pow(10, 9);
-      const bondMaturationBlock: number = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
-      const pendingPayout: BigNumber = await bondContract.pendingPayoutFor(address);
-      let balance: string | number = "0";
+      try {
+        const bondContract: Contract = new ethers.Contract(bond.bondAddress, StableBondContract, provider);
+        // #TODO check
+        const reserveContract: Contract = new Contract(bond.getReserveAddress(tokens), wFTMReserveContract, provider);
+        const bondDetails = await bondContract.bondInfo(address);
+        const interestDue: number = bondDetails.payout / Math.pow(10, 9);
+        const bondMaturationBlock: number = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
+        const pendingPayout: BigNumber = await bondContract.pendingPayoutFor(address);
+        let balance: string | number = "0";
   
-      const allowance: BigNumber = await reserveContract.allowance(address, bond.bondAddress);
-      
-      balance = await reserveContract.balanceOf(address);
-      
-      const balanceVal: string = ethers.utils.formatEther(balance);
-      const nativeCurrencyBalance = await provider.getSigner().getBalance();
-      const nativeCurrencyVal = ethers.utils.formatEther(nativeCurrencyBalance);
-      const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, "gwei");
+        const allowance: BigNumber = await reserveContract.allowance(address, bond.bondAddress);
   
-      // #TODO check
-      balance = (bond.id !== 'USDC')
-        ? Number(balanceVal)
-        : Number(balanceVal) * Math.pow(10, 12);
-      
-      return {
-        bond: bond.id,
-        displayName: bond.displayName,
-        bondIcon: bond.bondIcon,
-        isLP: bond.isLP,
-        allowance: Number(allowance),
-        balance,
-        nativeCurrencyBalance: Number(nativeCurrencyVal),
-        interestDue,
-        bondMaturationBlock,
-        pendingPayout: Number(pendingPayoutVal)
-      };
+        balance = await reserveContract.balanceOf(address);
+  
+        const balanceVal: string = ethers.utils.formatEther(balance);
+        const nativeCurrencyBalance = await provider.getSigner().getBalance();
+        const nativeCurrencyVal = ethers.utils.formatEther(nativeCurrencyBalance);
+        const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, "gwei");
+  
+        // #TODO check
+        balance = (bond.id !== 'USDC')
+          ? Number(balanceVal)
+          : Number(balanceVal) * Math.pow(10, 12);
+  
+        return {
+          bond: bond.id,
+          displayName: bond.displayName,
+          bondIcon: bond.bondIcon,
+          isLP: bond.isLP,
+          allowance: Number(allowance),
+          balance,
+          nativeCurrencyBalance: Number(nativeCurrencyVal),
+          interestDue,
+          bondMaturationBlock,
+          pendingPayout: Number(pendingPayoutVal)
+        };
+      } catch (e) {
+        console.log('calculateUserBondDetails() e: ', bond.id, e);
+      }
     }
   }
 );
@@ -160,37 +166,42 @@ export const calculateUserTokenDetails = createAsyncThunk(
         });
       });
     } else {
-      if (token.isNativeCurrency) {
-        const nativeCurrencyBalance: BigNumber = await provider.getSigner().getBalance();
-        const nativeCurrencyVal: string = ethers.utils.formatEther(nativeCurrencyBalance);
-    
-        return {
-          token: token.name,
-          tokenIcon: token.icon,
-          balance: Number(nativeCurrencyVal),
-          isNativeCurrency: true
-        };
-      } else {
-        if (token.address) {
-          const addresses = getBondAddresses(networkID);
-          const tokenContract: Contract = new Contract(token.address, TokenContract, provider);
-          const balance = await tokenContract.balanceOf(address);
-          // #TODO remove comment
-          // const allowance = await tokenContract.allowance(address, addresses.ZAPIN_ADDRESS);
-          const allowance = 1;
-    
-          const balanceVal: number = Number(balance) / Math.pow(10, token.decimals);
+      try {
+        if (token.isNativeCurrency) {
+          const nativeCurrencyBalance: BigNumber = await provider.getSigner().getBalance();
+          const nativeCurrencyVal: string = ethers.utils.formatEther(nativeCurrencyBalance);
     
           return {
-            token: token.name,
-            address: token.address,
+            id: token.name,
             icon: token.icon,
-            allowance: Number(allowance),
-            balance: Number(balanceVal)
+            balance: Number(nativeCurrencyVal),
+            isNativeCurrency: true
           };
         } else {
-          throw new Error('No exist token address');
+          if (token.address) {
+            const addresses = getBondAddresses(networkID);
+            const tokenContract: Contract = new Contract(token.address, TokenContract, provider);
+            const balance = await tokenContract.balanceOf(address);
+            // #TODO remove comment
+            // const allowance = await tokenContract.allowance(address, addresses.ZAPIN_ADDRESS);
+            const allowance = 1;
+      
+            const balanceVal: number = Number(balance) / Math.pow(10, token.decimals);
+      
+            return {
+              token: token.name,
+              address: token.address,
+              icon: token.icon,
+              allowance: Number(allowance),
+              balance: Number(balanceVal)
+            };
+          } else {
+            throw new Error('No exist token address');
+          }
         }
+      } catch (e) {
+        console.log('calculateUserTokenDetails() e: ', address, token, e);
+        throw new Error('calculateUserTokenDetails() Error');
       }
     }
   }

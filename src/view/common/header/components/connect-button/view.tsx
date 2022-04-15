@@ -1,28 +1,28 @@
 import { useSelector } from 'react-redux';
-import { useWeb3Context } from '@services/hooks';
 import { SUPPORTED_NETWORKS_CHAIN_IDS } from '@constants/networks';
 import { IReduxState } from '@store/slices/state.interface';
 import { IPendingTxn } from '@store/slices/pending-txns-slice';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import cx from 'classnames';
-import network from '@services/common/network';
+import { useNetworkContext } from '@services/hooks/network';
 
 import './styles.scss';
 
 export function ConnectMenu() {
-  const { connect, disconnect, isConnected, chainID } = useWeb3Context();
+  const { chainId } = useSelector((state: IReduxState) => state.network);
+  const { getIsWrongNetwork, onConnect, onDisconnect, isConnected } = useNetworkContext();
   
   const pendingTransactions = useSelector<IReduxState, IPendingTxn[]>((state) => {
     return state.pendingTransactions;
   });
   
   let buttonText: string = 'Connect Wallet';
-  let clickFunc: any = connect;
+  let clickFunc: any = onConnect;
   let btnClasses: string = '';
   
   if (isConnected) {
     buttonText = 'Disconnect';
-    clickFunc = disconnect;
+    clickFunc = onDisconnect;
   }
   
   if (pendingTransactions && pendingTransactions.length > 0) {
@@ -30,10 +30,10 @@ export function ConnectMenu() {
     clickFunc = () => null;
   }
 
-  if (isConnected && (!SUPPORTED_NETWORKS_CHAIN_IDS.includes(String(chainID)))) {
+  if (isConnected && (!SUPPORTED_NETWORKS_CHAIN_IDS.includes(String(chainId)))) {
     buttonText = 'Wrong network';
     btnClasses = 'error';
-    clickFunc = () => network.getIsWrongNetwork;
+    clickFunc = () => getIsWrongNetwork;
   }
   
   return (

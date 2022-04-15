@@ -6,14 +6,8 @@ import { ReferenceObject } from 'popper.js';
 import WrapButton from './../wrap-button';
 import WrapModal from '@view/common/header/components/wrap-modal';
 import AddTokens from '@view/common/header/components/add-tokens';
-import network from '@services/common/network';
 
 import './styles.scss';
-
-interface IToken {
-  id: string;
-  label: string;
-}
 
 export function TokenButton(): ReactElement {
   const [anchorEl, setAnchorEl] = useState<null | ReferenceObject | (() => ReferenceObject)>(null);

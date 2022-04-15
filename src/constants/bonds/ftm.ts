@@ -37,11 +37,12 @@ export const GEIST: Bond = new Bond({
   bondIcon: tokensIcons.GEIST,
   bondAddress: '0x85878783Fea0ED4d59c893634B3F836D69574929',
   tokensInStrategy: '0',
+  networkType: 'FTM',
 });
 export const TSHARE: Bond = new Bond({
   id: 'TSHARE',
   bondIcon: tokensIcons.TSHARE,
-  bondAddress: '0xA2C549AA935bdD275429E02989b8888A68e47Bfc',
+  bondAddress: '0xBf3366ad351DBF44e9f96F0621bdf614d899995f',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
@@ -76,7 +77,7 @@ export const BEETS: Bond = new Bond({
 export const YFI: Bond = new Bond({
   id: 'YFI',
   bondIcon: tokensIcons.YFI,
-  bondAddress: '0x6b0d624B55b4aBFf9A2D593F991DEf893c335f1b',
+  bondAddress: '0xe9474D1446CD908EF72A29841cfa00B7296Cbd17',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
@@ -90,7 +91,7 @@ export const LINK: Bond = new Bond({
 export const SPIRIT: Bond = new Bond({
   id: 'SPIRIT',
   bondIcon: tokensIcons.SPIRIT,
-  bondAddress: '0xb9646742Ec3c349Cb223fe7d19E549E4142c8743',
+  bondAddress: '0xd9cBAbCBf8898bAe2A3EbB741c11adAB65409d33',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });

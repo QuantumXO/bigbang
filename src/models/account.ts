@@ -37,8 +37,8 @@ export namespace IAccount {
   export interface ICalcUserBondDetails {
     address: string;
     bond: Bond;
+    tokens: IBlockchain.IToken[];
     provider: StaticJsonRpcProvider | JsonRpcProvider;
-    networkID: number;
   }
   export interface IUserBondDetails {
     allowance: number;

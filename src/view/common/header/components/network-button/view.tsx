@@ -3,16 +3,17 @@ import cx from 'classnames';
 import { ACTIVE_NETWORKS } from '@constants/networks';
 import { IBlockchain } from '@models/blockchain';
 import { Fade, Popper } from '@material-ui/core';
-import network from '@services/common/network';
-import { useWeb3Context } from '@services/hooks';
-// import { switchNetwork } from '@services/helpers/switch-network';
 
 import './styles.scss';
+import { useNetworkContext } from '@services/hooks/network';
+import { useSelector } from 'react-redux';
+import { IReduxState } from '@store/slices/state.interface';
 
 export const NetworkButton = (): ReactElement => {
-  const { chainID } = useWeb3Context();
+  const { chainId } = useSelector((state: IReduxState) => state.network);
+  const { switchNetwork } = useNetworkContext();
   const filteredNetworks: IBlockchain.INetwork[] = ACTIVE_NETWORKS
-    .filter(({ chainId: networkChainId }: IBlockchain.INetwork) => networkChainId !== String(chainID));
+    .filter(({ chainId: networkChainId }: IBlockchain.INetwork) => networkChainId !== String(chainId));
   
   const [anchorEl, setAnchorEl] = useState<any>(null);
   
@@ -29,13 +30,13 @@ export const NetworkButton = (): ReactElement => {
       .find(({ id: networkId }: IBlockchain.INetwork) => networkId === String(id));
   
     if (newNetwork) {
-      await network.switchNetwork(newNetwork.id);
+      await switchNetwork(newNetwork.id);
     }
   };
   
   const onRenderBtnLabel = (): ReactElement => {
     const currentNetwork: IBlockchain.INetwork | undefined = ACTIVE_NETWORKS
-    .find(({ chainId: networkChainId }: IBlockchain.INetwork) => networkChainId === String(chainID));
+    .find(({ chainId: networkChainId }: IBlockchain.INetwork) => networkChainId === String(chainId));
     let btnLabel: string = 'Network';
     let btnClasses: string = '';
     

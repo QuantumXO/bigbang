@@ -2,23 +2,24 @@ import { IBond } from '@models/bond';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Contract, Signer } from 'ethers';
 import { IBlockchain } from '@models/blockchain';
-import network from '@services/common/network';
 import { getToken } from '@services/helpers/get-token';
 import { LpReserveContract } from '@services/abi';
 import { getReserves } from '@services/helpers/get-reserves';
+import { getCurrentNetwork } from '@services/common/network';
 
 export const getLPInNativeCurrency = async (
-  bondId: IBond.IBondType,
   networkID: number,
   provider: StaticJsonRpcProvider | Signer,
+  bondId: IBond.IBondType,
+  tokens: IBlockchain.IToken[],
 ): Promise<number> => {
-  const currentNetwork: IBlockchain.INetwork | undefined = network.getCurrentNetwork;
+  const currentNetwork: IBlockchain.INetwork | undefined = getCurrentNetwork(String(networkID));
   let result: number = 0;
   
   if (currentNetwork) {
-    const tokenNativeCurrencyLPAddress: string = getToken(bondId, 'tokenNativeCurrencyLPAddress');
+    const tokenNativeCurrencyLPAddress: string = getToken(tokens, bondId, 'tokenNativeCurrencyLPAddress');
     const nativeCurrencyTokenId: IBlockchain.TokenType = currentNetwork.nativeCurrency.id;
-    const nativeCurrencyTokenAddress: string = getToken(nativeCurrencyTokenId, 'address');
+    const nativeCurrencyTokenAddress: string = getToken(tokens, nativeCurrencyTokenId, 'address');
     const LPContract = new Contract(tokenNativeCurrencyLPAddress, LpReserveContract, provider);
     const totalSupply: number = await LPContract.totalSupply();
     

@@ -36,7 +36,7 @@ export const tshare: IBlockchain.ITokenAsset = {
 };
 export const multi: IBlockchain.ITokenAsset = {
   id: 'MULTI',
-  icon: tokensIcons.MULTICHAIN,
+  icon: tokensIcons.MULTI,
   decimals: 18,
   name: 'MULTI',
 };
@@ -54,23 +54,29 @@ export const yel: IBlockchain.ITokenAsset = {
 };
 export const beets: IBlockchain.ITokenAsset = {
   id: 'BEETS',
-  icon: tokensIcons.beets,
+  icon: tokensIcons.BEETS,
   decimals: 18,
   name: 'BEETS',
 };
 export const link: IBlockchain.ITokenAsset = {
   id: 'LINK',
-  icon: tokensIcons.Avax,
+  icon: tokensIcons.LINK,
   decimals: 18,
   name: 'LINK',
 };
 export const spirit: IBlockchain.ITokenAsset = {
   id: 'SPIRIT',
-  icon: tokensIcons.Avax,
+  icon: tokensIcons.SPIRIT,
   decimals: 18,
   name: 'SPIRIT',
 };
+export const yfi: IBlockchain.ITokenAsset = {
+  id: 'YFI',
+  icon: tokensIcons.YFI,
+  decimals: 18,
+  name: 'YFI',
+};
 
 export default <IBlockchain.ITokenAsset[]>[
-  wftm, bigWftm, scream, geist, tshare, multi, boo, yel, beets, link, spirit,
+  wftm, bigWftm, scream, geist, tshare, multi, boo, yel, beets, link, spirit, yfi
 ];

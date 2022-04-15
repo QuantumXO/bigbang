@@ -1,8 +1,10 @@
 import { IBlockchain } from '@models/blockchain';
-import network from '@services/common/network';
 
-export const getToken = (type: IBlockchain.TokenType, field?: keyof IBlockchain.IToken): any => {
-  const tokens: IBlockchain.IToken[] | undefined = network.getCurrentNetworkTokens || [];
+export const getToken = (
+  tokens: IBlockchain.IToken[],
+  type: IBlockchain.TokenType,
+  field?: keyof IBlockchain.IToken
+): any => {
   const token: IBlockchain.IToken | undefined = tokens.find(({ id }: IBlockchain.IToken) => type === id);
   let result: any = undefined;
   

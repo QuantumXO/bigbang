@@ -1,7 +1,6 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Signer } from 'ethers';
 import { IBlockchain } from '@models/blockchain';
-import network from '@services/common/network';
 import { getToken } from '@services/helpers/get-token';
 import { getReserves } from '@services/helpers/get-reserves';
 import { LpReserveContract } from '@services/abi';
@@ -10,13 +9,14 @@ import { sleep } from '@services/helpers';
 export const getNativeCurrencyInUSDC = async (
   networkID: number,
   provider: StaticJsonRpcProvider | Signer,
+  tokens: IBlockchain.IToken[],
+  uSDCNativeCurrencyLPToken: IBlockchain.IToken | undefined,
 ): Promise<number> => {
-  const uSDCNativeCurrencyLPToken: IBlockchain.IToken | undefined = network.getNetworkUSDCNativeCurrencyLPToken;
   let nativeCurrencyInUSDC: number = 0; // in USDC
   
   try {
     if (uSDCNativeCurrencyLPToken) {
-      const uSDCAddress: string = getToken('USDC', 'address');
+      const uSDCAddress: string = getToken(tokens, 'USDC', 'address');
       
       const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
         contractAddress: uSDCNativeCurrencyLPToken?.tokenNativeCurrencyLPAddress || 'unknown',
@@ -36,7 +36,7 @@ export const getNativeCurrencyInUSDC = async (
       throw new Error('uSDCNativeCurrencyLPToken error');
     }
   } catch (e) {
-    console.error('getNativeCurrencyInUSDC() error: ', e);
+    console.log('getNativeCurrencyInUSDC() error: ', e);
   }
   
   await sleep(0.01);

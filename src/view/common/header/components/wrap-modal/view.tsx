@@ -6,14 +6,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 import { trim } from '@services/helpers';
 import { calcWrapDetails, changeWrap, changeApproval, calcWrapPrice } from '@store/slices/wrap-slice';
-import { useWeb3Context } from '@services/hooks';
 import { warning } from '@store/slices/messages-slice';
 import { messages } from '@constants/messages';
 import { IPendingTxn, isPendingTxn, txnButtonText } from '@store/slices/pending-txns-slice';
 import React from 'react';
 
 import './styles.scss';
-import network from '@services/common/network';
+import { useNetworkContext } from '@services/hooks/network';
 
 interface IProps {
   isOpen: boolean;
@@ -22,7 +21,8 @@ interface IProps {
 
 export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
   const dispatch = useDispatch();
-  const { provider, address, chainID } = useWeb3Context();
+  const { chainId } = useSelector((state: IReduxState) => state.network);
+  const { getIsWrongNetwork, provider, address } = useNetworkContext();
   const wrapBond: string = 'BANG'
   const unwrapBond: string = 'dYEL'
   
@@ -30,7 +30,6 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
   const [isWrap, setIsWrap] = useState(true);
   const [isWrapPrice, setIsWrapPrice] = useState(true);
   
-  const isAppLoading = useSelector<IReduxState, boolean>(state => state.app.loading);
   const bangBalance = useSelector<IReduxState, string>(state => {
     return state.account.balances && state.account.balances.bang;
   });
@@ -50,12 +49,14 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
     return state.account.wrapping && state.account.wrapping.bang;
   });
   
+  const networkID: number = Number(chainId);
+  
   useEffect((): void => {
-    dispatch(calcWrapDetails({ isWrap, provider, value, networkID: chainID }));
+    dispatch(calcWrapDetails({ isWrap, provider, value, networkID }));
   }, [value]);
   
   useEffect((): void => {
-    dispatch(calcWrapPrice({ isWrap: isWrapPrice, provider, networkID: chainID }));
+    dispatch(calcWrapPrice({ isWrap: isWrapPrice, provider, networkID }));
   }, [isWrapPrice]);
   
   const hasAllowance = useCallback((): boolean => bangAllowance > 0, [bangAllowance]);
@@ -76,7 +77,7 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
     setValue('');
     setIsWrap(true);
     setIsWrapPrice(true);
-    dispatch(calcWrapDetails({ isWrap, provider, value: '', networkID: chainID }));
+    dispatch(calcWrapDetails({ isWrap, provider, value: '', networkID }));
     closeWrapModal();
   };
   
@@ -86,19 +87,19 @@ export function WrapModal({ isOpen, closeWrapModal }: IProps): ReactElement {
   const getBalance = (): string => isWrap ? `${trimmedBangBalance} ${wrapBond}` : `${trimmedDYelBalance} ${unwrapBond}`;
   
   const handleOnWrap = async () => {
-    if (await network.getIsWrongNetwork) return;
+    if (getIsWrongNetwork()) return;
     
     if (value === '' || parseFloat(value) === 0) {
       dispatch(warning({ text: isWrap ? messages.before_wrap : messages.before_unwrap }));
     } else {
-      await dispatch(changeWrap({ isWrap, value, provider, networkID: chainID, address }));
+      await dispatch(changeWrap({ isWrap, value, provider, networkID, address }));
       setValue('');
     }
   };
   
   const onSeekApproval = async () => {
-    if (await network.getIsWrongNetwork) return;
-    await dispatch(changeApproval({ address, provider, networkID: chainID }));
+    if (getIsWrongNetwork()) return;
+    await dispatch(changeApproval({ address, provider, networkID }));
   };
   
   const onRenderApproveBtn = (): ReactElement => {

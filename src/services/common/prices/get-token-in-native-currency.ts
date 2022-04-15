@@ -2,24 +2,25 @@ import { IBond } from '@models/bond';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Signer } from 'ethers';
 import { IBlockchain } from '@models/blockchain';
-import network from '@services/common/network';
 import { getToken } from '@services/helpers/get-token';
 import { getReserves } from '@services/helpers/get-reserves';
 import { LpReserveContract } from '@services/abi';
+import { getCurrentNetwork } from '@services/common/network';
 
 export const getTokenInNativeCurrency = async (
-  bondId: IBond.IBondType,
   networkID: number,
   provider: StaticJsonRpcProvider | Signer,
+  bondId: IBond.IBondType,
+  tokens: IBlockchain.IToken[],
 ): Promise<number> => {
-  const currentNetwork: IBlockchain.INetwork | undefined = network.getCurrentNetwork;
+  const currentNetwork: IBlockchain.INetwork | undefined = getCurrentNetwork(String(networkID));
   let result: number = 0;
   
   try {
     if (currentNetwork) {
-      const tokenNativeCurrencyLPAddress: string = getToken(bondId, 'tokenNativeCurrencyLPAddress');
+      const tokenNativeCurrencyLPAddress: string = getToken(tokens, bondId, 'tokenNativeCurrencyLPAddress');
       const nativeCurrencyTokenId: IBlockchain.TokenType = currentNetwork.nativeCurrency.id;
-      const nativeCurrencyTokenAddress: string = getToken(nativeCurrencyTokenId, 'address');
+      const nativeCurrencyTokenAddress: string = getToken(tokens, nativeCurrencyTokenId, 'address');
       
       const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
         contractAddress: tokenNativeCurrencyLPAddress,

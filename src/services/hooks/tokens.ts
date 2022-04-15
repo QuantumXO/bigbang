@@ -2,7 +2,6 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { IReduxState } from "@store/slices/state.interface";
 import { IBlockchain } from '@models/blockchain';
-import network from '@services/common/network';
 import { IAccount } from '@models/account';
 
 // Smash all the interfaces together to get the BondData Type
@@ -12,22 +11,25 @@ export interface IUseTokensReturn {
   loading: boolean;
 }
 
-const initialTokenArray: IBlockchain.IToken[] = network.getCurrentNetworkTokens || [];
-
 function useTokens(): IUseTokensReturn {
   const accountLoading: boolean = useSelector<IReduxState, boolean>(state => state.account.loading);
   const accountTokensState =
     useSelector<IReduxState, Record<string,  IAccount.IUserTokenDetails>>(state => state.account.tokens);
+  const { tokens: tokensFromStore } = useSelector((state: IReduxState) => state.network);
   
   //@ts-ignore
-  const [tokens, setTokens] = useState<IAllTokenData[]>(initialTokenArray);
+  const [tokens, setTokens] = useState<IAllTokenData[]>(tokensFromStore);
   
   useEffect((): void => {
     //@ts-ignore
-    const tokenDetails: IAllTokenData[] = (network.getCurrentNetworkTokens || [])
+    const tokenDetails: IAllTokenData[] = tokensFromStore
       .flatMap((token: IBlockchain.IToken) => {
         if (accountTokensState[token.id]) {
-          return Object.assign(token, accountTokensState[token.id]);
+          // return Object.assign(token, accountTokensState[token.id]);
+          return {
+            ...token,
+            ...accountTokensState[token.id],
+          };
         }
         return token;
       });
@@ -39,7 +41,7 @@ function useTokens(): IUseTokensReturn {
       });
     
     setTokens(mostProfitableBonds);
-  }, [accountTokensState, accountLoading]);
+  }, [accountTokensState, accountLoading, tokensFromStore]);
   
   return { tokens, loading: accountLoading };
 }

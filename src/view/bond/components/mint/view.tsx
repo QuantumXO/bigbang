@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { OutlinedInput, InputAdornment, FormGroup, FormControlLabel, Switch } from '@material-ui/core';
 import { trim, prettifySeconds } from '@services/helpers';
 import { changeApproval, bondAsset, calcBondDetails } from '@store/slices/bond-slice';
-import { useWeb3Context } from '@services/hooks';
 import { IPendingTxn, isPendingTxn, txnButtonText } from '@store/slices/pending-txns-slice';
 import { IReduxState } from '@store/slices/state.interface';
 import { IAllBondData } from '@services/hooks/bonds';
@@ -15,9 +14,9 @@ import Togglers from '@view/bond/components/togglers';
 import { IBond } from '@models/bond';
 import * as React from 'react';
 import cx from 'classnames';
+import { useNetworkContext } from '@services/hooks/network';
 
 import "./styles.scss";
-import network from '@services/common/network';
 
 interface IBondPurchaseProps {
   bond: IAllBondData;
@@ -26,8 +25,9 @@ interface IBondPurchaseProps {
 }
 
 export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps): ReactElement {
+  const { chainId, tokens } = useSelector((state: IReduxState) => state.network);
   const dispatch = useDispatch();
-  const { provider, address, chainID } = useWeb3Context();
+  const { getIsWrongNetwork, provider, address } = useNetworkContext();
 
   const [quantity, setQuantity] = useState<string>('');
   const [useNativeCurrency, setUseNativeCurrency] = useState<boolean>(false);
@@ -35,12 +35,14 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
   const bondDetailsDebounce = useDebounce(quantity, 1000);
   const displayUnits: string = useNativeCurrency ? 'FTM' : bond.displayUnits;
   
+  const networkID: number = Number(chainId);
+  
   useEffect((): void => {
     setUseNativeCurrency(false);
   }, [bond.id]);
   
   useEffect((): void => {
-    dispatch(calcBondDetails({ bond, value: quantity, provider, networkID: chainID }));
+    dispatch(calcBondDetails({ bond, value: quantity, provider, networkID, tokens }));
   }, [bondDetailsDebounce]);
   
   const hasAllowance = useCallback((): boolean => {
@@ -54,7 +56,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
   const vestingPeriod = (): string => prettifySeconds(bond.vestingTerm, 'day');
 
   async function onBond() {
-    if (await network.getIsWrongNetwork) return;
+    if (getIsWrongNetwork()) return;
     
     if (quantity === '') {
       dispatch(warning({ text: messages.before_minting }));
@@ -70,7 +72,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
             value: trimBalance,
             slippage,
             bond,
-            networkID: chainID,
+            networkID,
             provider,
             address,
             useNativeCurrency,
@@ -85,7 +87,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
           value: trimBalance,
           slippage,
           bond,
-          networkID: chainID,
+          networkID,
           provider,
           address,
           useNativeCurrency,
@@ -110,8 +112,8 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
 
 
   const onSeekApproval = async () => {
-    if (!await network.getIsWrongNetwork) {
-      dispatch(changeApproval({ address, bond, provider, networkID: chainID }));
+    if (!getIsWrongNetwork()) {
+      dispatch(changeApproval({ address, bond, provider, networkID }));
     }
   };
   

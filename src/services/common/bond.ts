@@ -6,7 +6,6 @@ import { IBond } from '@models/bond';
 import { getToken } from '@services/helpers/get-token';
 import { getBondAddresses, sleep } from '@services/helpers';
 import { LPTokenContract, StableBondContract, StableReserveContract, TokenContract } from '@services/abi';
-import network from '@services/common/network';
 import { getReserves } from '@services/helpers/get-reserves';
 import { getNativeCurrencyInUSDC } from '@services/common/prices/get-native-currency-in-usdc'
 import { getTokenInNativeCurrency } from '@services/common/prices/get-token-in-native-currency'
@@ -62,75 +61,15 @@ export class Bond {
     this.networkType = networkType;
   }
   
-  public async getTokenAmount(networkID: number, provider: StaticJsonRpcProvider): Promise<number> {
-    return this.getTreasuryBalance(networkID, provider);
-  }
-  
   public getBigAmount(networkID: number, provider: StaticJsonRpcProvider): Promise<number> {
     return new Promise<number>(reserve => reserve(0));
   }
   
-  public async getTreasuryBalance(networkID: number, provider: StaticJsonRpcProvider): Promise<number> {
-    const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
-    const bondTokenAddress: string = getToken(this.id, 'address');
-    const tokenContract: Contract = new Contract(bondTokenAddress, TokenContract, provider);
-    const tokenBalanceOf = await tokenContract.balanceOf(addresses.TREASURY_ADDRESS);
-    const bigNativeCurrencyLPToken = network.getNetworkBigNativeCurrencyLPToken;
-    const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider);
-    let treasuryBalance: number = 0;
-    
-    if (this.id === 'USDC') {
-      treasuryBalance = tokenBalanceOf / Math.pow(10, 6);
-    } else if (this.isWrap) {
-      treasuryBalance = (tokenBalanceOf / Math.pow(10, 18)) * nativeCurrencyInUSDC;
-    } else if (this.isLP) {
-      const lpContractAddress: string = bigNativeCurrencyLPToken?.address || 'unknown';
-      const lpContract = new Contract(lpContractAddress, LPTokenContract, provider);
-      const lpBalanceOf = await lpContract.balanceOf(addresses.TREASURY_ADDRESS);
-      const tokens: IBlockchain.IToken[] = network.getCurrentNetworkTokens || [];
-      const wrapTokenAddress: string | undefined = tokens
-        .find(({ isWrap }: IBlockchain.IToken) => isWrap)?.address;
-      const totalSupply: number = (await lpContract.totalSupply());
-      
-      let lpPriceInUSDC;
-      
-      if (wrapTokenAddress) {
-        const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
-          contractAddress: lpContractAddress,
-          contractABI: LPTokenContract,
-          provider,
-          comparedAddress: wrapTokenAddress,
-        });
-        
-        if (comparedAddressInReserve === 0) {
-          lpPriceInUSDC = ((((reserve0 / Math.pow(10, 18)) * 2) * nativeCurrencyInUSDC) / (totalSupply / Math.pow(10, 18)));
-        } else if (comparedAddressInReserve === 1) {
-          lpPriceInUSDC = ((((reserve1 / Math.pow(10, 18)) * 2) * nativeCurrencyInUSDC) / (totalSupply / Math.pow(10, 18)));
-        } else {
-          throw new Error('No existed wrapTokenAddress in reserves');
-        }
-      } else {
-        throw new Error('wrapTokenAddress Error');
-      }
-      treasuryBalance = (lpBalanceOf / Math.pow(10, 18)) * lpPriceInUSDC;
-    } else if (this.id === 'CRV') {
-      treasuryBalance = await getCrvTreasuryBalance(networkID, provider, this.id);
-    } else {
-      const tokenInNativeCurrency: number = await getTokenInNativeCurrency(this.id, networkID, provider);
-      const tokenPriceInUSDC: number = tokenInNativeCurrency * nativeCurrencyInUSDC;
-      treasuryBalance = tokenBalanceOf / Math.pow(10, 18) * tokenPriceInUSDC
-    }
-
-    await sleep(0.01);
-    
-    return treasuryBalance;
-  }
-  
-  protected getTokenPrice(): number {
+  /* protected getTokenPrice(): number {
     return getTokenPrice(this.bondToken);
-  }
+  } */
   
-  get getReserveAddress(): string {
-    return getToken(this.bondToken, 'address');
+  getReserveAddress(tokens: IBlockchain.IToken[]): string {
+    return getToken(tokens, this.bondToken, 'address');
   }
 }

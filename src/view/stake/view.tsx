@@ -4,7 +4,6 @@ import { Grid, InputAdornment, OutlinedInput, Zoom, Slider } from '@material-ui/
 import RebaseTimer from './components/rebaseTimer';
 import { trim } from '@services/helpers';
 import { changeStake, changeApproval } from '@store/slices/stake-thunk';
-import { useWeb3Context } from '@services/hooks';
 import { IPendingTxn, isPendingTxn, txnButtonText } from '@store/slices/pending-txns-slice';
 import { Skeleton } from '@material-ui/lab';
 import { IReduxState } from '@store/slices/state.interface';
@@ -12,7 +11,7 @@ import { messages } from '@constants/messages';
 import cx from 'classnames';
 import { warning } from '@store/slices/messages-slice';
 import { Mark } from '@material-ui/core/Slider/Slider';
-import network from '@services/common/network';
+import { useNetworkContext } from '@services/hooks/network';
 
 import './styles.scss';
 
@@ -26,7 +25,7 @@ const stakeSliderMarks: Mark[] = [
 
 export function Stake(): ReactElement {
   const dispatch = useDispatch();
-  const { provider, address, connect, chainID } = useWeb3Context();
+  const { getIsWrongNetwork, provider, address, onConnect } = useNetworkContext();
   
   const [view, setView] = useState(0);
   const [quantity, setQuantity] = useState<string>('');
@@ -62,6 +61,9 @@ export function Stake(): ReactElement {
   const pendingTransactions: IPendingTxn[] = useSelector<IReduxState, IPendingTxn[]>(state => {
     return state.pendingTransactions;
   });
+  const { chainId } = useSelector((state: IReduxState) => state.network);
+  
+  const networkID: number = Number(chainId);
   
   const trimmedBangBalance: string = trim(Number(bangBalance), 9);
   const trimmedStakingAPY: string = trim(stakingAPY * 100, 1);
@@ -80,17 +82,17 @@ export function Stake(): ReactElement {
   };
   
   const onSeekApproval = async (token: 'big' | 'bang'): Promise<void> => {
-    if (await network.getIsWrongNetwork) return;
+    if (getIsWrongNetwork()) return;
     
-    await dispatch(changeApproval({ address, token, provider, networkID: chainID }));
+    await dispatch(changeApproval({ address, token, provider, networkID }));
   };
   
   const onChangeStake = async (action: string): Promise<void> => {
-    if (await network.getIsWrongNetwork) return;
+    if (await getIsWrongNetwork()) return;
     if (quantity === '' || parseFloat(quantity) === 0) {
       dispatch(warning({ text: action === 'stake' ? messages.before_stake : messages.before_unstake }));
     } else {
-      await dispatch(changeStake({ address, action, value: String(quantity), provider, networkID: chainID }));
+      await dispatch(changeStake({ address, action, value: String(quantity), provider, networkID }));
       setQuantity('');
     }
   };
@@ -121,7 +123,7 @@ export function Stake(): ReactElement {
     if (!address) {
       layout = (
         <div className="stake__wallet">
-          <div className="stake__wallet__btn btn__primary--fulfilled" onClick={connect}>
+          <div className="stake__wallet__btn btn__primary--fulfilled" onClick={onConnect}>
             <span>{'Connect Wallet'}</span>
           </div>
           <p className="stake__wallet__description">

@@ -7,17 +7,20 @@ import { Contract } from 'ethers';
 import { LpReserveContract, StableBondContract } from '@services/abi';
 import { getToken } from '@services/helpers/get-token';
 import { getReserves } from '@services/helpers/get-reserves';
+import { IBlockchain } from '@models/blockchain';
 
 interface IProps {
   bond: Bond;
   networkID: number;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
+  tokens: IBlockchain.IToken[];
 }
 
 export const getBondPrice = async (props: IProps): Promise<number> => {
-  const { bond, networkID, provider } = props;
+  const { bond, networkID, provider, tokens } = props;
   const { bondAddress, id: bondId, isWrap: bondIsWrap, isLP: bondIsLP } = bond;
-  const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider);
+  const uSDCNativeCurrencyLPToken = tokens.find(({ isUSDCNativeCurrencyLP }: IBlockchain.IToken) => isUSDCNativeCurrencyLP);
+  const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider, tokens, uSDCNativeCurrencyLPToken);
   let bondPrice: number = 0;
   let bondPriceInUSD: number = 0;
   
@@ -30,8 +33,8 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
     } else if (bondIsWrap) {
       bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * nativeCurrencyInUSDC; // in bond token
     } else if (bondId === 'ORBS') {
-      const usdcAddress: string = getToken('USDC', 'address');
-      const orbsLPAddress: string = getToken('ORBS', 'tokenNativeCurrencyLPAddress');
+      const usdcAddress: string = getToken(tokens, 'USDC', 'address');
+      const orbsLPAddress: string = getToken(tokens, 'ORBS', 'tokenNativeCurrencyLPAddress');
   
       const {
         reserves: [reserve0, reserve1],
@@ -52,8 +55,8 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
       
       bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * orbsPriceInUSDC;
     } else if (bondId === 'CRV') {
-      const crvAddress: string = getToken('CRV', 'address')?.toLowerCase();
-      const wMATICAddress: string = getToken('wMATIC', 'address')?.toLowerCase();
+      const crvAddress: string = getToken(tokens, 'CRV', 'address')?.toLowerCase();
+      const wMATICAddress: string = getToken(tokens, 'wMATIC', 'address')?.toLowerCase();
       let crvPriceInWETH: number = 0;
       let wethPriceInWMAtic: number = 0;
   
@@ -103,7 +106,7 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
       bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * nativeCurrencyInUSDC;
     } else {
       // Tokens
-      const tokenInNativeCurrency: number = await getTokenInNativeCurrency(bondId, networkID, provider);
+      const tokenInNativeCurrency: number = await getTokenInNativeCurrency(networkID, provider, bondId, tokens);
       const tokenPriceInUSDC = tokenInNativeCurrency * nativeCurrencyInUSDC
       bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * tokenPriceInUSDC;
     }

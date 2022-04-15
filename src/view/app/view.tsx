@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useCallback, ReactElement, FC, memo } from 'react';
+import React, { useEffect, useCallback, ReactElement, FC, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAddress, useWeb3Context } from '@services/hooks';
 import { calcBondDetails } from '@store/slices/bond-slice';
 import { loadAppDetails } from '@store/slices/app-slice';
 import { loadAccountDetails, calculateUserBondDetails, calculateUserTokenDetails } from '@store/slices/account-slice';
@@ -12,16 +11,20 @@ import { SnackbarProvider } from 'notistack';
 import Router from '@view/router';
 import { Dispatch } from 'redux';
 import { JsonRpcProvider } from '@ethersproject/providers';
+import { useAddress, useNetworkContext } from '@services/hooks/network';
 
 import '@assets/styles/index.scss';
 
 export const App: FC = memo((): ReactElement => {
   const dispatch: Dispatch<any> = useDispatch();
-  const { provider, chainID, isConnected, isCheckedWallet } = useWeb3Context();
+  const { provider, isConnected, isCheckedWallet } = useNetworkContext();
   const address: string = useAddress();
   const { bonds } = useBonds();
   const { tokens } = useTokens();
   const isAppLoaded: boolean = useSelector<IReduxState, boolean>(state => !Boolean(state.app.marketPrice));
+  const { chainId } = useSelector((state: IReduxState) => (state.network));
+  
+  const networkID: number = Number(chainId);
   
   useEffect((): void => {
     // #TODO check && or ||
@@ -48,36 +51,37 @@ export const App: FC = memo((): ReactElement => {
     }
 
     if (whichDetails === 'userBonds' && address && isConnected) {
-      bonds.map((bond: IAllBondData): void => {
-        dispatch(calculateUserBondDetails({ address, bond, networkID: chainID, provider }));
+      bonds.forEach((bond: IAllBondData): void => {
+        dispatch(calculateUserBondDetails({ address, bond, tokens, provider }));
       });
     }
 
     if (whichDetails === 'userTokens' && address && isConnected) {
-      tokens.map((token: IAllTokenData): void => {
-        dispatch(calculateUserTokenDetails({ address, token, provider, networkID: chainID }));
+      tokens.forEach((token: IAllTokenData): void => {
+        dispatch(calculateUserTokenDetails({ address, token, provider, networkID }));
       });
     }
   }
   
   const loadApp = useCallback(
     (loadProvider: JsonRpcProvider): void => {
-      dispatch(loadAppDetails({ networkID: chainID, provider: loadProvider }));
+      console.log('loadApp()', isConnected, tokens, bonds);
+      dispatch(loadAppDetails({ networkID, provider: loadProvider, bonds, tokens }));
   
-      bonds.map((bond: IAllBondData): void => {
-        dispatch(calcBondDetails({ bond, value: null, provider: loadProvider, networkID: chainID }));
+      bonds.forEach((bond: IAllBondData): void => {
+        dispatch(calcBondDetails({ bond, value: null, provider: loadProvider, networkID, tokens }));
       });
-
-      tokens.map((token: IAllTokenData): void => {
-        dispatch(calculateUserTokenDetails({ address: '', token, provider, networkID: chainID }));
+      
+      tokens.forEach((token: IAllTokenData): void => {
+        dispatch(calculateUserTokenDetails({ address: '', token, provider, networkID }));
       });
     },
-    [isConnected],
+    [isConnected, tokens, bonds],
   );
 
   const loadAccount = useCallback(
     (loadProvider: JsonRpcProvider): void => {
-      dispatch(loadAccountDetails({ networkID: chainID, address, provider: loadProvider }));
+      dispatch(loadAccountDetails({ networkID, address, provider: loadProvider }));
     },
     [isConnected],
   );

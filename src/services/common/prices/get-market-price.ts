@@ -1,10 +1,5 @@
-import { Contract, Signer } from 'ethers';
-import { LpReserveContract } from '@services/abi';
+import { Signer } from 'ethers';
 import { IBlockchain } from '@models/blockchain';
-import { getToken } from '@services/helpers/get-token';
-import network from '@services/common/network';
-import { IBond } from '@models/bond';
-import { getReserves } from '@services/helpers/get-reserves';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { sleep } from '@services/helpers/sleep';
 import { getBigPriceInNativeCurrency } from '@services/common/prices/get-big-price-in-native-currency';
@@ -13,16 +8,19 @@ import { getNativeCurrencyInUSDC } from '@services/common/prices/get-native-curr
 // #TODO check method
 export const getMarketPrice = async (
   networkID: number,
-  provider: StaticJsonRpcProvider | Signer
+  provider: StaticJsonRpcProvider | Signer,
+  tokens: IBlockchain.IToken[],
 ): Promise<number> =>  {
   let result: number = 0
   try {
-    const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider);
-    const bigPriceInNativeCurrency: number = await getBigPriceInNativeCurrency(networkID, provider);
+    const bigNativeCurrencyLPToken = tokens.find(({ isBigNativeCurrencyLP }: IBlockchain.IToken) => isBigNativeCurrencyLP);
+    const uSDCNativeCurrencyLPToken = tokens.find(({ isUSDCNativeCurrencyLP }: IBlockchain.IToken) => isUSDCNativeCurrencyLP);
+    const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider, tokens, uSDCNativeCurrencyLPToken);
+    const bigPriceInNativeCurrency: number = await getBigPriceInNativeCurrency(networkID, provider, bigNativeCurrencyLPToken);
     // USDC per nativeCurrency
     result = nativeCurrencyInUSDC * bigPriceInNativeCurrency;
   } catch (e) {
-    console.error('getMarketPrice() error: ', e);
+    console.log('getMarketPrice() error: ', e);
   }
   
   await sleep(0.01);
