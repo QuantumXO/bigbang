@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
+    
     "paths": {
       "@store/*": ["./src/store/*"],
       "@selectors/*": ["./src/selectors/*"],
