@@ -5,7 +5,7 @@ import FTMTokens from './ftm';
 import POLYGONTokens from './polygon';
 
 export const usdc: IBlockchain.ITokenAsset = {
-  id: "USDC",
+  id: 'USDC',
   icon: tokensIcons.USDCIcon,
   decimals: 6,
   name: 'USDC',

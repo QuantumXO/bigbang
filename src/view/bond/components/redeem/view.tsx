@@ -12,7 +12,7 @@ import Togglers from '@view/bond/components/togglers';
 import { IBond } from '@models/bond';
 import { IAccount } from '@models/account';
 
-import "./styles.scss";
+import './styles.scss';
 import { useCommonContext } from '@services/hooks/network';
 
 interface IBondRedeem {

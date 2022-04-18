@@ -1,13 +1,13 @@
 import { ReactElement } from 'react';
 import { Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { useSelector } from "react-redux";
-import { IReduxState } from "@store/slices/state.interface";
+import { useSelector } from 'react-redux';
+import { IReduxState } from '@store/slices/state.interface';
 import { IAllBondData } from '@services/hooks/bonds';
 import { IAppSlice } from '@store/slices/app-slice';
 import { trim } from '@services/helpers';
 
-import "./styles.scss";
+import './styles.scss';
 
 interface IProps {
   bond: IAllBondData;

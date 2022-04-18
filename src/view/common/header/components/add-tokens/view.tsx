@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react';
 import { IBlockchain } from '@models/blockchain';
 import { getTokenUrl } from '@services/helpers'
-import { getBondAddresses } from "@services/helpers/bond/get-bond-addresses";
+import { getBondAddresses } from '@services/helpers/bond/get-bond-addresses';
 import { useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 import { useCommonContext } from '@services/hooks/network';
 
-import "./styles.scss";
+import './styles.scss';
 
 export const AddTokens = (): ReactElement => {
   const { getIsEthereumAPIAvailable } = useCommonContext();
@@ -21,9 +21,9 @@ export const AddTokens = (): ReactElement => {
     if (getIsEthereumAPIAvailable()) {
       try {
         await window.ethereum.request({
-          method: "wallet_watchAsset",
+          method: 'wallet_watchAsset',
           params: {
-            type: "ERC20",
+            type: 'ERC20',
             options: {
               address: tokenAddress,
               symbol: tokenId,

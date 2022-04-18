@@ -1,2 +1,2 @@
-export const DRAWER_WIDTH = 280;
-export const TRANSITION_DURATION = 969;
+export const DRAWER_WIDTH: number = 280;
+export const TRANSITION_DURATION: number = 969;

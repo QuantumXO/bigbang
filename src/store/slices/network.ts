@@ -21,7 +21,7 @@ const initialState: INetworkState = {
 };
 
 const networkSlice = createSlice({
-  name: "network",
+  name: 'network',
   initialState,
   reducers: {
     onSetChainID: (state: Draft<INetworkState>, action: PayloadAction<{ chainId: string }>) => {

@@ -1,6 +1,6 @@
-import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { IReduxState } from "@store/slices/state.interface";
+import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { IReduxState } from '@store/slices/state.interface';
 import { IBlockchain } from '@models/blockchain';
 import { IAccount } from '@models/account';
 
@@ -37,7 +37,7 @@ function useTokens(): IUseTokensReturn {
     const mostProfitableBonds: IAllTokenData[] = tokenDetails
       .concat()
       .sort((a: IAllTokenData, b: IAllTokenData) => {
-        return a["balance"] > b["balance"] ? -1 : b["balance"] > a["balance"] ? 1 : 0;
+        return a['balance'] > b['balance'] ? -1 : b['balance'] > a['balance'] ? 1 : 0;
       });
     
     setTokens(mostProfitableBonds);

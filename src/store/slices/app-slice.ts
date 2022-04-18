@@ -1,9 +1,9 @@
-import { ethers, Contract } from "ethers";
-import { BangTokenContract, StakingContract, BigTokenContract } from "@services/abi";
-import { getMarketPrice, setAll, getBondAddresses } from "@services/helpers";
-import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
-import { JsonRpcProvider } from "@ethersproject/providers";
-import { RootState } from "@store/store";
+import { ethers, Contract } from 'ethers';
+import { BangTokenContract, StakingContract, BigTokenContract } from '@services/abi';
+import { getMarketPrice, setAll, getBondAddresses } from '@services/helpers';
+import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { RootState } from '@store/store';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { IBlockchain } from '@models/blockchain';
 import { Bond } from '@services/common/bond';
@@ -91,7 +91,7 @@ export const loadAppDetails = createAsyncThunk(
       const runway: number = Math.log(treasuryRunway) / Math.log(1 + stakingRebase) / 3;
   
       return {
-        currentIndex: String(Number(ethers.utils.formatUnits(currentIndex, "gwei")) / 4.5),
+        currentIndex: String(Number(ethers.utils.formatUnits(currentIndex, 'gwei')) / 4.5),
         totalSupply,
         marketCap,
         currentBlock,
@@ -119,7 +119,7 @@ const initialState = {
 };
 
 const appSlice = createSlice({
-  name: "app",
+  name: 'app',
   initialState,
   reducers: {
     fetchAppSuccess(state, action) {

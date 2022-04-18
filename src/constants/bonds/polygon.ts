@@ -11,7 +11,7 @@ export const USDCInPOLYGON: Bond = new Bond({
 export const wMATIC: Bond = new Bond({
   id: 'wMATIC',
   bondIcon: tokensIcons.wMATIC,
-  bondAddress: '0x9A7ebf612B6f254feaFA4f4249361132FCC39D51',
+  bondAddress: '0x1a8E70cDdb478BDE0Bd3AECa9bc0caF471999a2d',
   tokensInStrategy: '0',
   networkType: 'MATIC',
   isWrap: true,

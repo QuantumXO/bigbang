@@ -26,7 +26,7 @@ export const Sidebar: FC<IProps> = memo(({ mobileOpen, handleDrawerToggle }: IPr
 
 const useSidebarStyles = makeStyles(theme => ({
   drawer: {
-    [theme.breakpoints.up("md")]: {
+    [theme.breakpoints.up('md')]: {
       width: DRAWER_WIDTH,
       flexShrink: 0,
     },

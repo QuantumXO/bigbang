@@ -11,7 +11,7 @@ export const USDCInFTM: Bond = new Bond({
 export const wFTM: Bond = new Bond({
   id: 'wFTM',
   bondIcon: tokensIcons.wFTM,
-  bondAddress: '0xc59570FA143af3db62E0f36B9fe0723e9F6Db5B5',
+  bondAddress: '0x222d703D58885bf0A29a08f8eAdEf837d5B7F3c4',
   tokensInStrategy: '0',
   networkType: 'FTM',
   isWrap: true,

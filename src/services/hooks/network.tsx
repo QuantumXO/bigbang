@@ -43,7 +43,7 @@ export const useCommonContext = (): CommonContextDataType => {
   
   if (!commonContext) {
     throw new Error(
-      "useWeb3Context() can only be used inside of <CommonContextProvider />, " + "please declare it at a higher level."
+      'useWeb3Context() can only be used inside of <CommonContextProvider />, ' + 'please declare it at a higher level.'
     );
   }
   
@@ -123,15 +123,15 @@ export const CommonContextProvider: FC<INetworkContextProviderProps> = ({ childr
       }
       
       rawProvider.on(
-        "accountsChanged",
+        'accountsChanged',
         () => setTimeout(() => window.location.reload(), 1)
       );
       
-      rawProvider.on("chainChanged", async (chainId: number): Promise<void> => {
+      rawProvider.on('chainChanged', async (chainId: number): Promise<void> => {
         await onHandleNetworkChange(chainId);
       });
       
-      rawProvider.on("network", (_newNetwork, oldNetwork): void => {
+      rawProvider.on('network', (_newNetwork, oldNetwork): void => {
         console.log('network: ', _newNetwork, oldNetwork);
         if (!oldNetwork) return;
         window.location.reload();
@@ -147,7 +147,7 @@ export const CommonContextProvider: FC<INetworkContextProviderProps> = ({ childr
       _initListeners(rawProvider);
       
       // @ts-ignore
-      const connectedProvider: Web3Provider = new Web3Provider(rawProvider, "any");
+      const connectedProvider: Web3Provider = new Web3Provider(rawProvider, 'any');
       const { chainId: connectedProviderChainId }: Network = await connectedProvider.getNetwork()
       const connectedAddress: string = await connectedProvider.getSigner().getAddress();
       
@@ -218,7 +218,7 @@ export const CommonContextProvider: FC<INetworkContextProviderProps> = ({ childr
       const { hexadecimalChainId } = newNetwork;
       try {
         await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
+          method: 'wallet_switchEthereumChain',
           params: [{ chainId: hexadecimalChainId }]
         });
         
@@ -253,7 +253,7 @@ export const CommonContextProvider: FC<INetworkContextProviderProps> = ({ childr
       }
       try {
         return window.ethereum.request({
-          method: "wallet_addEthereumChain",
+          method: 'wallet_addEthereumChain',
           params: [param]
         });
       } catch (e) {

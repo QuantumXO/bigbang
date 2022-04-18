@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { close } from "@store/slices/messages-slice";
+import { close } from '@store/slices/messages-slice';
 import './console-interceptor';
-import { IMessagesState } from "@store/slices/messages-slice";
-import { IReduxState } from "@store/slices/state.interface";
+import { IMessagesState } from '@store/slices/messages-slice';
+import { IReduxState } from '@store/slices/state.interface';
 import React, { useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 

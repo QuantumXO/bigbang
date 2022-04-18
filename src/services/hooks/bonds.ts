@@ -1,8 +1,8 @@
-import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { Bond } from "src/services/common/bond";
-import { IBondDetails, IBondSlice } from "@store/slices/bond-slice";
-import { IReduxState } from "@store/slices/state.interface";
+import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { Bond } from 'src/services/common/bond';
+import { IBondDetails, IBondSlice } from '@store/slices/bond-slice';
+import { IReduxState } from '@store/slices/state.interface';
 import { IAccount } from '@models/account';
 
 // Smash all the interfaces together to get the BondData Type
@@ -40,7 +40,7 @@ function useBonds(): IUseBondsReturn {
     const mostProfitableBonds: IAllBondData[] = bondDetails
       .concat()
       .sort((a: IAllBondData, b: IAllBondData) => {
-        return a["bondDiscount"] > b["bondDiscount"] ? -1 : b["bondDiscount"] > a["bondDiscount"] ? 1 : 0;
+        return a['bondDiscount'] > b['bondDiscount'] ? -1 : b['bondDiscount'] > a['bondDiscount'] ? 1 : 0;
       });
     
     setBonds(mostProfitableBonds);

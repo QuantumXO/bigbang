@@ -1,17 +1,17 @@
-import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
-import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
-import { messages } from "@constants/messages";
-import { IBlockchain } from "@models/blockchain";
-import { setAll, sleep } from "@services/helpers";
-import { info, success, warning } from "./messages-slice";
-import { RootState } from "../store";
-import { ethers } from "ethers";
-import { metamaskErrorWrap } from "@services/helpers/metamask-error-wrap";
-import { dYelTokenContract } from "@services/abi";
-import { clearPendingTxn, fetchPendingTxns, getWrappingTypeText } from "./pending-txns-slice";
-import { getGasPrice } from "@services/helpers/get-gas-price";
-import { getBondAddresses } from "@services/helpers/bond/get-bond-addresses";
-import { fetchAccountSuccess, getBalances } from "./account-slice";
+import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
+import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import { messages } from '@constants/messages';
+import { IBlockchain } from '@models/blockchain';
+import { setAll, sleep } from '@services/helpers';
+import { info, success, warning } from './messages-slice';
+import { RootState } from '../store';
+import { ethers } from 'ethers';
+import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
+import { dYelTokenContract } from '@services/abi';
+import { clearPendingTxn, fetchPendingTxns, getWrappingTypeText } from './pending-txns-slice';
+import { getGasPrice } from '@services/helpers/get-gas-price';
+import { getBondAddresses } from '@services/helpers/bond/get-bond-addresses';
+import { fetchAccountSuccess, getBalances } from './account-slice';
 
 export interface IChangeApproval {
   provider: StaticJsonRpcProvider | JsonRpcProvider;
@@ -27,7 +27,7 @@ export interface IChangeWrap {
 }
 export interface IWrapSlice {
   loading: boolean;
-  wrapValue: "";
+  wrapValue: '';
   wrapPrice: number;
 }
 export interface IWrapPrice {
@@ -44,12 +44,12 @@ export interface IWrapDetails {
 
 const initialState: IWrapSlice = {
   loading: true,
-  wrapValue: "",
+  wrapValue: '',
   wrapPrice: 0
 };
 
 export const changeApproval = createAsyncThunk(
-  "wrapping/changeApproval",
+  'wrapping/changeApproval',
   async ({ provider, address, networkID}: IChangeApproval, { dispatch }) => {
     if (!provider) {
       dispatch(warning({ text: messages.please_connect_wallet }));
@@ -66,8 +66,8 @@ export const changeApproval = createAsyncThunk(
       
       approveTx = await bangContract.approve(addresses.DYEL_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
       
-      const text = "Approve Wrapping";
-      const pendingTxnType = "approve_wrapping";
+      const text = 'Approve Wrapping';
+      const pendingTxnType = 'approve_wrapping';
       
       dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }));
       await approveTx.wait();
@@ -95,7 +95,7 @@ export const changeApproval = createAsyncThunk(
 );
 
 export const changeWrap = createAsyncThunk(
-  "wrapping/changeWrap",
+  'wrapping/changeWrap',
   async ({ isWrap, value, provider, networkID, address}: IChangeWrap, { dispatch }) => {
     if (!provider) {
       dispatch(warning({ text: messages.please_connect_wallet }));
@@ -104,7 +104,7 @@ export const changeWrap = createAsyncThunk(
     
     const addresses = getBondAddresses(networkID);
     const signer = provider.getSigner();
-    const amountInWei = isWrap ? ethers.utils.parseUnits(value, "gwei") : ethers.utils.parseEther(value);
+    const amountInWei = isWrap ? ethers.utils.parseUnits(value, 'gwei') : ethers.utils.parseEther(value);
     const dYelContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, signer);
     
     let wrapTx;
@@ -118,7 +118,7 @@ export const changeWrap = createAsyncThunk(
         wrapTx = await dYelContract.unwrap(amountInWei, { gasPrice });
       }
       
-      const pendingTxnType = isWrap ? "wrapping" : "unwrapping";
+      const pendingTxnType = isWrap ? 'wrapping' : 'unwrapping';
       dispatch(fetchPendingTxns({ txnHash: wrapTx.hash, text: getWrappingTypeText(isWrap), type: pendingTxnType }));
       await wrapTx.wait();
       dispatch(success({ text: messages.tx_successfully_send }));
@@ -141,7 +141,7 @@ export const changeWrap = createAsyncThunk(
 const calcWrapValue = async ({ isWrap, value, provider, networkID }: IWrapDetails): Promise<number> => {
   const addresses = getBondAddresses(networkID);
   
-  const amountInWei = isWrap ? ethers.utils.parseUnits(value, "gwei") : ethers.utils.parseEther(value);
+  const amountInWei = isWrap ? ethers.utils.parseUnits(value, 'gwei') : ethers.utils.parseEther(value);
   
   let wrapValue = 0;
   
@@ -159,7 +159,7 @@ const calcWrapValue = async ({ isWrap, value, provider, networkID }: IWrapDetail
 };
 
 export const calcWrapDetails = createAsyncThunk(
-  "wrapping/calcWrapDetails",
+  'wrapping/calcWrapDetails',
   async ({ isWrap, value, provider, networkID}: IWrapDetails, { dispatch }) => {
     if (!provider) {
       dispatch(warning({ text: messages.please_connect_wallet }));
@@ -169,7 +169,7 @@ export const calcWrapDetails = createAsyncThunk(
     if (!value) {
       return new Promise<any>(resolve =>
         resolve({
-          wrapValue: ""
+          wrapValue: ''
         })
       );
     }
@@ -183,14 +183,14 @@ export const calcWrapDetails = createAsyncThunk(
 );
 
 export const calcWrapPrice = createAsyncThunk(
-  "wrapping/calcWrapPrice",
+  'wrapping/calcWrapPrice',
   async ({ isWrap, provider, networkID}: IWrapPrice, { dispatch }) => {
     if (!provider) {
       dispatch(warning({ text: messages.please_connect_wallet }));
       return;
     }
     
-    const wrapPrice = await calcWrapValue({ isWrap, value: "1", provider, networkID });
+    const wrapPrice = await calcWrapValue({ isWrap, value: '1', provider, networkID });
     
     return {
       wrapPrice
@@ -199,7 +199,7 @@ export const calcWrapPrice = createAsyncThunk(
 );
 
 const wrapSlice = createSlice({
-  name: "wrapping",
+  name: 'wrapping',
   initialState,
   reducers: {
     fetchWrapSuccess(state, action) {

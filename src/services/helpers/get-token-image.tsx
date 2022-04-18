@@ -1,6 +1,6 @@
-import BangImg from "@assets/images/common/tokens/bang.svg";
-import BigImg from "@assets/images/common/tokens/big.svg";
-import dYelImg from "@assets/images/common/tokens/dyel.svg";
+import BangImg from '@assets/images/common/tokens/bang.svg';
+import BigImg from '@assets/images/common/tokens/big.svg';
+import dYelImg from '@assets/images/common/tokens/dyel.svg';
 import { IBlockchain } from '@models/blockchain';
 
 function toUrl(tokenPath: string): string {

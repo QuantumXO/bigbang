@@ -1,16 +1,14 @@
 import { BigNumber, Contract, ethers } from 'ethers';
 import { BangTokenContract, BigTokenContract, dYelTokenContract, TokenContract, StableBondContract, wFTMReserveContract } from '@services/abi';
 import { setAll, getBondAddresses } from '@services/helpers';
-import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
-import { IBlockchain } from "@models/blockchain";
-import { RootState } from "../store";
+import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import { IBlockchain } from '@models/blockchain';
+import { RootState } from '../store';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { IAccount } from '@models/account';
-import { useCommonContext } from '@services/hooks/network';
-import { useSelector } from 'react-redux';
 
 export const getBalances = createAsyncThunk(
-  "account/getBalances",
+  'account/getBalances',
   async ({ address, networkID, provider }: IAccount.IGetBalances): Promise<IAccount.IAccountBalances> => {
     const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
     const bigContract: Contract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, provider);
@@ -22,15 +20,15 @@ export const getBalances = createAsyncThunk(
     
     return {
       balances: {
-        big: ethers.utils.formatUnits(bigBalance, "gwei"),
-        bang: ethers.utils.formatUnits(bangBalance, "gwei"),
+        big: ethers.utils.formatUnits(bigBalance, 'gwei'),
+        bang: ethers.utils.formatUnits(bangBalance, 'gwei'),
         dYel: ethers.utils.formatEther(dYelBalance)
       }
     };
 });
 
 export const loadAccountDetails = createAsyncThunk(
-  "account/loadAccountDetails",
+  'account/loadAccountDetails',
   async ({ networkID, provider, address }: IAccount.ILoadAccountDetails): Promise<IAccount.IUserAccountDetails> => {
     let bigBalance: number = 0;
     let bangBalance: number = 0;
@@ -65,8 +63,8 @@ export const loadAccountDetails = createAsyncThunk(
   
     return {
       balances: {
-        bang: ethers.utils.formatUnits(bangBalance, "gwei"),
-        big: ethers.utils.formatUnits(bigBalance, "gwei"),
+        bang: ethers.utils.formatUnits(bangBalance, 'gwei'),
+        big: ethers.utils.formatUnits(bigBalance, 'gwei'),
         dYel: ethers.utils.formatEther(dYelBalance)
       },
       staking: {
@@ -81,7 +79,7 @@ export const loadAccountDetails = createAsyncThunk(
 );
 
 export const calculateUserBondDetails = createAsyncThunk(
-  "account/calculateUserBondDetails",
+  'account/calculateUserBondDetails',
   async ({
     address,
     bond,
@@ -91,15 +89,15 @@ export const calculateUserBondDetails = createAsyncThunk(
     if (!address) {
       return new Promise<any>(resolve => {
         resolve({
-          bond: "",
-          displayName: "",
-          bondIcon: "",
+          bond: '',
+          displayName: '',
+          bondIcon: '',
           isLP: false,
           allowance: 0,
           balance: 0,
           interestDue: 0,
           bondMaturationBlock: 0,
-          pendingPayout: "",
+          pendingPayout: '',
           avaxBalance: 0
         });
       });
@@ -112,7 +110,7 @@ export const calculateUserBondDetails = createAsyncThunk(
         const interestDue: number = bondDetails.payout / Math.pow(10, 9);
         const bondMaturationBlock: number = Number(bondDetails.vesting) + Number(bondDetails.lastTime);
         const pendingPayout: BigNumber = await bondContract.pendingPayoutFor(address);
-        let balance: string | number = "0";
+        let balance: string | number = '0';
   
         const allowance: BigNumber = await reserveContract.allowance(address, bond.bondAddress);
   
@@ -121,7 +119,7 @@ export const calculateUserBondDetails = createAsyncThunk(
         const balanceVal: string = ethers.utils.formatEther(balance);
         const nativeCurrencyBalance = await provider.getSigner().getBalance();
         const nativeCurrencyVal = ethers.utils.formatEther(nativeCurrencyBalance);
-        const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, "gwei");
+        const pendingPayoutVal = ethers.utils.formatUnits(pendingPayout, 'gwei');
   
         // #TODO check
         balance = (bond.id !== 'USDC')
@@ -158,9 +156,9 @@ export const calculateUserTokenDetails = createAsyncThunk(
     if (!address) {
       return new Promise<any>((resolve) => {
         resolve({
-          token: "",
-          address: "",
-          img: "",
+          token: '',
+          address: '',
+          img: '',
           allowance: 0,
           balance: 0
         });
@@ -210,14 +208,14 @@ export const calculateUserTokenDetails = createAsyncThunk(
 const initialState: IAccount.IAccountSlice = {
   loading: true,
   bonds: {},
-  balances: { bang: "", big: "", dYel: "" },
+  balances: { bang: '', big: '', dYel: '' },
   staking: { big: 0, bang: 0 },
   wrapping: { bang: 0 },
   tokens: {}
 };
 
 const accountSlice = createSlice({
-  name: "account",
+  name: 'account',
   initialState,
   reducers: {
     fetchAccountSuccess(state, action) {

@@ -19,11 +19,12 @@ import { getBondPrice } from '@services/helpers/bond/get-bond-price';
 import { useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 
-interface IChangeApproval {
+interface IChangeApprovalArgs {
   bond: Bond;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   networkID: number;
   address: string;
+  tokens: IBlockchain.IToken[];
 }
 interface ICalcBondDetails {
   bond: Bond;
@@ -54,14 +55,13 @@ export interface IBondDetails {
 
 export const changeApproval = createAsyncThunk(
   'bonding/changeApproval',
-  async ({ bond, provider, networkID, address }: IChangeApproval,
+  async ({ bond, provider, networkID, address, tokens }: IChangeApprovalArgs,
   { dispatch }) => {
     if (!provider) {
       dispatch(warning({ text: messages.please_connect_wallet }));
       return;
     }
-  
-    const { tokens } = useSelector((state: IReduxState) => state.network);
+    
     const signer = provider.getSigner();
     const reserveContract: Contract = new Contract(bond.getReserveAddress(tokens), wFTMReserveContract, signer);
     
@@ -125,7 +125,6 @@ export const calcBondDetails = createAsyncThunk(
       
       const bondContract: Contract = new Contract(bond.bondAddress, contractAbi, provider);
       const terms = await bondContract.terms();
-      
       const maxBondPrice: number = (await bondContract.maxPayout()) / Math.pow(10, 9);
       const marketPrice: number = await getMarketPrice(networkID, provider, tokens);
       const minPurchase: number = await bondContract.minPayout() / Math.pow(10, 9);
@@ -161,9 +160,11 @@ export const calcBondDetails = createAsyncThunk(
         const maxBondQuote = await bondContract.payoutFor(maxBodValue);
         maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -18));
       }
-  
+      
       if (!!value && bondQuote > maxBondPrice) {
         dispatch(error({ text: messages.try_mint_more(maxBondPrice.toFixed(2).toString()) }));
+      } else if (value !== '0' && bondQuote < minPurchase) {
+        dispatch(error({ text: messages.try_mint_less(minPurchase.toString()) }));
       }
   
       // Calculate bonds purchased
@@ -205,7 +206,7 @@ export const calcBondDetails = createAsyncThunk(
   }
 );
 
-interface IBondAsset {
+interface IBondAssetArgs {
   value: string;
   address: string;
   bond: Bond;
@@ -213,15 +214,15 @@ interface IBondAsset {
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   slippage: number;
   useNativeCurrency: boolean;
+  tokens: IBlockchain.IToken[];
 }
 
 export const bondAsset = createAsyncThunk(
   'bonding/bondAsset',
   async (
-    { value, address, bond, networkID, provider, slippage, useNativeCurrency }: IBondAsset,
+    { value, address, bond, networkID, provider, slippage, useNativeCurrency, tokens }: IBondAssetArgs,
     { dispatch }
   ) => {
-    const { tokens } = useSelector((state: IReduxState) => state.network);
     const depositorAddress: string = address;
     const acceptedSlippage: number = slippage / 100 || 0.005;
     const tokenDecimals: number = getToken(tokens, bond.id, 'decimals');

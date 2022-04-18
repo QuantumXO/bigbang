@@ -313,7 +313,7 @@ export function Stake(): ReactElement {
                 value={quantity}
                 placeholder="Amount"
                 inputProps={{
-                  className: "input",
+                  className: 'input',
                 }}
                 className="input__wrapper"
                 endAdornment={

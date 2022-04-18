@@ -1,11 +1,11 @@
-import { configureStore } from "@reduxjs/toolkit";
-import accountReducer from "./slices/account-slice";
-import bondingReducer from "./slices/bond-slice";
-import appReducer from "./slices/app-slice";
-import pendingTransactionsReducer from "./slices/pending-txns-slice";
-import messagesReducer from "./slices/messages-slice";
-import wrappingReducer from "./slices/wrap-slice";
-import networkReducer from "./slices/network";
+import { configureStore } from '@reduxjs/toolkit';
+import accountReducer from './slices/account-slice';
+import bondingReducer from './slices/bond-slice';
+import appReducer from './slices/app-slice';
+import pendingTransactionsReducer from './slices/pending-txns-slice';
+import messagesReducer from './slices/messages-slice';
+import wrappingReducer from './slices/wrap-slice';
+import networkReducer from './slices/network';
 
 const store = configureStore({
   reducer: {

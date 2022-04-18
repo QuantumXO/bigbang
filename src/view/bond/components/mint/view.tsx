@@ -16,7 +16,7 @@ import * as React from 'react';
 import cx from 'classnames';
 import { useCommonContext } from '@services/hooks/network';
 
-import "./styles.scss";
+import './styles.scss';
 
 interface IBondPurchaseProps {
   bond: IAllBondData;
@@ -26,18 +26,21 @@ interface IBondPurchaseProps {
 
 export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps): ReactElement {
   const { chainId, tokens } = useSelector((state: IReduxState) => state.network);
+  const pendingTransactions: IPendingTxn[] = useSelector<IReduxState, IPendingTxn[]>(state => {
+    return state.pendingTransactions;
+  });
   const dispatch = useDispatch();
   const { getIsWrongNetwork, provider, address } = useCommonContext();
+  const networkID: number = Number(chainId);
 
   const [quantity, setQuantity] = useState<string>('');
   const [useNativeCurrency, setUseNativeCurrency] = useState<boolean>(false);
   
   const bondDetailsDebounce = useDebounce(quantity, 1000);
-  const displayUnits: string = useNativeCurrency ? 'FTM' : bond.displayUnits;
-  
-  const networkID: number = Number(chainId);
+  const displayUnits: string = useNativeCurrency ? bond.bondToken : bond.displayUnits;
   
   useEffect((): void => {
+    clearInput();
     setUseNativeCurrency(false);
   }, [bond.id]);
   
@@ -49,10 +52,6 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
     return bond.allowance > 0;
   }, [bond.allowance]);
   
-  const pendingTransactions: IPendingTxn[] = useSelector<IReduxState, IPendingTxn[]>(state => {
-    return state.pendingTransactions;
-  });
-
   const vestingPeriod = (): string => prettifySeconds(bond.vestingTerm, 'day');
 
   async function onBond() {
@@ -76,6 +75,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
             provider,
             address,
             useNativeCurrency,
+            tokens,
           }),
         );
         clearInput();
@@ -91,6 +91,7 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
           provider,
           address,
           useNativeCurrency,
+          tokens
         }),
       );
       clearInput();
@@ -110,10 +111,9 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
     setQuantity((amount || '').toString());
   };
 
-
   const onSeekApproval = async () => {
     if (!getIsWrongNetwork()) {
-      dispatch(changeApproval({ address, bond, provider, networkID }));
+      dispatch(changeApproval({ address, bond, provider, networkID, tokens }));
     }
   };
   
@@ -197,10 +197,10 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
         <div className="form--card card card--custom">
           <Togglers handleChangeView={handleChangeTab} activeTabIndex={0} />
           <div className="form--card__inner">
-            {(bond.id === 'wFTM') && (
+            {(bond.isWrap) && (
               <FormGroup className="avax--checkbox__wrapper">
                 <FormControlLabel
-                  label="Use FTM"
+                  label={`Use ${bond.bondToken}`}
                   classes={{
                     label: 'label',
                     root: 'root'
