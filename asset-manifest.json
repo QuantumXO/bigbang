@@ -1,11 +1,11 @@
 {
   "files": {
-    "main.css": "/bigbang/static/css/main.f90f6f56.chunk.css",
-    "main.js": "/bigbang/static/js/main.82192577.chunk.js",
+    "main.css": "/bigbang/static/css/main.eee49c53.chunk.css",
+    "main.js": "/bigbang/static/js/main.f43c59eb.chunk.js",
     "runtime-main.js": "/bigbang/static/js/runtime-main.d383285f.js",
-    "static/js/2.b129e5d2.chunk.js": "/bigbang/static/js/2.b129e5d2.chunk.js",
+    "static/js/2.142a18dd.chunk.js": "/bigbang/static/js/2.142a18dd.chunk.js",
     "index.html": "/bigbang/index.html",
-    "static/js/2.b129e5d2.chunk.js.LICENSE.txt": "/bigbang/static/js/2.b129e5d2.chunk.js.LICENSE.txt",
+    "static/js/2.142a18dd.chunk.js.LICENSE.txt": "/bigbang/static/js/2.142a18dd.chunk.js.LICENSE.txt",
     "static/media/AAVE.13df32ae.svg": "/bigbang/static/media/AAVE.13df32ae.svg",
     "static/media/ALCX.b76b24e5.svg": "/bigbang/static/media/ALCX.b76b24e5.svg",
     "static/media/ALPACA.9bf969ea.svg": "/bigbang/static/media/ALPACA.9bf969ea.svg",
@@ -57,8 +57,8 @@
   },
   "entrypoints": [
     "static/js/runtime-main.d383285f.js",
-    "static/js/2.b129e5d2.chunk.js",
-    "static/css/main.f90f6f56.chunk.css",
-    "static/js/main.82192577.chunk.js"
+    "static/js/2.142a18dd.chunk.js",
+    "static/css/main.eee49c53.chunk.css",
+    "static/js/main.f43c59eb.chunk.js"
   ]
 }
