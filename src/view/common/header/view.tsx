@@ -4,8 +4,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import ConnectButton from './components/connect-button';
 import NetworkButton from './components/network-button';
 import cx from 'classnames';
-import { DRAWER_WIDTH, TRANSITION_DURATION } from '@constants/style';
+import { TRANSITION_DURATION } from '@constants/style';
 import TokenButton from '@view/common/header/components/token-button';
+import Menu from './components/menu';
 
 import './styles.scss';
 
@@ -55,6 +56,7 @@ export const Header: FC<IProps> = memo(({ drawe, handleSidebarToggle }: IProps):
         <Toolbar disableGutters className="toolbar">
           <span onClick={handleSidebarToggle} className="btn--toggle--sidebar" />
           <div className="toolbar-btns-wrap">
+            <Menu />
             <TokenButton />
             <ConnectButton />
             <NetworkButton />

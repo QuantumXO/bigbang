@@ -1,0 +1,38 @@
+@import "./src/assets/styles/basic/variables";
+
+.header__menu {
+  display: inline-flex;
+  margin-right: 24px;
+  align-items: center;
+  &__link {
+    height: 50px;
+    display: inline-flex;
+    padding: 0 18px;
+    grid-gap: 18px;
+    gap: 18px;
+    color: #5a5a5c;
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: 400;
+    align-items: center;
+    text-decoration: none;
+    transition: all .3s linear;
+    cursor: pointer;
+    &:hover {
+      color: $brand_color;
+      .icon {
+        &.dYEL,
+        &.equilibrium {
+          path {
+            fill: $brand_color;
+          }
+        }
+        &.ecosystem {
+          path {
+            stroke: $brand_color;
+          }
+        }
+      }
+    }
+  }
+}

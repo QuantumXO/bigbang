@@ -160,7 +160,7 @@ export function Stake(): ReactElement {
           <div className='row divide--top'>
             <div className='row__label'>{'Wrapped Balance'}</div>
             <div className='row__value'>
-              {isAppLoading ? <Skeleton width="80px" /> : <>{`0 dYel`}</>}
+              <Skeleton width="80px" />
             </div>
           </div>
           <div className='row exchange--rate'>

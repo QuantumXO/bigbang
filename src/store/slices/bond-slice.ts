@@ -123,8 +123,13 @@ export const calcBondDetails = createAsyncThunk(
         contractAbi = YFI_TSHAREBondContract;
       }
       
+      
       const bondContract: Contract = new Contract(bond.bondAddress, contractAbi, provider);
       const terms = await bondContract.terms();
+      
+      
+      
+      
       const maxBondPrice: number = (await bondContract.maxPayout()) / Math.pow(10, 9);
       const marketPrice: number = await getMarketPrice(networkID, provider, tokens);
       const minPurchase: number = await bondContract.minPayout() / Math.pow(10, 9);

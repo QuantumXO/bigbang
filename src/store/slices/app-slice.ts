@@ -1,5 +1,5 @@
 import { ethers, Contract } from 'ethers';
-import { BangTokenContract, StakingContract, BigTokenContract } from '@services/abi';
+import { BangTokenContract, StakingContract, BigTokenContract, dYelTokenContract } from '@services/abi';
 import { getMarketPrice, setAll, getBondAddresses } from '@services/helpers';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -61,7 +61,10 @@ export const loadAppDetails = createAsyncThunk(
       const treasuryBalance: number = tokenBalances
         .reduce((tokenBalance0: number, tokenBalance1: number): number => tokenBalance0 + tokenBalance1, 0);
   
-      const dYelPrice: number = 0;
+      const dYelContract: Contract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, provider);
+      const dYelTotalSupply: number = await dYelContract.totalSupply() / Math.pow(10, 18);
+  
+      const dYelPrice: number = treasuryBalance / dYelTotalSupply;
   
       const tokenAmountsPromises = bonds.map((bond: Bond) => getTokenAmount(bond, tokens, networkID, provider));
       const tokenAmounts: number[] = await Promise.all(tokenAmountsPromises);

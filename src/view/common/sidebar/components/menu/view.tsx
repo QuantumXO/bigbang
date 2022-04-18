@@ -101,7 +101,7 @@ export const SidebarContent = (): ReactElement => {
   return (
     <div className="sidebar">
       <div className="sidebar--header">
-        <Link to="/" className="sidebar--logo" />
+        <a href="https://yel-finance.vercel.app" className="sidebar--logo" />
         {address && (
           <a
             target="_blank"

@@ -22,12 +22,15 @@ export function WrapModal({ onClose }: IProps): ReactElement {
   const dispatch = useDispatch();
   const { chainId } = useSelector((state: IReduxState) => state.network);
   const { getIsWrongNetwork, provider, address, isActiveWrapModal, toggleWrapModal } = useCommonContext();
+  const networkID: number = Number(chainId);
   const wrapBond: string = 'BANG'
   const unwrapBond: string = 'dYEL'
   
-  const [value, setValue] = useState('');
-  const [isWrap, setIsWrap] = useState(true);
-  const [isWrapPrice, setIsWrapPrice] = useState(true);
+  const [value, setValue] = useState<string>('');
+  const [isWrap, setIsWrap] = useState<boolean>(true);
+  const [isWrapPrice, setIsWrapPrice] = useState<boolean>(true);
+  // #TODO need to fix & remove
+  const [WTF_isApproved, WTF_setIsApproved] = useState<boolean>(false);
   
   const bangBalance = useSelector<IReduxState, string>(state => {
     return state.account.balances && state.account.balances.bang;
@@ -45,10 +48,13 @@ export function WrapModal({ onClose }: IProps): ReactElement {
     return state.pendingTransactions;
   });
   const bangAllowance: number = useSelector<IReduxState, number>(state => {
-    return state.account.wrapping && state.account.wrapping.bang;
+    return state.account.wrapping?.bang;
   });
   
-  const networkID: number = Number(chainId);
+  const hasAllowance = useCallback((): boolean => bangAllowance > 0, [bangAllowance]);
+  
+  const trimmedBangBalance: string = trim(Number(bangBalance), 6);
+  const trimmedDYelBalance: string = trim(Number(dYelBalance), 6);
   
   useEffect((): void => {
     dispatch(calcWrapDetails({ isWrap, provider, value, networkID }));
@@ -57,8 +63,6 @@ export function WrapModal({ onClose }: IProps): ReactElement {
   useEffect((): void => {
     dispatch(calcWrapPrice({ isWrap: isWrapPrice, provider, networkID }));
   }, [isWrapPrice]);
-  
-  const hasAllowance = useCallback((): boolean => bangAllowance > 0, [bangAllowance]);
   
   const handleSwap = (): void => {
     setValue('');
@@ -82,9 +86,6 @@ export function WrapModal({ onClose }: IProps): ReactElement {
     toggleWrapModal(false);
   };
   
-  const trimmedBangBalance: string = trim(Number(bangBalance), 6);
-  const trimmedDYelBalance: string = trim(Number(dYelBalance), 6);
-  
   const getBalance = (): string => isWrap ? `${trimmedBangBalance} ${wrapBond}` : `${trimmedDYelBalance} ${unwrapBond}`;
   
   const handleOnWrap = async () => {
@@ -101,12 +102,14 @@ export function WrapModal({ onClose }: IProps): ReactElement {
   const onSeekApproval = async () => {
     if (getIsWrongNetwork()) return;
     await dispatch(changeApproval({ address, provider, networkID }));
+    
+    WTF_setIsApproved(true);
   };
   
   const onRenderApproveBtn = (): ReactElement => {
     return (
       <>
-        {hasAllowance()
+        {hasAllowance() || WTF_isApproved
           ? (
             <div
               className="action--btn btn__primary--fulfilled"
