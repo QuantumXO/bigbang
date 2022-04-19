@@ -10,10 +10,10 @@ export const getBigPriceInNativeCurrency = async (
   provider: StaticJsonRpcProvider | Signer,
   bigNativeCurrencyLPToken: IBlockchain.IToken | undefined,
 ): Promise<number> => {
-  const { BIG_ADDRESS }: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
+  const { BIG_ADDRESS } = getBondAddresses(networkID) || {};
   let bigPriceInNativeCurrency: number = 0;
   
-  if (bigNativeCurrencyLPToken) {
+  if (bigNativeCurrencyLPToken && BIG_ADDRESS) {
     try {
       const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
         contractAddress: bigNativeCurrencyLPToken.address,
@@ -33,7 +33,7 @@ export const getBigPriceInNativeCurrency = async (
       console.error('getBigPriceInNativeCurrency() error: ', e);
     }
   } else {
-    throw new Error('bigNativeCurrencyLPToken error');
+    throw new Error('bigNativeCurrencyLPToken or BIG_ADDRESS error');
   }
   
   return bigPriceInNativeCurrency;

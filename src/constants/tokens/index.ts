@@ -3,6 +3,7 @@ import tokensIcons from '@constants/icons';
 
 import FTMTokens from './ftm';
 import POLYGONTokens from './polygon';
+import BSCTokens from './bsc';
 
 export const usdc: IBlockchain.ITokenAsset = {
   id: 'USDC',
@@ -15,5 +16,5 @@ export const usdc: IBlockchain.ITokenAsset = {
 };
 
 export default <IBlockchain.ITokenAsset[]>[
-  usdc, ...FTMTokens, ...POLYGONTokens
+  usdc, ...FTMTokens, ...POLYGONTokens, ...BSCTokens,
 ];

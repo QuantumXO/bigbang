@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, ReactElement, FC, memo } from 'react';
+import React, { useEffect, useCallback, ReactElement, FC, memo, ReactNode } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { calcBondDetails } from '@store/slices/bond-slice';
 import { loadAppDetails } from '@store/slices/app-slice';
@@ -7,7 +7,7 @@ import { IReduxState } from '@store/slices/state.interface';
 import useBonds, { IAllBondData } from '@services/hooks/bonds';
 import useTokens, { IAllTokenData } from '@services/hooks/tokens';
 import SnackMessage from '@view/common/messages/snackbar';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider, SnackbarKey } from 'notistack';
 import Router from '@view/router';
 import { Dispatch } from 'redux';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -98,13 +98,15 @@ export const App: FC = memo((): ReactElement => {
   );
 
   return (
+    // @ts-ignore
     <SnackbarProvider
       maxSnack={4}
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'right',
       }}
-      content={(key, message: string) => <SnackMessage id={key} message={JSON.parse(message)} />}
+      // @ts-ignore
+      content={(key: SnackbarKey, message: string): ReactNode => <SnackMessage id={key} message={JSON.parse(message)} />}
       autoHideDuration={10000}
     >
       <Router />

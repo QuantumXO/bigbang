@@ -114,7 +114,7 @@ export const calcBondDetails = createAsyncThunk(
     }
     try {
       const { id: bondId } = bond;
-      const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
+      const { TREASURY_ADDRESS } = getBondAddresses(networkID);
       const amountInWei: BigNumber = ethers.utils.parseEther(value);
       const bondCalcContract: Contract = getBondCalculator(networkID, provider, bond);
       let contractAbi: ContractInterface = StableBondContract;
@@ -123,13 +123,8 @@ export const calcBondDetails = createAsyncThunk(
         contractAbi = YFI_TSHAREBondContract;
       }
       
-      
       const bondContract: Contract = new Contract(bond.bondAddress, contractAbi, provider);
       const terms = await bondContract.terms();
-      
-      
-      
-      
       const maxBondPrice: number = (await bondContract.maxPayout()) / Math.pow(10, 9);
       const marketPrice: number = await getMarketPrice(networkID, provider, tokens);
       const minPurchase: number = await bondContract.minPayout() / Math.pow(10, 9);
@@ -176,20 +171,24 @@ export const calcBondDetails = createAsyncThunk(
       const token: Contract = new ethers.Contract(bond.getReserveAddress(tokens), wFTMReserveContract, provider);
       const tokenDecimals: number = await token.decimals();
   
-      let purchased = await token.balanceOf(addresses.TREASURY_ADDRESS);
+      let purchased: any = 0;
   
-      if (bond.isLP) {
-        const markdown = await bondCalcContract.markdown(bigNativeCurrencyLPTokenAddress);
+      if (TREASURY_ADDRESS) {
+        purchased = await token.balanceOf(TREASURY_ADDRESS);
+        
+        if (bond.isLP) {
+          const markdown = await bondCalcContract.markdown(bigNativeCurrencyLPTokenAddress);
     
-        purchased = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, purchased);
-        purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 9));
-      } else {
-        if (bond.tokensInStrategy) {
-          purchased = BigNumber.from(purchased).add(BigNumber.from(bond.tokensInStrategy)).toString();
+          purchased = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, purchased);
+          purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 9));
+        } else {
+          if (bond.tokensInStrategy) {
+            purchased = BigNumber.from(purchased).add(BigNumber.from(bond.tokensInStrategy)).toString();
+          }
+    
+          // #TODO check
+          purchased = Number(purchased) / Math.pow(10, tokenDecimals);
         }
-    
-        // #TODO check
-        purchased = purchased / Math.pow(10, tokenDecimals);
       }
   
       return {

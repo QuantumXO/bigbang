@@ -67,10 +67,11 @@ export const getTreasuryBalance = async (
   provider: StaticJsonRpcProvider
 ): Promise<number> => {
   const { id: bondId, isLP: bondIsLP, isWrap: bondIsWrap } = bond;
-  const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
+  const addresses = getBondAddresses(networkID);
+  
   const bondTokenAddress: string = getToken(tokens, bondId, 'address');
   const tokenContract: Contract = new Contract(bondTokenAddress, TokenContract, provider);
-  const tokenBalanceOf = await tokenContract.balanceOf(addresses.TREASURY_ADDRESS);
+  const tokenBalanceOf = await tokenContract.balanceOf(addresses?.TREASURY_ADDRESS);
   const bigNativeCurrencyLPToken = tokens.find(({ isBigNativeCurrencyLP }: IBlockchain.IToken) => isBigNativeCurrencyLP);
   const uSDCNativeCurrencyLPToken = tokens.find(({ isUSDCNativeCurrencyLP }: IBlockchain.IToken) => isUSDCNativeCurrencyLP);
   const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider, tokens, uSDCNativeCurrencyLPToken);
@@ -83,7 +84,7 @@ export const getTreasuryBalance = async (
   } else if (bondIsLP) {
     const lpContractAddress: string = bigNativeCurrencyLPToken?.address || 'unknown';
     const lpContract = new Contract(lpContractAddress, LPTokenContract, provider);
-    const lpBalanceOf = await lpContract.balanceOf(addresses.TREASURY_ADDRESS);
+    const lpBalanceOf = await lpContract.balanceOf(addresses?.TREASURY_ADDRESS);
     const wrapTokenAddress: string | undefined = tokens
       .find(({ isWrap }: IBlockchain.IToken) => isWrap)?.address;
     const totalSupply: number = (await lpContract.totalSupply());
@@ -110,7 +111,7 @@ export const getTreasuryBalance = async (
     }
     treasuryBalance = (lpBalanceOf / Math.pow(10, 18)) * lpPriceInUSDC;
   } else if (bondId === 'CRV') {
-    treasuryBalance = await getCrvTreasuryBalance(networkID, provider, bondId, tokens);
+    treasuryBalance = await getCrvTreasuryBalance(networkID, provider, bondId, tokens) || 0;
   } else {
     const tokenInNativeCurrency: number = await getTokenInNativeCurrency(networkID, provider, bondId, tokens);
     const tokenPriceInUSDC: number = tokenInNativeCurrency * nativeCurrencyInUSDC;
