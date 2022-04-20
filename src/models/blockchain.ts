@@ -1,5 +1,5 @@
 export namespace IBlockchain {
-  export type NetworkType = 'ETH' | 'FTM' | 'MATIC' | 'BSC';
+  export type NetworkType = 'ETH' | 'FTM' | 'MATIC' | 'BSC' | 'AVAX';
   export interface INativeCurrency {
     id: TokenType;
     symbol: string;
@@ -45,6 +45,7 @@ export namespace IBlockchain {
     DISTRIBUTOR_ADDRESS: string;
     STAKING_WARMUP_ADDRESS: string;
     ZAPIN_ADDRESS: string;
+    BUSD_ADDRESS?: string;
   }
   export type OurTokenType = 'BIG' | 'BANG' | 'dYel';
   export interface IToken {

@@ -25,5 +25,6 @@ export const getMarketPrice = async (
   
   await sleep(0.01);
   
+  
   return result;
 }

@@ -4,6 +4,7 @@ import tokensIcons from '@constants/icons';
 import FTMTokens from './ftm';
 import POLYGONTokens from './polygon';
 import BSCTokens from './bsc';
+import AVAXTokens from '@constants/tokens/avax';
 
 export const usdc: IBlockchain.ITokenAsset = {
   id: 'USDC',
@@ -16,5 +17,5 @@ export const usdc: IBlockchain.ITokenAsset = {
 };
 
 export default <IBlockchain.ITokenAsset[]>[
-  usdc, ...FTMTokens, ...POLYGONTokens, ...BSCTokens,
+  usdc, ...FTMTokens, ...POLYGONTokens, ...BSCTokens, ...AVAXTokens,
 ];

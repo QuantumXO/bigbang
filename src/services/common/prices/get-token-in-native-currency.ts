@@ -29,15 +29,12 @@ export const getTokenInNativeCurrency = async (
       });
       
       if (comparedAddressInReserve === 0) {
-        //
+        result = reserve0 / reserve1;
       } else if (comparedAddressInReserve === 1) {
-        //
+        result = reserve1 / reserve0;
       } else {
         (process.env.NODE_ENV === 'development') && console.log('nativeCurrencyTokenAddress error');
       }
-      
-      // eslint-disable-next-line prefer-const
-      result = reserve0 / reserve1;
     } else {
       throw new Error('currentNetwork Error');
     }
