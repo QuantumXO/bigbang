@@ -5,7 +5,7 @@ import { calculateUserBondDetails, fetchAccountSuccess, getBalances } from './ac
 import { clearPendingTxn, fetchPendingTxns } from './pending-txns-slice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Bond } from '@services/common/bond';
+import { Bond } from '@services/helpers/bond/bond';
 import { IBlockchain } from '@models/blockchain';
 import { getBondCalculator } from '@services/helpers/bond/get-bond-calculator';
 import { RootState } from '../store';

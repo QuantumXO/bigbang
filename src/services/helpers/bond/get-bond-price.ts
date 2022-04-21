@@ -1,4 +1,4 @@
-import { Bond } from '@services/common/bond';
+import { Bond } from '@services/helpers/bond/bond';
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
 import { sleep } from '@services/helpers';
 import { getNativeCurrencyInUSDC } from '@services/common/prices/get-native-currency-in-usdc'
@@ -116,14 +116,14 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
       } else if (bondId === 'BIFI') {
         bondPrice = bondPriceInUSD / Math.pow(10, 17);
       } else if (bondId === 'STG') {
-        const lPAddress: string = getToken(tokens, bondId, 'tokenNativeCurrencyLPAddress');
+        const tokenAddress: string = getToken(tokens, bondId, 'tokenNativeCurrencyLPAddress');
         const stgTokenAddress: string = getToken(tokens, bondId, 'address');
     
         const {
           reserves: [reserve0, reserve1],
           comparedAddressInReserve
         } = await getReserves({
-          contractAddress: lPAddress,
+          contractAddress: tokenAddress,
           contractABI: LpReserveContract,
           provider,
           comparedAddress: stgTokenAddress,

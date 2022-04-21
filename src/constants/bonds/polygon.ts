@@ -1,4 +1,4 @@
-import { Bond } from '@services/common/bond';
+import { Bond } from '@services/helpers/bond/bond';
 import tokensIcons from '@constants/icons';
 
 export const USDCInPOLYGON: Bond = new Bond({

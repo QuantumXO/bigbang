@@ -142,6 +142,7 @@ export namespace IBlockchain {
     | AVALANCHENativeCurrencyType
     | 'AVAX'
     | 'JOE'
+    | 'LINK'
     | 'LINK.e'
     | 'PTP'
     | 'SPELL'

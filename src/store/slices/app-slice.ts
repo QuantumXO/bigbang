@@ -6,8 +6,10 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { RootState } from '@store/store';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { IBlockchain } from '@models/blockchain';
-import { Bond } from '@services/common/bond';
+import { Bond } from '@services/helpers/bond/bond';
 import { getTreasuryBalance, getTokenAmount } from '@services/common/network';
+import getDyelPrice from '@services/common/prices/get-dyel-price';
+import { getNativeCurrencyInUSDC } from '@services/common/prices/get-native-currency-in-usdc';
 
 interface ILoadAppDetails {
   networkID: number;
@@ -60,12 +62,9 @@ export const loadAppDetails = createAsyncThunk(
         const tokenBalances: number[] = await Promise.all(tokenBalPromises);
         const treasuryBalance: number = tokenBalances
           .reduce((tokenBalance0: number, tokenBalance1: number): number => tokenBalance0 + tokenBalance1, 0);
-  
-        const dYelContract: Contract = new ethers.Contract(DYEL_ADDRESS, dYelTokenContract, provider);
-        const dYelTotalSupply: number = await dYelContract.totalSupply() / Math.pow(10, 18);
         
         // #TODO change
-        const dYelPrice: number = treasuryBalance / dYelTotalSupply;
+        const dYelPrice: number = await getDyelPrice(networkID, provider, treasuryBalance);
   
         const tokenAmountsPromises = bonds.map((bond: Bond) => getTokenAmount(bond, tokens, networkID, provider));
         const tokenAmounts: number[] = await Promise.all(tokenAmountsPromises);

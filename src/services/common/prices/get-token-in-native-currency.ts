@@ -18,22 +18,23 @@ export const getTokenInNativeCurrency = async (
   
   try {
     if (currentNetwork) {
+      const tokenAddress: string = getToken(tokens, bondId, 'address');
       const tokenNativeCurrencyLPAddress: string = getToken(tokens, bondId, 'tokenNativeCurrencyLPAddress');
-      const nativeCurrencyTokenAddress: string = currentNetwork.nativeCurrency.address
+      // const nativeCurrencyTokenAddress: string = currentNetwork.nativeCurrency.address
   
       const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
         contractAddress: tokenNativeCurrencyLPAddress,
         contractABI: LpReserveContract,
         provider,
-        comparedAddress: nativeCurrencyTokenAddress,
+        comparedAddress: tokenAddress,
       });
       
       if (comparedAddressInReserve === 0) {
-        result = reserve0 / reserve1;
-      } else if (comparedAddressInReserve === 1) {
         result = reserve1 / reserve0;
+      } else if (comparedAddressInReserve === 1) {
+        result = reserve0 / reserve1;
       } else {
-        (process.env.NODE_ENV === 'development') && console.log('nativeCurrencyTokenAddress error');
+        (process.env.NODE_ENV === 'development') && console.log('nativeCurrencyTokenAddress error: ', bondId);
       }
     } else {
       throw new Error('currentNetwork Error');

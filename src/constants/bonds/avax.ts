@@ -1,4 +1,4 @@
-import { Bond } from '@services/common/bond';
+import { Bond } from '@services/helpers/bond/bond';
 import tokensIcons from '@constants/icons';
 
 export const USDCInAVAX: Bond = new Bond({
@@ -34,8 +34,8 @@ export const JOE: Bond = new Bond({
   networkType: 'AVAX',
 });
 export const LINK: Bond = new Bond({
-  id: 'LINK.e',
-  bondIcon: tokensIcons['LINK.e'],
+  id: 'LINK',
+  bondIcon: tokensIcons['LINK'],
   bondAddress: '0x1EcAc9574b64190573F7663F30ec28e3c1501F28',
   tokensInStrategy: '0',
   networkType: 'AVAX',

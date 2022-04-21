@@ -2,7 +2,7 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { BondingCalcContract } from '@services/abi';
 import { Contract } from 'ethers';
 import { getBondAddresses } from '@services/helpers/bond/get-bond-addresses';
-import { Bond } from '@services/common/bond';
+import { Bond } from '@services/helpers/bond/bond';
 
 export function getBondCalculator(networkID: number, provider: StaticJsonRpcProvider, bond: Bond): Contract {
   const { isLP } = bond;

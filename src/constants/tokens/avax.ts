@@ -5,7 +5,7 @@ const AVAXTokens: IBlockchain.ITokenAsset[] = [
   { id: 'wAVAX', icon: tokensIcons.wAVAX, decimals: 18, name: 'wAVAX', isWrap: true },
   { id: 'BIGwAVAX', icon: tokensIcons.wAVAX, decimals: 18, name: 'BIGwAVAX', isLP: true, isBigNativeCurrencyLP: true },
   { id: 'JOE', icon: tokensIcons.JOE, decimals: 18, name: 'JOE' },
-  { id: 'LINK.e', icon: tokensIcons['LINK.e'], decimals: 18, name: 'LINK.e' },
+  { id: 'LINK', icon: tokensIcons.LINK, decimals: 18, name: 'LINK.e' },
   { id: 'PTP', icon: tokensIcons.PTP, decimals: 18, name: 'PTP' },
   { id: 'SPELL', icon: tokensIcons.SPELL, decimals: 18, name: 'SPELL' },
   { id: 'AAVE', icon: tokensIcons.AAVE, decimals: 18, name: 'AAVE' },
