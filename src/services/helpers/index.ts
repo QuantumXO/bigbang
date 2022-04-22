@@ -9,4 +9,4 @@ export * from './set-all';
 export * from './token-price';
 export * from './price-units';
 export * from './sleep';
-export * from '@services/helpers/bond/get-bond-addresses';
+export * from '@services/common/bond/get-bond-addresses';

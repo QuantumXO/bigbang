@@ -1,4 +1,4 @@
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond/bond';
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
 import { sleep } from '@services/helpers';
 import { getNativeCurrencyInUSDC } from '@services/common/prices/get-native-currency-in-usdc'

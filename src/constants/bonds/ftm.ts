@@ -1,4 +1,4 @@
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond/bond';
 import tokensIcons from '@constants/icons';
 
 export const USDCInFTM: Bond = new Bond({

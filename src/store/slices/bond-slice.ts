@@ -5,9 +5,9 @@ import { calculateUserBondDetails, fetchAccountSuccess, getBalances } from './ac
 import { clearPendingTxn, fetchPendingTxns } from './pending-txns-slice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond/bond';
 import { IBlockchain } from '@models/blockchain';
-import { getBondCalculator } from '@services/helpers/bond/get-bond-calculator';
+import { getBondCalculator } from '@services/common/bond/get-bond-calculator';
 import { RootState } from '../store';
 import { error, info, success, warning } from '../slices/messages-slice';
 import { messages } from '@constants/messages';
@@ -15,7 +15,7 @@ import { getGasPrice } from '@services/helpers/get-gas-price';
 import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
 import { StableBondContract, wFTMReserveContract, YFI_TSHAREBondContract } from '@services/abi';
 import { getToken } from '@services/helpers/get-token';
-import { getBondPrice } from '@services/helpers/bond/get-bond-price';
+import { getBondPrice } from '@services/common/bond/get-bond-price';
 import { useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 
@@ -113,7 +113,7 @@ export const calcBondDetails = createAsyncThunk(
       value = '0';
     }
     try {
-      const { id: bondId } = bond;
+      const { id: bondId, bondAddress } = bond;
       const { TREASURY_ADDRESS } = getBondAddresses(networkID);
       const amountInWei: BigNumber = ethers.utils.parseEther(value);
       const bondCalcContract: Contract = getBondCalculator(networkID, provider, bond);
@@ -123,7 +123,12 @@ export const calcBondDetails = createAsyncThunk(
         contractAbi = YFI_TSHAREBondContract;
       }
       
-      const bondContract: Contract = new Contract(bond.bondAddress, contractAbi, provider);
+      const bondContract: Contract = new Contract(bondAddress, contractAbi, provider);
+  
+      if (bondId === 'wAVAX') {
+        console.log('bondAddress: ', bondAddress);
+      }
+      
       const terms = await bondContract.terms();
       const maxBondPrice: number = (await bondContract.maxPayout()) / Math.pow(10, 9);
       const marketPrice: number = await getMarketPrice(networkID, provider, tokens);
@@ -138,7 +143,7 @@ export const calcBondDetails = createAsyncThunk(
   
       const bondPrice: number = await getBondPrice({ bond, networkID, provider, tokens });
       const bondDiscount: number = (marketPrice - bondPrice) / marketPrice;
-  
+      
       if (bond.isLP) {
         try {
           valuation = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, amountInWei);
@@ -153,10 +158,18 @@ export const calcBondDetails = createAsyncThunk(
         const maxBondQuote = await bondContract.payoutFor(maxValuation);
         maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9));
       } else {
+        if (bondId === 'wAVAX') {
+          console.log('=====');
+        }
         bondQuote = await bondContract.payoutFor(amountInWei);
-    
+  
+  
+        if (bondId === 'wAVAX') {
+          console.log('bondQuote');
+        }
+        
         bondQuote = bondQuote / Math.pow(10, 18);
-    
+
         const maxBondQuote = await bondContract.payoutFor(maxBodValue);
         maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -18));
       }
@@ -167,10 +180,12 @@ export const calcBondDetails = createAsyncThunk(
         dispatch(error({ text: messages.try_mint_less(minPurchase.toString()) }));
       }
   
+      
       // Calculate bonds purchased
       const token: Contract = new ethers.Contract(bond.getReserveAddress(tokens), wFTMReserveContract, provider);
       const tokenDecimals: number = await token.decimals();
   
+      
       let purchased: any = 0;
   
       if (TREASURY_ADDRESS) {

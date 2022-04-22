@@ -5,7 +5,7 @@ import { getNativeCurrencyInUSDC } from '@services/common/prices/get-native-curr
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Contract } from 'ethers';
 import { IBlockchain } from '@models/blockchain';
-import { getBondAddresses } from '@services/helpers/bond/get-bond-addresses';
+import { getBondAddresses } from '@services/common/bond/get-bond-addresses';
 
 export default async (
   networkID: number,

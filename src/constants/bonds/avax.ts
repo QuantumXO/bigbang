@@ -1,4 +1,4 @@
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond/bond';
 import tokensIcons from '@constants/icons';
 
 export const USDCInAVAX: Bond = new Bond({
@@ -21,7 +21,7 @@ export const BIGwAVAX: Bond = new Bond({
   displayName: 'BIG_wAVAX',
   bondIcon: tokensIcons.BIG,
   bondLPIcon: tokensIcons.wAVAX,
-  bondAddress: '',
+  bondAddress: '0x3aaC9704E6c104a5F93dBa1f4d3113005d455eDd',
   tokensInStrategy: '0',
   networkType: 'AVAX',
   isLP: true,
@@ -68,14 +68,14 @@ export const wMEMO: Bond = new Bond({
   tokensInStrategy: '0',
   networkType: 'AVAX',
 });
-export const YEL: Bond = new Bond({
+/*export const YEL: Bond = new Bond({
   id: 'YEL',
   bondIcon: tokensIcons.YEL,
   bondAddress: '',
   tokensInStrategy: '0',
   networkType: 'AVAX',
-});
+});*/
 
 export default <Bond[]>[
-  USDCInAVAX, wAVAX, BIGwAVAX, JOE, LINK, PTP, SPELL, AAVE, wMEMO, YEL
+  USDCInAVAX, wAVAX, BIGwAVAX, JOE, LINK, PTP, SPELL, AAVE, wMEMO, /*YEL*/
 ];

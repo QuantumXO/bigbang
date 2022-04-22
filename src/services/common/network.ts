@@ -1,4 +1,4 @@
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond/bond';
 import { IBlockchain } from '@models/blockchain';
 import tokensAssets from '@constants/tokens';
 import { ACTIVE_NETWORKS } from '@constants/networks';
@@ -67,10 +67,10 @@ export const getTreasuryBalance = async (
   provider: StaticJsonRpcProvider
 ): Promise<number> => {
   const { id: bondId, isLP: bondIsLP, isWrap: bondIsWrap, networkType: bondNetworkType } = bond;
-  const addresses = getBondAddresses(networkID);
+  const { TREASURY_ADDRESS } = getBondAddresses(networkID);
   const bondTokenAddress: string = getToken(tokens, bondId, 'address');
   const tokenContract: Contract = new Contract(bondTokenAddress, TokenContract, provider);
-  const tokenBalanceOf = await tokenContract.balanceOf(addresses?.TREASURY_ADDRESS);
+  const tokenBalanceOf = await tokenContract.balanceOf(TREASURY_ADDRESS);
   const bigNativeCurrencyLPToken = tokens.find(({ isBigNativeCurrencyLP }: IBlockchain.IToken) => isBigNativeCurrencyLP);
   const uSDCNativeCurrencyLPToken = tokens.find(({ isUSDCNativeCurrencyLP }: IBlockchain.IToken) => isUSDCNativeCurrencyLP);
   const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider, tokens, uSDCNativeCurrencyLPToken);
@@ -82,7 +82,7 @@ export const getTreasuryBalance = async (
   } else if (bondIsLP) {
     const lpContractAddress: string = bigNativeCurrencyLPToken?.address || 'unknown';
     const lpContract = new Contract(lpContractAddress, LPTokenContract, provider);
-    const lpBalanceOf = await lpContract.balanceOf(addresses?.TREASURY_ADDRESS);
+    const lpBalanceOf = await lpContract.balanceOf(TREASURY_ADDRESS);
     const wrapTokenAddress: string | undefined = tokens
       .find(({ isWrap }: IBlockchain.IToken) => isWrap)?.address;
     const totalSupply: number = (await lpContract.totalSupply());

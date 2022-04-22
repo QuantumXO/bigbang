@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { IBlockchain } from '@models/blockchain';
 import { getTokenUrl } from '@services/helpers'
-import { getBondAddresses } from '@services/helpers/bond/get-bond-addresses';
+import { getBondAddresses } from '@services/common/bond/get-bond-addresses';
 import { useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 import { useCommonContext } from '@services/hooks/network';

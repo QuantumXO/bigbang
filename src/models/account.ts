@@ -1,6 +1,6 @@
 import { IBlockchain } from '@models/blockchain';
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond/bond';
 
 export namespace IAccount {
   export interface IGetBalances {

@@ -10,7 +10,7 @@ import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
 import { dYelTokenContract } from '@services/abi';
 import { clearPendingTxn, fetchPendingTxns, getWrappingTypeText } from './pending-txns-slice';
 import { getGasPrice } from '@services/helpers/get-gas-price';
-import { getBondAddresses } from '@services/helpers/bond/get-bond-addresses';
+import { getBondAddresses } from '@services/common/bond/get-bond-addresses';
 import { fetchAccountSuccess, getBalances } from './account-slice';
 
 export interface IChangeApproval {

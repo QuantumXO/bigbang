@@ -1,7 +1,7 @@
 import { createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 import { IBlockchain } from '@models/blockchain';
 import { setAll } from '@services/helpers';
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond/bond';
 import { DEFAULT_NETWORK } from '@constants/networks';
 import { getCurrentNetwork, onMapCurrentNetworkTokens } from '@services/common/network';
 import allBonds from '@constants/bonds';

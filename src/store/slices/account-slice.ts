@@ -186,6 +186,7 @@ export const calculateUserTokenDetails = createAsyncThunk(
             const addresses = getBondAddresses(networkID);
             const tokenContract: Contract = new Contract(token.address, TokenContract, provider);
             const balance = await tokenContract.balanceOf(address);
+            console.log(token.id, balance);
             // #TODO remove comment
             // const allowance = await tokenContract.allowance(address, addresses.ZAPIN_ADDRESS);
             const allowance = 1;

@@ -6,7 +6,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { RootState } from '@store/store';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { IBlockchain } from '@models/blockchain';
-import { Bond } from '@services/helpers/bond/bond';
+import { Bond } from '@services/common/bond/bond';
 import { getTreasuryBalance, getTokenAmount } from '@services/common/network';
 import getDyelPrice from '@services/common/prices/get-dyel-price';
 import { getNativeCurrencyInUSDC } from '@services/common/prices/get-native-currency-in-usdc';
