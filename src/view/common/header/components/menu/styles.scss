@@ -18,6 +18,7 @@
     text-decoration: none;
     transition: all .3s linear;
     cursor: pointer;
+    &.active,
     &:hover {
       color: $brand_color;
       .icon {

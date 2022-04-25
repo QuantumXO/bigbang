@@ -1,15 +1,16 @@
 @import "./src/assets/styles/basic/variables";
 
 .header {
-  max-width: #{$content_max_width};
+  padding: 0 10px;
   @include desktop {
     margin-left: $sidebar_width;
   }
   .toolbar {
     width: 100%;
-    margin: auto;
-    padding: 0 8px;
     align-items: center;
+    @include desktop() {
+      max-width: #{$page_content_width};
+    }
     .btn--toggle--sidebar {
       @include desktop {
         display: none;
@@ -42,7 +43,9 @@
     }
   }
   &__appbar {
-    width: 100%;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
     @include desktop {
       padding: 40px 0 20px 0;
     }

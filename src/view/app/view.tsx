@@ -8,7 +8,7 @@ import useBonds, { IAllBondData } from '@services/hooks/bonds';
 import useTokens, { IAllTokenData } from '@services/hooks/tokens';
 import SnackMessage from '@view/common/messages/snackbar';
 import { SnackbarProvider, SnackbarKey } from 'notistack';
-import Router from '@view/router';
+import Router from '@view/common/router';
 import { Dispatch } from 'redux';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { useAddress, useCommonContext } from '@services/hooks/network';

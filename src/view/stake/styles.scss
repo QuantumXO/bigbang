@@ -2,14 +2,17 @@
 
 .stake.page {
   .header__cards__grid {
+    flex-wrap: nowrap;
     align-items: stretch;
-    .card {
-      @include desktop {
-        max-width: 445px;
-      }
-      @include noDesktop {
-        max-width: 49%;
-      }
+    @include desktop() {
+      grid-gap: 30px;
+      flex-wrap: nowrap;
+    }
+    @include noDesktop() {
+      grid-gap: 16px;
+    }
+    & > .card {
+      width: 100%;
       &.welcome {
         @include noDesktop {
           //margin-bottom: 10px;
@@ -75,7 +78,7 @@
         margin-top: 30px;
       }
       @include noDesktop {
-        margin-top: 10px;
+        margin-top: 16px;
         flex-direction: column-reverse;
       }
       .additional__card {
@@ -87,7 +90,7 @@
         }
         &:first-child {
           @include noDesktop {
-            margin-top: 10px;
+            margin-top: 16px;
           }
         }
         &:nth-child(n+2) {

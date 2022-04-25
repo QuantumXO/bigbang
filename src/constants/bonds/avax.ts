@@ -11,7 +11,7 @@ export const USDCInAVAX: Bond = new Bond({
 export const wAVAX: Bond = new Bond({
   id: 'wAVAX',
   bondIcon: tokensIcons.wAVAX,
-  bondAddress: '0x5f5aecabd37f4e219719151e4b44f4d94f3a9c9c',
+  bondAddress: '0x28a915342d6A41e0b649F3D07Bb61BC3e638bA48',
   tokensInStrategy: '0',
   networkType: 'AVAX',
   isWrap: true,
