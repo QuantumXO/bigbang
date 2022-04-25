@@ -4,14 +4,14 @@ import tokensIcons from '@constants/icons';
 export const USDCInFTM: Bond = new Bond({
   id: 'USDC',
   bondIcon: tokensIcons.USDC,
-  bondAddress: '0xFFf2fDd8Ff796cD3903b0CE550f0050172804215',
+  bondAddress: '0xAc8A418FCDF3fe8b0Bc2BFa63f54a0E231D3f92B',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
 export const wFTM: Bond = new Bond({
   id: 'wFTM',
   bondIcon: tokensIcons.wFTM,
-  bondAddress: '0x222d703D58885bf0A29a08f8eAdEf837d5B7F3c4',
+  bondAddress: '0x18BA5d78d1443be1c743795C362257745fAA94Cd',
   tokensInStrategy: '0',
   networkType: 'FTM',
   isWrap: true,
@@ -21,7 +21,7 @@ export const BIGwFTM: Bond = new Bond({
   displayName: 'BIG_wFTM',
   bondIcon: tokensIcons.BIG,
   bondLPIcon: tokensIcons.wFTM,
-  bondAddress: '0x13dA1FC51978FAB071eD28e65E7825Cf4860c9F8',
+  bondAddress: '',
   tokensInStrategy: '0',
   networkType: 'FTM',
   isLP: true,
@@ -29,70 +29,70 @@ export const BIGwFTM: Bond = new Bond({
 export const SCREAM: Bond = new Bond({
   id: 'SCREAM',
   bondIcon: tokensIcons.SCREAM,
-  bondAddress: '0x08dafdB796f7E95dD4f16f910Db84E3f9Ade7b99',
+  bondAddress: '0xd955B9B92f534A81baAF6bb0DA74E7C26b9C3a46',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
 export const GEIST: Bond = new Bond({
   id: 'GEIST',
   bondIcon: tokensIcons.GEIST,
-  bondAddress: '0x85878783Fea0ED4d59c893634B3F836D69574929',
+  bondAddress: '0xBC7de8991A217AF108b33C9b68b4fB8B3FA98417',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
 export const TSHARE: Bond = new Bond({
   id: 'TSHARE',
   bondIcon: tokensIcons.TSHARE,
-  bondAddress: '0xBf3366ad351DBF44e9f96F0621bdf614d899995f',
+  bondAddress: '0x16253b1ed49253cbe2a99a60b2a7daF7c317917A',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
 export const MULTI: Bond = new Bond({
   id: 'MULTI',
   bondIcon: tokensIcons.MULTI,
-  bondAddress: '0x534fD86683b1012745070bb1d78aE0907C43d5d9',
+  bondAddress: '0x8b3E03AC29e1e55C8012C7A659286309652E7405',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
 export const BOO: Bond = new Bond({
   id: 'BOO',
   bondIcon: tokensIcons.BOO,
-  bondAddress: '0x25e9beC87a4408517cb9A0c0eC5CA6194Ab976c4',
+  bondAddress: '0x5F9da9D8a53e546b14f2f7f7e978dd64a228c64C',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
 export const YEL: Bond = new Bond({
   id: 'YEL',
   bondIcon: tokensIcons.YEL,
-  bondAddress: '0x4DF06b47a6BA88127A056Fc8522bbbE6289cFB23',
+  bondAddress: '0x32ca650a20e373D13d8bACf46353c70c4360c958',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
 export const BEETS: Bond = new Bond({
   id: 'BEETS',
   bondIcon: tokensIcons.BEETS,
-  bondAddress: '0x081725889c8CC14afcd601965e79d65BbF00778d',
+  bondAddress: '0x8cfef22001EFD73e8C7D13A002F615C2cF747542',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
 export const YFI: Bond = new Bond({
   id: 'YFI',
   bondIcon: tokensIcons.YFI,
-  bondAddress: '0xe9474D1446CD908EF72A29841cfa00B7296Cbd17',
+  bondAddress: '0x9f4b2c84a221e3e2b41dc1e4b2e58f2e60ecae56',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
 export const LINK: Bond = new Bond({
   id: 'LINK',
   bondIcon: tokensIcons.LINK,
-  bondAddress: '0xb9646742Ec3c349Cb223fe7d19E549E4142c8743',
+  bondAddress: '0x04b08244ea4c40db7DaFcD40D8C21e993C562dc0',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
 export const SPIRIT: Bond = new Bond({
   id: 'SPIRIT',
   bondIcon: tokensIcons.SPIRIT,
-  bondAddress: '0xd9cBAbCBf8898bAe2A3EbB741c11adAB65409d33',
+  bondAddress: '0xe204e9426101126e1C46a1b39BA82a1A32A7ce8a',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });
