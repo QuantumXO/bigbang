@@ -31,20 +31,18 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
     
     if (bondIsWrap) {
       if (bondId === 'wBNB') {
-        bondPrice = bondPriceInUSD / Math.pow(10, 16);
+        bondPrice = bondPriceInUSD / Math.pow(10, 21);
+      } else if (bondId === 'wMATIC') {
+        bondPrice = bondPriceInUSD / Math.pow(10, 18);
       } else {
         bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * nativeCurrencyInUSDC;
       }
     } else if (bondIsLP) {
-      bondPrice = (bondPriceInUSD / Math.pow(10, 21)) * nativeCurrencyInUSDC;
+      bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * nativeCurrencyInUSDC;
     } else {
       // Tokens
       if (bondId === 'USDC') {
-        if (bondNetworkType === 'BSC') {
-          bondPrice = bondPriceInUSD / Math.pow(10, 18);
-        } else {
-          bondPrice = bondPriceInUSD / Math.pow(10, 6);
-        }
+        bondPrice = bondPriceInUSD / Math.pow(10, 18);
       } else if (bondId === 'YFI') {
         bondPrice = bondPriceInUSD / Math.pow(10, 18);
       } else if (bondId === 'ORBS') {
@@ -137,10 +135,12 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
         }
     
         bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * stgPriceInBUSD;
+      } else if (bondId === 'wMEMO') {
+        const tokenInNativeCurrency: number = await getTokenInNativeCurrency(networkID, provider, bondId, tokens);
+        bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * tokenInNativeCurrency;
       } else {
         const tokenInNativeCurrency: number = await getTokenInNativeCurrency(networkID, provider, bondId, tokens);
-        const tokenPriceInUSDC = tokenInNativeCurrency * nativeCurrencyInUSDC;
-  
+        const tokenPriceInUSDC: number = tokenInNativeCurrency * nativeCurrencyInUSDC;
         bondPrice = (bondPriceInUSD / Math.pow(10, 18)) * tokenPriceInUSDC;
       }
     }

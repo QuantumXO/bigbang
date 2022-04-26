@@ -45,6 +45,7 @@ export namespace IBlockchain {
     DISTRIBUTOR_ADDRESS: string;
     STAKING_WARMUP_ADDRESS: string;
     ZAPIN_ADDRESS: string;
+    REVERSE_BONDING_ADDRESS: string;
     BUSD_ADDRESS?: string;
   }
   export type OurTokenType = 'BIG' | 'BANG' | 'dYel';

@@ -18,6 +18,7 @@ export const getNativeCurrencyInUSDC = async (
   try {
     if (uSDCNativeCurrencyLPToken) {
       const uSDCAddress: string = getToken(tokens, 'USDC', 'address');
+      
       const currentNetwork: IBlockchain.INetwork | undefined = getCurrentNetwork(String(networkID));
       let uSDCTokenDecimals: number = 6;
       

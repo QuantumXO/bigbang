@@ -7,9 +7,8 @@ import { RootState } from '@store/store';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { IBlockchain } from '@models/blockchain';
 import { Bond } from '@services/common/bond/bond';
-import { getTreasuryBalance, getTokenAmount } from '@services/common/network';
+import { getTreasuryBalance } from '@services/common/network';
 import getDyelPrice from '@services/common/prices/get-dyel-price';
-import { getNativeCurrencyInUSDC } from '@services/common/prices/get-native-currency-in-usdc';
 
 interface ILoadAppDetails {
   networkID: number;
@@ -59,6 +58,7 @@ export const loadAppDetails = createAsyncThunk(
         const tokenBalPromises: Promise<number>[] = bonds.map(async (bond: Bond): Promise<number> => {
           return getTreasuryBalance(bond, tokens, networkID, provider);
         });
+        
         const tokenBalances: number[] = await Promise.all(tokenBalPromises);
         const treasuryBalance: number = tokenBalances
           .reduce((tokenBalance0: number, tokenBalance1: number): number => tokenBalance0 + tokenBalance1, 0);
@@ -66,8 +66,9 @@ export const loadAppDetails = createAsyncThunk(
         // #TODO change
         const dYelPrice: number = await getDyelPrice(networkID, provider, treasuryBalance);
   
-        const tokenAmountsPromises = bonds.map((bond: Bond) => getTokenAmount(bond, tokens, networkID, provider));
-        const tokenAmounts: number[] = await Promise.all(tokenAmountsPromises);
+        // const tokenAmountsPromises = bonds.map((bond: Bond) => getTreasuryBalance(bond, tokens, networkID, provider));
+        // const tokenAmounts: number[] = await Promise.all(tokenAmountsPromises);
+        const tokenAmounts: number[] = tokenBalances;
         const rfvTreasury = tokenAmounts
           .reduce((tokenAmount0: number, tokenAmount1: number) => tokenAmount0 + tokenAmount1, 0);
   

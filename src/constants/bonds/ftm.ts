@@ -11,7 +11,7 @@ export const USDCInFTM: Bond = new Bond({
 export const wFTM: Bond = new Bond({
   id: 'wFTM',
   bondIcon: tokensIcons.wFTM,
-  bondAddress: '0x18BA5d78d1443be1c743795C362257745fAA94Cd',
+  bondAddress: '0xE10ABF664c307F8333aB076211edF53dA733bf65',
   tokensInStrategy: '0',
   networkType: 'FTM',
   isWrap: true,
@@ -21,7 +21,7 @@ export const BIGwFTM: Bond = new Bond({
   displayName: 'BIG_wFTM',
   bondIcon: tokensIcons.BIG,
   bondLPIcon: tokensIcons.wFTM,
-  bondAddress: '',
+  bondAddress: '0x5397c29bfea7596c6348bcccdcb2d95fac95885f',
   tokensInStrategy: '0',
   networkType: 'FTM',
   isLP: true,
@@ -78,7 +78,7 @@ export const BEETS: Bond = new Bond({
 export const YFI: Bond = new Bond({
   id: 'YFI',
   bondIcon: tokensIcons.YFI,
-  bondAddress: '0x9f4b2c84a221e3e2b41dc1e4b2e58f2e60ecae56',
+  bondAddress: '0x74D5D74DCE06c375fa3a2Da9923E2e896E77EB20',
   tokensInStrategy: '0',
   networkType: 'FTM',
 });

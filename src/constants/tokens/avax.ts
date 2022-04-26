@@ -10,7 +10,7 @@ const AVAXTokens: IBlockchain.ITokenAsset[] = [
   { id: 'SPELL', icon: tokensIcons.SPELL, decimals: 18, name: 'SPELL' },
   { id: 'AAVE', icon: tokensIcons.AAVE, decimals: 18, name: 'AAVE' },
   { id: 'wMEMO', icon: tokensIcons.wMEMO, decimals: 18, name: 'wMEMO' },
-  // { id: 'YEL', icon: tokensIcons.YEL, decimals: 18, name: 'YEL' },
+  { id: 'YEL', icon: tokensIcons.YEL, decimals: 18, name: 'YEL' },
 ];
 
 export default AVAXTokens;

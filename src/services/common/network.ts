@@ -71,6 +71,7 @@ export const getTreasuryBalance = async (
   const bondTokenAddress: string = getToken(tokens, bondId, 'address');
   const tokenContract: Contract = new Contract(bondTokenAddress, TokenContract, provider);
   const tokenBalanceOf = await tokenContract.balanceOf(TREASURY_ADDRESS);
+  // #TODO need to optimize
   const bigNativeCurrencyLPToken = tokens.find(({ isBigNativeCurrencyLP }: IBlockchain.IToken) => isBigNativeCurrencyLP);
   const uSDCNativeCurrencyLPToken = tokens.find(({ isUSDCNativeCurrencyLP }: IBlockchain.IToken) => isUSDCNativeCurrencyLP);
   const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider, tokens, uSDCNativeCurrencyLPToken);
@@ -81,6 +82,7 @@ export const getTreasuryBalance = async (
     treasuryBalance = (tokenBalanceOf / Math.pow(10, 18)) * nativeCurrencyInUSDC;
   } else if (bondIsLP) {
     const lpContractAddress: string = bigNativeCurrencyLPToken?.address || 'unknown';
+    
     const lpContract = new Contract(lpContractAddress, LPTokenContract, provider);
     const lpBalanceOf = await lpContract.balanceOf(TREASURY_ADDRESS);
     const wrapTokenAddress: string | undefined = tokens
@@ -160,6 +162,9 @@ export const getTreasuryBalance = async (
       }
       
       treasuryBalance = (tokenBalanceOf / Math.pow(10, 18)) * orbsPriceInUSDC;
+    } else if (bondId === 'wMEMO') {
+      const tokenInNativeCurrency: number = await getTokenInNativeCurrency(networkID, provider, bondId, tokens);
+      treasuryBalance = tokenBalanceOf / Math.pow(10, 18) * tokenInNativeCurrency
     } else {
       const tokenInNativeCurrency: number = await getTokenInNativeCurrency(networkID, provider, bondId, tokens);
       const tokenPriceInUSDC: number = tokenInNativeCurrency * nativeCurrencyInUSDC;

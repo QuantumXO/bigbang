@@ -3,9 +3,7 @@ import { BangTokenContract, BigTokenContract, dYelTokenContract } from '@service
 import { getBondAddresses } from '@services/helpers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 
-export default async (
-  networkId: number, provider: JsonRpcProvider, treasuryBalance: number,
-): Promise<number> => {
+export default async (networkId: number, provider: JsonRpcProvider, treasuryBalance: number): Promise<number> => {
   const { DYEL_ADDRESS, BIG_ADDRESS, BANG_ADDRESS, STAKING_ADDRESS } = getBondAddresses(networkId);
   const dYelContract: Contract = new ethers.Contract(DYEL_ADDRESS, dYelTokenContract, provider);
   const dYelTotalSupply: number = await dYelContract.totalSupply() / Math.pow(10, 18);

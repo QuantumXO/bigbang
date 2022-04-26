@@ -22,7 +22,7 @@ const menu: IMenuLink[] = [
       </svg>
     )
   },
-  { id: 'Equilibrium', label: 'Equilibrium', url: 'https://eq-yel-finance.vercel.app/',
+  { id: 'Equilibrium', label: 'Equilibrium', url: 'https://yel-finance.vercel.app/equilibrium',
     icon: (
       <svg width="16" height="14" className="icon equilibrium" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -31,7 +31,7 @@ const menu: IMenuLink[] = [
       </svg>
     )
   },
-  { id: 'Ecosystem', label: 'Ecosystem', url: 'https://app-yel-finance.vercel.app/',
+  { id: 'Ecosystem', label: 'Ecosystem', url: 'https://yel-finance.vercel.app/spectre',
     icon: (
       <svg className="icon ecosystem" width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5.0625 0.424805H15.0625L18.8125 4.1748L10.0625 12.9248L1.3125 4.1748L5.0625 0.424805Z" stroke="#5A5A5C" strokeWidth="0.85" strokeLinecap="round"
