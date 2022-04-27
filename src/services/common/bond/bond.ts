@@ -1,9 +1,10 @@
 import { IBlockchain } from '@models/blockchain';
-import { ContractInterface } from 'ethers';
+import { Contract, ContractInterface } from 'ethers';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { IBond } from '@models/bond';
 import { getToken } from '@services/helpers/get-token';
-import { StableBondContract, StableReserveContract } from '@services/abi';
+import { BondingCalcContract, StableBondContract, StableReserveContract } from '@services/abi';
+import { getBondAddresses } from '@services/common/bond/get-bond-addresses';
 
 export interface BondOpts {
   readonly id: IBond.IBondType; // Internal name used for references
@@ -58,13 +59,18 @@ export class Bond {
     this.bondLPIcon = bondLPIcon;
   }
   
-  public getBigAmount(networkID: number, provider: StaticJsonRpcProvider): Promise<number> {
+  public getBigAmount(): Promise<number> {
     return new Promise<number>(reserve => reserve(0));
   }
   
-  /* protected getTokenPrice(): number {
-    return getTokenPrice(this.bondToken);
-  } */
+  public getBondCalculatorContract(networkID: number, provider: StaticJsonRpcProvider): Contract {
+    const { BONDING_CALC_ADDRESS } = getBondAddresses(networkID) || {};
+    const bondingCalcAddress: string = (this.isLP && BONDING_CALC_ADDRESS)
+      ? BONDING_CALC_ADDRESS
+      : '0x0000000000000000000000000000000000000000';
+    return new Contract(bondingCalcAddress, BondingCalcContract, provider);
+  }
+  
   
   getReserveAddress(tokens: IBlockchain.IToken[]): string {
     return getToken(tokens, this.bondToken, 'address');

@@ -36,7 +36,7 @@ export const CAKE: Bond = new Bond({
 export const BIFI: Bond = new Bond({
   id: 'BIFI',
   bondIcon: tokensIcons.BIFI,
-  bondAddress: '0x6b52b628804f1b70c241bdb1063af046421d1020',
+  bondAddress: '0x27173aF7efd987B38BA5025D0096eD243F1A7AB2',
   tokensInStrategy: '0',
   networkType: 'BSC',
 });

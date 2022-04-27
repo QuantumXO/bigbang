@@ -72,7 +72,7 @@ export const loadAppDetails = createAsyncThunk(
         const rfvTreasury = tokenAmounts
           .reduce((tokenAmount0: number, tokenAmount1: number) => tokenAmount0 + tokenAmount1, 0);
   
-        const bigBondsAmountsPromises = bonds.map((bond: Bond) => bond.getBigAmount(networkID, provider));
+        const bigBondsAmountsPromises = bonds.map((bond: Bond) => bond.getBigAmount());
         const bigBondsAmounts: number[] = await Promise.all(bigBondsAmountsPromises);
         const bigAmount: number = bigBondsAmounts
           .reduce((bigAmount0: number, bigAmount1: number) => bigAmount0 + bigAmount1, 0);

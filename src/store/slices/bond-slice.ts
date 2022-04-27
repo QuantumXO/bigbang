@@ -7,7 +7,6 @@ import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Bond } from '@services/common/bond/bond';
 import { IBlockchain } from '@models/blockchain';
-import { getBondCalculator } from '@services/common/bond/get-bond-calculator';
 import { RootState } from '../store';
 import { error, info, success, warning } from '../slices/messages-slice';
 import { messages } from '@constants/messages';
@@ -116,7 +115,7 @@ export const calcBondDetails = createAsyncThunk(
       const { id: bondId, bondAddress } = bond;
       const { TREASURY_ADDRESS } = getBondAddresses(networkID);
       const amountInWei: BigNumber = ethers.utils.parseEther(value);
-      const bondCalcContract: Contract = getBondCalculator(networkID, provider, bond);
+      const bondCalcContract: Contract = bond.getBondCalculatorContract(networkID, provider);
   
       let contractAbi: ContractInterface = StableBondContract;
       
