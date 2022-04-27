@@ -74,6 +74,7 @@
     content: '';
     mask-repeat: no-repeat;
     mask-position: 50%;
+    mask-size: cover;
   }
   &.current {
     margin-left: 17px;
@@ -110,7 +111,7 @@
       mask-image: url(../../../../../assets/images/common/networks/fantom.svg);
     }
   }
-  &.BNB {
+  &.BSC {
     &::before {
       width: 20px;
       height: 20px;
@@ -122,6 +123,13 @@
       width: 19px;
       height: 17px;
       mask-image: url(../../../../../assets/images/common/networks/polygon_MATIC.svg);
+    }
+  }
+  &.AVAX {
+    &::before {
+      width: 19px;
+      height: 18px;
+      mask-image: url(../../../../../assets/images/common/networks/avax.svg);
     }
   }
 }

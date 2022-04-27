@@ -350,7 +350,7 @@ export function Stake(): ReactElement {
       <Zoom in={true}>
         <div>
           <Grid container spacing={0} justifyContent="space-between" className="header__cards__grid">
-            <Grid item lg={6} md={6} sm={6} xs={12} className="card stake__card welcome">
+            <Grid item lg={6} md={6} sm={12} xs={12} className="card stake__card welcome">
               <p className="card__title">{'Stake'}</p>
               <p className="card__value">
                 {'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet' +

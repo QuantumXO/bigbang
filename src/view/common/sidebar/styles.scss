@@ -85,6 +85,12 @@
             mask-image: url(../../../assets/images/common/sidebar/stake-icon.svg);
           }
         }
+        &.reverseBonding {
+          &::before {
+            mask-size: 17px;
+            mask-image: url(../../../assets/images/common/sidebar/reverse-bonding.svg);
+          }
+        }
         &.mints {
           &::before {
             mask-image: url(../../../assets/images/common/sidebar/mint-icon.svg);

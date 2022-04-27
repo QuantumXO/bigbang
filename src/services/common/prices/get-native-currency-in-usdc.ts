@@ -5,6 +5,7 @@ import { getToken } from '@services/helpers/get-token';
 import { getReserves } from '@services/helpers/get-reserves';
 import { LpReserveContract } from '@services/abi';
 import { sleep } from '@services/helpers';
+import { getCurrentNetwork } from '@services/common/network';
 
 export const getNativeCurrencyInUSDC = async (
   networkID: number,
@@ -18,6 +19,13 @@ export const getNativeCurrencyInUSDC = async (
     if (uSDCNativeCurrencyLPToken) {
       const uSDCAddress: string = getToken(tokens, 'USDC', 'address');
       
+      const currentNetwork: IBlockchain.INetwork | undefined = getCurrentNetwork(String(networkID));
+      let uSDCTokenDecimals: number = 6;
+      
+      if (currentNetwork?.id === 'BSC') {
+        uSDCTokenDecimals = 18;
+      }
+      
       const { reserves: [reserve0, reserve1], comparedAddressInReserve } = await getReserves({
         contractAddress: uSDCNativeCurrencyLPToken?.tokenNativeCurrencyLPAddress || 'unknown',
         contractABI: LpReserveContract,
@@ -26,9 +34,10 @@ export const getNativeCurrencyInUSDC = async (
       });
       
       if (comparedAddressInReserve === 0) {
-        nativeCurrencyInUSDC = ((reserve0 * Math.pow(10, 18)) / reserve1) / Math.pow(10, 6);
+        nativeCurrencyInUSDC = ((reserve0 * Math.pow(10, 18)) / reserve1) / Math.pow(10, uSDCTokenDecimals);
       } else if (comparedAddressInReserve === 1) {
-        nativeCurrencyInUSDC = ((reserve1 * Math.pow(10, 18)) / reserve0) / Math.pow(10, 6);
+        nativeCurrencyInUSDC = ((reserve1 * Math.pow(10, 18)) / reserve0) / Math.pow(10, uSDCTokenDecimals);
+  
       } else {
         throw new Error('No exist USDC address');
       }

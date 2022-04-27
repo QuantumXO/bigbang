@@ -25,7 +25,8 @@
     "noImplicitAny": false,
     "downlevelIteration": true,
     "noErrorTruncation": true,
-    "allowUnreachableCode": true
+    "allowUnreachableCode": true,
+    "strictFunctionTypes": false
   },
   "include": [
     "src"

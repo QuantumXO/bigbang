@@ -1,8 +1,8 @@
 import React, { FC, ReactElement } from 'react';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import { Bond, Dashboard, NotFound, Stake, Mints } from '@view/index';
+import { Bond, Dashboard, NotFound, Stake, Mints, ReverseBonding } from '@view/index';
 import useBonds, { IAllBondData } from '@services/hooks/bonds';
-import CommonRoute from '@view/router/components/common-route';
+import CommonRoute from '@view/common/router/components/common-route';
 
 export const Router: FC = (): ReactElement => {
   const { bonds } = useBonds();
@@ -13,6 +13,7 @@ export const Router: FC = (): ReactElement => {
         <Route path="dashboard" element={<CommonRoute Component={Dashboard} />} />
         <Route path="stake" element={<CommonRoute Component={Stake} />} />
         <Route path="mints" element={<CommonRoute Component={Mints} />} />
+        <Route path="reverse-bonding" element={<CommonRoute Component={ReverseBonding} />} />
         {bonds.map((bond: IAllBondData): ReactElement => {
           return (
             <Route

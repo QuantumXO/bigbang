@@ -20,20 +20,26 @@
     background-position: 398px 0;
     background-size: calc(100% - 398px);
   }
-  &__content {
-    max-width: #{$content_max_width};
+  &__container {
     position: relative;
     background-repeat: no-repeat;
     @include desktop {
       display: flex;
       margin-left: $sidebar_width;
-      padding: 84px 0 50px 10px;
+      padding: 84px 10px 50px 10px;
       justify-content: flex-end;
     }
     @include noDesktop {
       width: 100%;
       padding: 0 10px;
     }
+  }
+  &__content {
+    width: 100%;
+    max-width: #{$content_max_width};
+    display: flex;
+    margin: 0 auto;
+    justify-content: center;
   }
   &--bg {
     top: 0;

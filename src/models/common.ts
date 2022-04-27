@@ -7,6 +7,7 @@ export declare namespace ICommon {
     'fund' = 'fund',
     'docs' = 'docs',
     'bond' = 'bond',
+    'reverseBonding' = 'reverseBonding',
   }
   type IGetLinkReturn = (...args: any) => string;
   export type GetLinkType = {

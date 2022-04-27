@@ -1,12 +1,12 @@
-import { Bond } from '@services/common/bond';
+import { Bond } from '@services/common/bond/bond';
 import { IBlockchain } from '@models/blockchain';
 import tokensAssets from '@constants/tokens';
 import { ACTIVE_NETWORKS } from '@constants/networks';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { getBondAddresses, sleep } from '@services/helpers';
 import { getToken } from '@services/helpers/get-token';
-import { Contract, ethers } from 'ethers';
-import { dYelTokenContract, LPTokenContract, TokenContract } from '@services/abi';
+import { Contract } from 'ethers';
+import { LpReserveContract, LPTokenContract, TokenContract } from '@services/abi';
 import { getNativeCurrencyInUSDC } from '@services/common/prices/get-native-currency-in-usdc';
 import { getReserves } from '@services/helpers/get-reserves';
 import getCrvTreasuryBalance from '@services/helpers/get-crv-treasury-balance';
@@ -66,24 +66,25 @@ export const getTreasuryBalance = async (
   networkID: number,
   provider: StaticJsonRpcProvider
 ): Promise<number> => {
-  const { id: bondId, isLP: bondIsLP, isWrap: bondIsWrap } = bond;
-  const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
+  const { id: bondId, isLP: bondIsLP, isWrap: bondIsWrap, networkType: bondNetworkType } = bond;
+  const { TREASURY_ADDRESS } = getBondAddresses(networkID);
   const bondTokenAddress: string = getToken(tokens, bondId, 'address');
   const tokenContract: Contract = new Contract(bondTokenAddress, TokenContract, provider);
-  const tokenBalanceOf = await tokenContract.balanceOf(addresses.TREASURY_ADDRESS);
+  const tokenBalanceOf = await tokenContract.balanceOf(TREASURY_ADDRESS);
+  // #TODO need to optimize
   const bigNativeCurrencyLPToken = tokens.find(({ isBigNativeCurrencyLP }: IBlockchain.IToken) => isBigNativeCurrencyLP);
   const uSDCNativeCurrencyLPToken = tokens.find(({ isUSDCNativeCurrencyLP }: IBlockchain.IToken) => isUSDCNativeCurrencyLP);
   const nativeCurrencyInUSDC: number = await getNativeCurrencyInUSDC(networkID, provider, tokens, uSDCNativeCurrencyLPToken);
+  let usdcDecimals: number = 6;
   let treasuryBalance: number = 0;
   
-  if (bondId === 'USDC') {
-    treasuryBalance = tokenBalanceOf / Math.pow(10, 6);
-  } else if (bondIsWrap) {
+  if (bondIsWrap) {
     treasuryBalance = (tokenBalanceOf / Math.pow(10, 18)) * nativeCurrencyInUSDC;
   } else if (bondIsLP) {
     const lpContractAddress: string = bigNativeCurrencyLPToken?.address || 'unknown';
+    
     const lpContract = new Contract(lpContractAddress, LPTokenContract, provider);
-    const lpBalanceOf = await lpContract.balanceOf(addresses.TREASURY_ADDRESS);
+    const lpBalanceOf = await lpContract.balanceOf(TREASURY_ADDRESS);
     const wrapTokenAddress: string | undefined = tokens
       .find(({ isWrap }: IBlockchain.IToken) => isWrap)?.address;
     const totalSupply: number = (await lpContract.totalSupply());
@@ -109,12 +110,66 @@ export const getTreasuryBalance = async (
       throw new Error('wrapTokenAddress Error');
     }
     treasuryBalance = (lpBalanceOf / Math.pow(10, 18)) * lpPriceInUSDC;
-  } else if (bondId === 'CRV') {
-    treasuryBalance = await getCrvTreasuryBalance(networkID, provider, bondId, tokens);
   } else {
-    const tokenInNativeCurrency: number = await getTokenInNativeCurrency(networkID, provider, bondId, tokens);
-    const tokenPriceInUSDC: number = tokenInNativeCurrency * nativeCurrencyInUSDC;
-    treasuryBalance = tokenBalanceOf / Math.pow(10, 18) * tokenPriceInUSDC
+    // Tokens
+    if (bondId === 'USDC') {
+      if (bondNetworkType === 'BSC') {
+        usdcDecimals = 18;
+      }
+      treasuryBalance = tokenBalanceOf / Math.pow(10, usdcDecimals);
+    } else if (bondId === 'CRV') {
+      treasuryBalance = await getCrvTreasuryBalance(networkID, provider, bondId, tokens) || 0;
+    } else if (bondId === 'STG') {
+      const tokenAddress: string = getToken(tokens, bondId, 'tokenNativeCurrencyLPAddress');
+      const stgTokenAddress: string = getToken(tokens, bondId, 'address');
+  
+      const {
+        reserves: [reserve0, reserve1],
+        comparedAddressInReserve
+      } = await getReserves({
+        contractAddress: tokenAddress,
+        contractABI: LpReserveContract,
+        provider,
+        comparedAddress: stgTokenAddress,
+      });
+      let stgPriceInBUSD: number = 0;
+  
+      if (comparedAddressInReserve === 0) {
+        stgPriceInBUSD = reserve1 / reserve0;
+      } else if (comparedAddressInReserve === 1) {
+        stgPriceInBUSD = reserve0 / reserve1;
+      }
+      treasuryBalance = (tokenBalanceOf / Math.pow(10, 18)) * stgPriceInBUSD;
+    } else if (bondId === 'ORBS') {
+      const orbsLPAddress: string = getToken(tokens, 'ORBS', 'tokenNativeCurrencyLPAddress');
+      const usdcAddress: string = getToken(tokens, 'USDC', 'address');
+  
+      const {
+        reserves: [reserve0, reserve1],
+        comparedAddressInReserve
+      } = await getReserves({
+        contractAddress: orbsLPAddress,
+        contractABI: LpReserveContract,
+        provider,
+        comparedAddress: usdcAddress,
+      });
+      let orbsPriceInUSDC: number = 0;
+  
+      if (comparedAddressInReserve === 0) {
+        orbsPriceInUSDC = (reserve0 / Math.pow(10, 6)) / (reserve1 / Math.pow(10, 18));
+      } else if (comparedAddressInReserve === 1) {
+        orbsPriceInUSDC = (reserve1 / Math.pow(10, 18)) / (reserve0 / Math.pow(10, 6));
+      }
+      
+      treasuryBalance = (tokenBalanceOf / Math.pow(10, 18)) * orbsPriceInUSDC;
+    } else if (bondId === 'wMEMO') {
+      const tokenInNativeCurrency: number = await getTokenInNativeCurrency(networkID, provider, bondId, tokens);
+      treasuryBalance = tokenBalanceOf / Math.pow(10, 18) * tokenInNativeCurrency
+    } else {
+      const tokenInNativeCurrency: number = await getTokenInNativeCurrency(networkID, provider, bondId, tokens);
+      const tokenPriceInUSDC: number = tokenInNativeCurrency * nativeCurrencyInUSDC;
+      treasuryBalance = tokenBalanceOf / Math.pow(10, 18) * tokenPriceInUSDC
+    }
   }
   
   await sleep(0.01);

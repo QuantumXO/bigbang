@@ -5,12 +5,12 @@ import { IBlockchain } from '@models/blockchain';
 import { setAll, sleep } from '@services/helpers';
 import { info, success, warning } from './messages-slice';
 import { RootState } from '../store';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
 import { dYelTokenContract } from '@services/abi';
 import { clearPendingTxn, fetchPendingTxns, getWrappingTypeText } from './pending-txns-slice';
 import { getGasPrice } from '@services/helpers/get-gas-price';
-import { getBondAddresses } from '@services/helpers/bond/get-bond-addresses';
+import { getBondAddresses } from '@services/common/bond/get-bond-addresses';
 import { fetchAccountSuccess, getBalances } from './account-slice';
 
 export interface IChangeApproval {
@@ -140,17 +140,17 @@ export const changeWrap = createAsyncThunk(
 
 const calcWrapValue = async ({ isWrap, value, provider, networkID }: IWrapDetails): Promise<number> => {
   const addresses = getBondAddresses(networkID);
-  
-  const amountInWei = isWrap ? ethers.utils.parseUnits(value, 'gwei') : ethers.utils.parseEther(value);
-  
-  let wrapValue = 0;
-  
   const dYelContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, provider);
+  const amountInWei: BigNumber = isWrap
+    ? ethers.utils.parseUnits(value, 'gwei')
+    : ethers.utils.parseEther(value);
+  
+  let wrapValue: number;
   
   if (isWrap) {
     const dYelValue = await dYelContract.BANGTodYel(amountInWei);
     wrapValue = dYelValue / Math.pow(10, 18);
-  } else {
+    } else {
     const bangValue = await dYelContract.dYelToBANG(amountInWei);
     wrapValue = bangValue / Math.pow(10, 9);
   }
@@ -189,12 +189,17 @@ export const calcWrapPrice = createAsyncThunk(
       dispatch(warning({ text: messages.please_connect_wallet }));
       return;
     }
-    
-    const wrapPrice = await calcWrapValue({ isWrap, value: '1', provider, networkID });
-    
-    return {
-      wrapPrice
-    };
+  
+    try {
+      const wrapPrice = await calcWrapValue({ isWrap, value: '1', provider, networkID });
+  
+      return {
+        wrapPrice
+      };
+    } catch (e) {
+      console.log('calcWrapPrice() e: ', e);
+      throw new Error('calcWrapPrice() Error');
+    }
   }
 );
 

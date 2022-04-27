@@ -1,5 +1,9 @@
-import React,
-{ ComponentType, FC, ReactElement, ReactNode, Children, isValidElement, cloneElement, ReactChildren, memo }
+import
+  React,
+  {
+    ComponentType, FC, ReactElement, ReactNode, Children, isValidElement, cloneElement, ReactFragment,
+    memo
+  }
   from 'react';
 import CommonWrapper from '@view/common/common-wrapper';
 
@@ -10,7 +14,7 @@ interface IProps {
 }
 
 export const CommonRoute: FC<IProps> = memo(({ Component, props = {}, children }: IProps): ReactElement => {
-  let childrenWithProps: Record<string, unknown>[] | null | undefined = null;
+  let childrenWithProps: (string | number | ReactElement | ReactFragment)[] | null | undefined = null;
   
   if (!!children) {
     childrenWithProps = Children.map(children, child => {

@@ -5,9 +5,8 @@ import { calculateUserBondDetails, fetchAccountSuccess, getBalances } from './ac
 import { clearPendingTxn, fetchPendingTxns } from './pending-txns-slice';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { JsonRpcProvider, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Bond } from '@services/common/bond';
+import { Bond } from '@services/common/bond/bond';
 import { IBlockchain } from '@models/blockchain';
-import { getBondCalculator } from '@services/helpers/bond/get-bond-calculator';
 import { RootState } from '../store';
 import { error, info, success, warning } from '../slices/messages-slice';
 import { messages } from '@constants/messages';
@@ -15,7 +14,7 @@ import { getGasPrice } from '@services/helpers/get-gas-price';
 import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
 import { StableBondContract, wFTMReserveContract, YFI_TSHAREBondContract } from '@services/abi';
 import { getToken } from '@services/helpers/get-token';
-import { getBondPrice } from '@services/helpers/bond/get-bond-price';
+import { getBondPrice } from '@services/common/bond/get-bond-price';
 import { useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 
@@ -113,26 +112,23 @@ export const calcBondDetails = createAsyncThunk(
       value = '0';
     }
     try {
-      const { id: bondId } = bond;
-      const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
+      const { id: bondId, bondAddress } = bond;
+      const { TREASURY_ADDRESS } = getBondAddresses(networkID);
       const amountInWei: BigNumber = ethers.utils.parseEther(value);
-      const bondCalcContract: Contract = getBondCalculator(networkID, provider, bond);
+      const bondCalcContract: Contract = bond.getBondCalculatorContract(networkID, provider);
+  
       let contractAbi: ContractInterface = StableBondContract;
       
       if (bondId === 'TSHARE' || bondId === 'YFI') {
         contractAbi = YFI_TSHAREBondContract;
       }
       
-      
-      const bondContract: Contract = new Contract(bond.bondAddress, contractAbi, provider);
+      const bondContract: Contract = new Contract(bondAddress, contractAbi, provider);
       const terms = await bondContract.terms();
-      
-      
-      
-      
       const maxBondPrice: number = (await bondContract.maxPayout()) / Math.pow(10, 9);
+      // #TODO leave getMarketPrice() to store
       const marketPrice: number = await getMarketPrice(networkID, provider, tokens);
-      const minPurchase: number = await bondContract.minPayout() / Math.pow(10, 9);
+      const minPurchase: number = (await bondContract.minPayout()) / Math.pow(10, 9);
       const maxBodValue = ethers.utils.parseEther('1');
       const bigNativeCurrencyLPToken: IBlockchain.IToken | undefined = tokens
         .find(({ isBigNativeCurrencyLP }: IBlockchain.IToken) => isBigNativeCurrencyLP);
@@ -143,7 +139,7 @@ export const calcBondDetails = createAsyncThunk(
   
       const bondPrice: number = await getBondPrice({ bond, networkID, provider, tokens });
       const bondDiscount: number = (marketPrice - bondPrice) / marketPrice;
-  
+      
       if (bond.isLP) {
         try {
           valuation = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, amountInWei);
@@ -159,9 +155,9 @@ export const calcBondDetails = createAsyncThunk(
         maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -9));
       } else {
         bondQuote = await bondContract.payoutFor(amountInWei);
-    
+        
         bondQuote = bondQuote / Math.pow(10, 18);
-    
+        
         const maxBondQuote = await bondContract.payoutFor(maxBodValue);
         maxBondPriceToken = maxBondPrice / (maxBondQuote * Math.pow(10, -18));
       }
@@ -171,25 +167,29 @@ export const calcBondDetails = createAsyncThunk(
       } else if (value !== '0' && bondQuote < minPurchase) {
         dispatch(error({ text: messages.try_mint_less(minPurchase.toString()) }));
       }
-  
+      
       // Calculate bonds purchased
       const token: Contract = new ethers.Contract(bond.getReserveAddress(tokens), wFTMReserveContract, provider);
       const tokenDecimals: number = await token.decimals();
+      
+      let purchased: any = 0;
   
-      let purchased = await token.balanceOf(addresses.TREASURY_ADDRESS);
+      if (TREASURY_ADDRESS) {
+        purchased = await token.balanceOf(TREASURY_ADDRESS);
   
-      if (bond.isLP) {
-        const markdown = await bondCalcContract.markdown(bigNativeCurrencyLPTokenAddress);
+        if (bond.isLP) {
+          const markdown = await bondCalcContract.markdown(bigNativeCurrencyLPTokenAddress);
+  
+          purchased = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, purchased);
+          purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 9));
+        } else {
+          if (bond.tokensInStrategy) {
+            purchased = BigNumber.from(purchased).add(BigNumber.from(bond.tokensInStrategy)).toString();
+          }
     
-        purchased = await bondCalcContract.valuation(bigNativeCurrencyLPTokenAddress, purchased);
-        purchased = (markdown / Math.pow(10, 18)) * (purchased / Math.pow(10, 9));
-      } else {
-        if (bond.tokensInStrategy) {
-          purchased = BigNumber.from(purchased).add(BigNumber.from(bond.tokensInStrategy)).toString();
+          // #TODO check
+          purchased = Number(purchased) / Math.pow(10, tokenDecimals);
         }
-    
-        // #TODO check
-        purchased = purchased / Math.pow(10, tokenDecimals);
       }
   
       return {
@@ -206,7 +206,7 @@ export const calcBondDetails = createAsyncThunk(
       };
     } catch (e) {
       console.log('calcBondDetails() e: ', bond.id, e);
-      throw new Error('calcBondDetails Error');
+      throw new Error('calcBondDetails() Error');
     }
   }
 );

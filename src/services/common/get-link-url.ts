@@ -15,6 +15,7 @@ export class LinkUrl {
       mints: (): string => `/mints`,
       fund: (): string => `/fund`,
       docs: (): string => '/',
+      reverseBonding: (): string => '/reverse-bonding',
       bond: (bondName: string): string => `/mints/${bondName}`,
     };
   }

@@ -6,6 +6,7 @@ $mobile: 360px;
 $tablet: 768px;
 $desktop: 1024px;
 $sidebar_width: 280px;
+$page_content_width: 920px;
 
 @mixin desktop() {
   @media (min-width: $desktop) {

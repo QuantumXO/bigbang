@@ -1,5 +1,5 @@
 export namespace IBlockchain {
-  export type NetworkType = 'ETH' | 'FTM' | 'BNB' | 'MATIC' | 'BSC';
+  export type NetworkType = 'ETH' | 'FTM' | 'MATIC' | 'BSC' | 'AVAX';
   export interface INativeCurrency {
     id: TokenType;
     symbol: string;
@@ -34,14 +34,6 @@ export namespace IBlockchain {
     };
     rpcUrls?: string[];
   }
-  export interface IBondAddresses {
-    reserveAddress: string;
-    bondAddress: string;
-  }
-  export enum WTF_BondEnum {
-    StableAsset,
-    LP,
-  }
   export interface IBondMainnetAddresses {
     BIG_ADDRESS: string;
     BANG_ADDRESS: string;
@@ -53,6 +45,8 @@ export namespace IBlockchain {
     DISTRIBUTOR_ADDRESS: string;
     STAKING_WARMUP_ADDRESS: string;
     ZAPIN_ADDRESS: string;
+    REVERSE_BONDING_ADDRESS: string;
+    BUSD_ADDRESS?: string;
   }
   export type OurTokenType = 'BIG' | 'BANG' | 'dYel';
   export interface IToken {
@@ -113,7 +107,7 @@ export namespace IBlockchain {
     | 'ORBS'
     | 'QI'
     | 'BIGwMATIC'
-  export type BSCNativeCurrencyType = 'BNB';
+  export type BSCNativeCurrencyType = 'wBNB';
   export type BSCTokenType =
     | StableMATICTokenType
     | BSCNativeCurrencyType
@@ -124,6 +118,7 @@ export namespace IBlockchain {
     | 'ALPACA'
     | 'STG'
     | 'YEL'
+    | 'BIGwBNB'
   export type ETHNativeCurrencyType = 'wETH';
   export type ETHTokenType =
     | StableMATICTokenType
@@ -141,18 +136,21 @@ export namespace IBlockchain {
     | 'CRV'
     | 'FARM'
     | 'BAL'
+    | 'BIGwETH'
   export type AVALANCHENativeCurrencyType = 'wAVAX';
   export type AVALANCHETokenType =
     | StableMATICTokenType
     | AVALANCHENativeCurrencyType
     | 'AVAX'
     | 'JOE'
+    | 'LINK'
     | 'LINK.e'
     | 'PTP'
     | 'SPELL'
     | 'AAVE'
     | 'wMEMO'
     | 'YEL'
+    | 'BIGwAVAX'
   export type TokenType =
     | StableWrapCommonTokenType
     | OurTokenType

@@ -2,79 +2,85 @@ import { BigNumber, Contract, ethers } from 'ethers';
 import { BangTokenContract, BigTokenContract, dYelTokenContract, TokenContract, StableBondContract, wFTMReserveContract } from '@services/abi';
 import { setAll, getBondAddresses } from '@services/helpers';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import { IBlockchain } from '@models/blockchain';
 import { RootState } from '../store';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { IAccount } from '@models/account';
 
 export const getBalances = createAsyncThunk(
   'account/getBalances',
-  async ({ address, networkID, provider }: IAccount.IGetBalances): Promise<IAccount.IAccountBalances> => {
-    const addresses: IBlockchain.IBondMainnetAddresses = getBondAddresses(networkID);
-    const bigContract: Contract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, provider);
-    const bigBalance: BigNumberish = await bigContract.balanceOf(address);
-    const bangContract: Contract = new ethers.Contract(addresses.BANG_ADDRESS, BangTokenContract, provider);
-    const bangBalance: BigNumberish = await bangContract.balanceOf(address);
-    const dYelContract: Contract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, provider);
-    const dYelBalance: BigNumberish = await dYelContract.balanceOf(address);
+  async ({ address, networkID, provider }: IAccount.IGetBalances): Promise<IAccount.IAccountBalances | undefined> => {
+    const { BIG_ADDRESS, BANG_ADDRESS, DYEL_ADDRESS } = getBondAddresses(networkID) || {};
     
-    return {
-      balances: {
-        big: ethers.utils.formatUnits(bigBalance, 'gwei'),
-        bang: ethers.utils.formatUnits(bangBalance, 'gwei'),
-        dYel: ethers.utils.formatEther(dYelBalance)
-      }
-    };
+    if (BIG_ADDRESS && BANG_ADDRESS && DYEL_ADDRESS) {
+      const bigContract: Contract = new ethers.Contract(BIG_ADDRESS, BigTokenContract, provider);
+      const bigBalance: BigNumberish = await bigContract.balanceOf(address);
+      const bangContract: Contract = new ethers.Contract(BANG_ADDRESS, BangTokenContract, provider);
+      const bangBalance: BigNumberish = await bangContract.balanceOf(address);
+      const dYelContract: Contract = new ethers.Contract(DYEL_ADDRESS, dYelTokenContract, provider);
+      const dYelBalance: BigNumberish = await dYelContract.balanceOf(address);
+      
+      return {
+        balances: {
+          big: ethers.utils.formatUnits(bigBalance, 'gwei'),
+          bang: ethers.utils.formatUnits(bangBalance, 'gwei'),
+          dYel: ethers.utils.formatEther(dYelBalance)
+        }
+      };
+    }
 });
 
 export const loadAccountDetails = createAsyncThunk(
   'account/loadAccountDetails',
-  async ({ networkID, provider, address }: IAccount.ILoadAccountDetails): Promise<IAccount.IUserAccountDetails> => {
-    let bigBalance: number = 0;
-    let bangBalance: number = 0;
-    let dYelBalance: number = 0;
+  async ({ networkID, provider, address }: IAccount.ILoadAccountDetails): Promise<IAccount.IUserAccountDetails | undefined> => {
+    const {
+      BIG_ADDRESS, BANG_ADDRESS, DYEL_ADDRESS, STAKING_HELPER_ADDRESS, STAKING_ADDRESS
+    } = getBondAddresses(networkID);
     
-    let bangDYelAllowance: number = 0;
-    let stakeAllowance: number = 0;
-    let unstakeAllowance: number = 0;
+    if (BIG_ADDRESS && BANG_ADDRESS && DYEL_ADDRESS && STAKING_HELPER_ADDRESS && STAKING_ADDRESS) {
+      let bigBalance: number = 0;
+      let bangBalance: number = 0;
+      let dYelBalance: number = 0;
   
-    const addresses = getBondAddresses(networkID);
+      let bangDYelAllowance: number = 0;
+      let stakeAllowance: number = 0;
+      let unstakeAllowance: number = 0;
   
-    if (addresses.BIG_ADDRESS) {
-      const bigContract = new ethers.Contract(addresses.BIG_ADDRESS, BigTokenContract, provider);
-      bigBalance = await bigContract.balanceOf(address);
-      stakeAllowance = await bigContract.allowance(address, addresses.STAKING_HELPER_ADDRESS);
-    }
+      if (BIG_ADDRESS) {
+        const bigContract = new ethers.Contract(BIG_ADDRESS, BigTokenContract, provider);
+        bigBalance = await bigContract.balanceOf(address);
+        stakeAllowance = await bigContract.allowance(address, STAKING_HELPER_ADDRESS);
+      }
+  
+      if (BANG_ADDRESS) {
+        const bangContract = new ethers.Contract(BANG_ADDRESS, BangTokenContract, provider);
+        bangBalance = await bangContract.balanceOf(address);
+        unstakeAllowance = await bangContract.allowance(address, STAKING_ADDRESS);
     
-    if (addresses.BANG_ADDRESS) {
-      const bangContract = new ethers.Contract(addresses.BANG_ADDRESS, BangTokenContract, provider);
-      bangBalance = await bangContract.balanceOf(address);
-      unstakeAllowance = await bangContract.allowance(address, addresses.STAKING_ADDRESS);
-      
-      if (addresses.DYEL_ADDRESS) {
-        bangDYelAllowance = await bangContract.allowance(address, addresses.DYEL_ADDRESS);
+        if (DYEL_ADDRESS) {
+          bangDYelAllowance = await bangContract.allowance(address, DYEL_ADDRESS);
+        }
       }
-    }
   
-    if (addresses.DYEL_ADDRESS) {
-      const dYelContract = new ethers.Contract(addresses.DYEL_ADDRESS, dYelTokenContract, provider);
-      dYelBalance = await dYelContract.balanceOf(address);
-    }
-  
-    return {
-      balances: {
-        bang: ethers.utils.formatUnits(bangBalance, 'gwei'),
-        big: ethers.utils.formatUnits(bigBalance, 'gwei'),
-        dYel: ethers.utils.formatEther(dYelBalance)
-      },
-      staking: {
-        big: Number(stakeAllowance),
-        bang: Number(unstakeAllowance)
-      },
-      wrapping: {
-        bang: Number(bangDYelAllowance)
+      if (DYEL_ADDRESS) {
+        const dYelContract = new ethers.Contract(DYEL_ADDRESS, dYelTokenContract, provider);
+        dYelBalance = await dYelContract.balanceOf(address);
       }
-    };
+  
+      return {
+        balances: {
+          bang: ethers.utils.formatUnits(bangBalance, 'gwei'),
+          big: ethers.utils.formatUnits(bigBalance, 'gwei'),
+          dYel: ethers.utils.formatEther(dYelBalance)
+        },
+        staking: {
+          big: Number(stakeAllowance),
+          bang: Number(unstakeAllowance)
+        },
+        wrapping: {
+          bang: Number(bangDYelAllowance)
+        }
+      };
+    }
   }
 );
 

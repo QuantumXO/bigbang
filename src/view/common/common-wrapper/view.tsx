@@ -53,20 +53,22 @@ export const CommonWrapper: FC<IProps> = memo(({ children }: IProps): ReactEleme
       {(isAppLoading || isLoadingTokensPrices)
         ? <Loader />
         : (
-          <div className='wrapper--common__inner'>
+          <>
             <Messages />
             <Header drawe={!isSmallerScreen} handleSidebarToggle={handleDrawerToggle} />
             <Sidebar mobileOpen={mobileOpen} handleDrawerToggle={handleDrawerToggle} />
             <div
               className={cx(
-                'wrapper--common__content',
+                'wrapper--common__container',
                 classes.content,
                 { [classes.contentShift]: isSmallerScreen }
               )}
             >
-              {children}
+              <div className="wrapper--common__content">
+                {children}
+              </div>
             </div>
-          </div>
+          </>
         )
       }
     </div>
