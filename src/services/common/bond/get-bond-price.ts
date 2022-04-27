@@ -112,7 +112,7 @@ export const getBondPrice = async (props: IProps): Promise<number> => {
   
         bondPrice = crvPriceInUSDC * (bondPriceInUSD / Math.pow(10, 18));
       } else if (bondId === 'BIFI') {
-        bondPrice = bondPriceInUSD / Math.pow(10, 17);
+        bondPrice = bondPriceInUSD / Math.pow(10, 18);
       } else if (bondId === 'STG') {
         const tokenAddress: string = getToken(tokens, bondId, 'tokenNativeCurrencyLPAddress');
         const stgTokenAddress: string = getToken(tokens, bondId, 'address');
