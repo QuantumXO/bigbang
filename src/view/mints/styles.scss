@@ -7,7 +7,9 @@
       .bonds__grid.mobile {
         align-items: stretch;
         .bond__card__wrapper {
-          max-width: 50%;
+          @media (min-width: $tablet) {
+            max-width: 50%;
+          }
         }
       }
     }
@@ -19,7 +21,6 @@
           margin-bottom: 30px;
         }
         @include noDesktop {
-          max-width: 48.5%;
           margin-bottom: 16px;
         }
         &__inner {

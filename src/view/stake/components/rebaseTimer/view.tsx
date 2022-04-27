@@ -50,7 +50,7 @@ export function RebaseTimer(): ReactElement {
   }
   
   return (
-    <Grid item lg={6} md={6} sm={6} xs={12} className="card big rebase--timer">
+    <Grid item lg={6} md={6} sm={12} xs={12} className="card big rebase--timer">
       <p className="card__title" style={{ color: '#AD00FE' }}>BIG Staking</p>
       <div className="rebase--timer__progress">
         {layout}

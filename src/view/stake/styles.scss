@@ -4,12 +4,14 @@
   .header__cards__grid {
     flex-wrap: nowrap;
     align-items: stretch;
-    @include desktop() {
+    @include desktop {
       grid-gap: 30px;
-      flex-wrap: nowrap;
     }
-    @include noDesktop() {
+    @include noDesktop {
       grid-gap: 16px;
+    }
+    @include mobile {
+      flex-wrap: wrap;
     }
     & > .card {
       width: 100%;

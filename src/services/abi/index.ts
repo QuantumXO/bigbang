@@ -15,4 +15,4 @@ export { abi as LPTokenContract } from './tokens/LPContract.json';
 export { abi as BondingCalcContract } from './BondingCalcContract.json';
 export { abi as StakingContract } from './StakingContract.json';
 export { abi as StakingHelperContract } from './StakingHelperContract.json';
-export { abi as TreasuryContract } from './TreasuryContract.json';
+export { abi as ReverseBondingContract } from './ReverseBondingContract.json';
