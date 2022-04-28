@@ -24,19 +24,19 @@ const pendingTxnsSlice = createSlice({
   }
 });
 
-export const getStakingTypeText = (action: string) => {
+export const getStakingTypeText = (action: string): 'Staking BIG' | 'Unstaking BANG' => {
   return action.toLowerCase() === 'stake' ? 'Staking BIG' : 'Unstaking BANG';
 };
 
-export const getWrappingTypeText = (isWrap: boolean) => {
+export const getWrappingTypeText = (isWrap: boolean): 'Wrap BANG' | 'Unwrap dYel' => {
   return isWrap ? 'Wrap BANG' : 'Unwrap dYel';
 };
 
-export const isPendingTxn = (pendingTransactions: IPendingTxn[], type: string) => {
+export const isPendingTxn = (pendingTransactions: IPendingTxn[], type: string): boolean => {
   return pendingTransactions.map(x => x.type).includes(type);
 };
 
-export const txnButtonText = (pendingTransactions: IPendingTxn[], type: string, defaultText: string) => {
+export const txnButtonText = (pendingTransactions: IPendingTxn[], type: string, defaultText: string): string => {
   return isPendingTxn(pendingTransactions, type) ? 'Pending...' : defaultText;
 };
 

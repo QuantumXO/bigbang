@@ -18,11 +18,12 @@ import { getCurrentNetwork } from '@services/common/network';
 import { IBlockchain } from '@models/blockchain';
 import useDebounce from '@services/hooks/debounce';
 import { getGasPrice } from '@services/helpers/get-gas-price';
-import { info, success } from '@store/slices/messages-slice';
+import { error, info, success } from '@store/slices/messages-slice';
 import { messages } from '@constants/messages';
 import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
 
 import './styles.scss';
+import { getBalances } from '@store/slices/account-slice';
 
 export const ReverseBonding: FC = memo((): ReactElement => {
   const dispatch = useDispatch();
@@ -79,11 +80,18 @@ export const ReverseBonding: FC = memo((): ReactElement => {
     setDYelContract(newDYelContract);
   }, [provider, DYEL_ADDRESS]);
   
+  useEffect((): void => {
+    setIsPending(
+      isPendingTxn(pendingTransactions, 'approve_reverse_bonding')
+      || isPendingTxn(pendingTransactions, 'claim_reverse_bonding')
+    );
+  }, [pendingTransactions]);
+  
   const onHandleAllowance = async (): Promise<void> => {
     if (dYelContract) {
       const dYelAllowance = await dYelContract.allowance(address, REVERSE_BONDING_ADDRESS);
   
-      setHasAllowance(!!Number(dYelAllowance))
+      setHasAllowance(!!Number(dYelAllowance));
     } else {
       setHasAllowance(false);
     }
@@ -98,7 +106,6 @@ export const ReverseBonding: FC = memo((): ReactElement => {
       try {
         const valueOfDYEL = BigNumber.from(String(+amount * Math.pow(10, 18)));
         const [userAmount,] = await reverseBondingContract?.valueOfDYEL(valueOfDYEL);
-    
         setUsdcValue(userAmount / Math.pow(10, usdcDecimals));
       } catch (e) {
         console.log(e);
@@ -136,26 +143,25 @@ export const ReverseBonding: FC = memo((): ReactElement => {
         if (approveTx) {
           dispatch(clearPendingTxn(approveTx.hash));
         }
-    
         setIsPending(false);
       }
-  
+      
       await onHandleAllowance();
     }
   };
   
   const onClaim = async (): Promise<void> => {
     if (!isPendingTxn(pendingTransactions, 'claim_reverse_bonding')) {
-      if (amount)  {
+      if (Number(amount) > 0)  {
         let claimTx;
         
         setIsPending(true);
         
         try {
-          const valueInWei: string = String(+amount * Math.pow(10, usdcDecimals));
-  
-          claimTx = await reverseBondingContract?.deposit(valueInWei);
-  
+          const claimValue: string = String(+amount * Math.pow(10, 18));
+          
+          claimTx = await reverseBondingContract?.claim(claimValue);
+          
           const pendingTxnType: string = 'claim_reverse_bonding';
           const text: string = 'Claim Reverse Bonding';
   
@@ -165,6 +171,11 @@ export const ReverseBonding: FC = memo((): ReactElement => {
           
           dispatch(success({ text: messages.tx_successfully_send }));
           dispatch(info({ text: messages.your_balance_update_soon }));
+  
+          await sleep(5);
+          await dispatch(getBalances({ address, networkID: networkId, provider }));
+          
+          dispatch(info({ text: messages.your_balance_updated }));
         } catch (err) {
           console.log(err);
           metamaskErrorWrap(err, dispatch);
@@ -173,8 +184,9 @@ export const ReverseBonding: FC = memo((): ReactElement => {
             dispatch(clearPendingTxn(claimTx?.hash));
           }
         }
-  
         setIsPending(false);
+      } else {
+        dispatch(error({ text: messages.pls_enter_dyel_amount }));
       }
     }
   };
