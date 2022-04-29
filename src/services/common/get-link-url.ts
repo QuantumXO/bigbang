@@ -11,9 +11,7 @@ export class LinkUrl {
     return {
       dashboard: (): string => `/dashboard`,
       stake: (): string => `/stake`,
-      calculator: (): string => `/calculator`,
       mints: (): string => `/mints`,
-      fund: (): string => `/fund`,
       docs: (): string => '/',
       reverseBonding: (): string => '/reverse-bonding',
       bond: (bondName: string): string => `/mints/${bondName}`,

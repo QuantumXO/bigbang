@@ -353,8 +353,8 @@ export function Stake(): ReactElement {
             <Grid item lg={6} md={6} sm={12} xs={12} className="card stake__card welcome">
               <p className="card__title">{'Stake'}</p>
               <p className="card__value">
-                {'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet' +
-                  ' sint. Velit officia consequat duis enim velit mollit. Exercitation veniam '}
+                {'BIG tokens can be staked here to generate APR. After staking you should receive BANG tokens. With ' +
+                  'every rebase, the balance of your BANG tokens will be updated. The ratio is always 1 BIG = 1 BANG.'}
               </p>
             </Grid>
             <RebaseTimer />
