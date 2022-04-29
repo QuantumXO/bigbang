@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { IReduxState } from '@store/slices/state.interface';
 import { trim } from '@services/helpers';
 import { calcWrapDetails, changeWrap, changeApproval, calcWrapPrice } from '@store/slices/wrap-slice';
-import { warning } from '@store/slices/messages-slice';
+import { error, warning } from '@store/slices/messages-slice';
 import { messages } from '@constants/messages';
 import { IPendingTxn, isPendingTxn, txnButtonText } from '@store/slices/pending-txns-slice';
 import React from 'react';
@@ -61,6 +61,7 @@ export function WrapModal({ onClose }: IProps): ReactElement {
   }, [value]);
   
   useEffect((): void => {
+    if (getIsWrongNetwork()) return;
     dispatch(calcWrapPrice({ isWrap: isWrapPrice, provider, networkID }));
   }, [isWrapPrice]);
   
@@ -89,27 +90,31 @@ export function WrapModal({ onClose }: IProps): ReactElement {
   const getBalance = (): string => isWrap ? `${trimmedBangBalance} ${wrapBond}` : `${trimmedDYelBalance} ${unwrapBond}`;
   
   const handleOnWrap = async () => {
-    if (getIsWrongNetwork()) return;
-    
-    if (value === '' || parseFloat(value) === 0) {
-      dispatch(warning({ text: isWrap ? messages.before_wrap : messages.before_unwrap }));
+    if (!getIsWrongNetwork()) {
+      if (value === '' || parseFloat(value) === 0) {
+        dispatch(warning({ text: isWrap ? messages.before_wrap : messages.before_unwrap }));
+      } else {
+        await dispatch(changeWrap({ isWrap, value, provider, networkID, address }));
+        setValue('');
+      }
     } else {
-      await dispatch(changeWrap({ isWrap, value, provider, networkID, address }));
-      setValue('');
+      dispatch(error({ text: messages.wrong_network }));
     }
   };
   
   const onSeekApproval = async () => {
-    if (getIsWrongNetwork()) return;
-    await dispatch(changeApproval({ address, provider, networkID }));
-    
-    WTF_setIsApproved(true);
+    if (!getIsWrongNetwork()) {
+      await dispatch(changeApproval({ address, provider, networkID }));
+      WTF_setIsApproved(true);
+    } else {
+      dispatch(error({ text: messages.wrong_network }));
+    }
   };
   
   const onRenderApproveBtn = (): ReactElement => {
     return (
       <>
-        {hasAllowance() || WTF_isApproved
+        {(hasAllowance() || WTF_isApproved)
           ? (
             <div
               className="action--btn btn__primary--fulfilled"

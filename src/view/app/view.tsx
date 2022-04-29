@@ -15,14 +15,14 @@ import { useAddress, useCommonContext } from '@services/hooks/network';
 
 import '@assets/styles/index.scss';
 
-export const App: FC = memo((): ReactElement => {
+export const App: FC = (): ReactElement => {
   const dispatch: Dispatch<any> = useDispatch();
   const { provider, isConnected, isCheckedWallet, getIsWrongNetwork } = useCommonContext();
   const address: string = useAddress();
   const { bonds } = useBonds();
   const { tokens } = useTokens();
   const isAppLoaded: boolean = useSelector<IReduxState, boolean>(state => !Boolean(state.app.marketPrice));
-  const { chainId } = useSelector((state: IReduxState) => (state.network));
+  const { chainId } = useSelector((state: IReduxState) => state.network);
   
   const networkID: number = Number(chainId);
   
@@ -76,7 +76,7 @@ export const App: FC = memo((): ReactElement => {
   const loadApp = useCallback(
     (loadProvider: JsonRpcProvider): void => {
       dispatch(loadAppDetails({ networkID, provider: loadProvider, bonds, tokens }));
-      
+  
       if (!getIsWrongNetwork()) {
         bonds.forEach((bond: IAllBondData): void => {
           dispatch(calcBondDetails({ bond, value: null, provider: loadProvider, networkID, tokens }));
@@ -87,7 +87,7 @@ export const App: FC = memo((): ReactElement => {
         });
       }
     },
-    [isConnected, tokens, bonds, getIsWrongNetwork],
+    [isConnected, tokens, bonds, getIsWrongNetwork, chainId],
   );
 
   const loadAccount = useCallback(
@@ -112,4 +112,4 @@ export const App: FC = memo((): ReactElement => {
       <Router />
     </SnackbarProvider>
   );
-});
+};

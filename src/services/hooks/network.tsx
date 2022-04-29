@@ -70,6 +70,8 @@ export const CommonContextProvider: FC<INetworkContextProviderProps> = ({ childr
   
   const hasCachedProvider = (): boolean => !!web3Modal?.cachedProvider;
   
+  const getNetworkVersion = (): string | undefined => window.ethereum?.networkVersion;
+  
   useEffect((): void => {
     (async function() {
       dispatch(onSetBonds());
@@ -79,7 +81,7 @@ export const CommonContextProvider: FC<INetworkContextProviderProps> = ({ childr
       
       setIsLoadingTokensPrices(false);
     })()
-  }, []);
+  }, [getNetworkVersion()]);
   
   useEffect((): void => {
     if (web3Modal) {
@@ -129,6 +131,8 @@ export const CommonContextProvider: FC<INetworkContextProviderProps> = ({ childr
       
       rawProvider.on('chainChanged', async (chainId: number): Promise<void> => {
         await onHandleNetworkChange(chainId);
+        
+        window.location.replace('/');
       });
       
       rawProvider.on('network', (_newNetwork, oldNetwork): void => {
@@ -142,7 +146,7 @@ export const CommonContextProvider: FC<INetworkContextProviderProps> = ({ childr
   
   const onConnect = useCallback(async (): Promise<Web3Provider | void> => {
     if (web3Modal) {
-      const rawProvider: JsonRpcProvider = await web3Modal?.connect();
+      const rawProvider: JsonRpcProvider = await web3Modal.connect();
       
       _initListeners(rawProvider);
       
@@ -186,11 +190,9 @@ export const CommonContextProvider: FC<INetworkContextProviderProps> = ({ childr
   
   const currentNetwork: IBlockchain.INetwork | undefined = getCurrentNetwork();
   
-  const getNetworkVersion = (): string | undefined => window.ethereum?.networkVersion;
-  
   const getIsEthereumAPIAvailable = (): boolean => !!window.ethereum;
   
-  const getIsWrongNetwork = (): boolean => !SUPPORTED_NETWORKS_CHAIN_IDS.includes(String(getNetworkVersion()));
+  const getIsWrongNetwork = (): boolean => !SUPPORTED_NETWORKS_CHAIN_IDS.includes(chainId);
   
   const switchNetwork = async (newChainId: string): Promise<void> => {
     if (getIsEthereumAPIAvailable()) {
