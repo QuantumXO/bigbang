@@ -28,7 +28,7 @@ import { getBalances } from '@store/slices/account-slice';
 export const ReverseBonding: FC = memo((): ReactElement => {
   const dispatch = useDispatch();
   const address: string = useAddress();
-  const { provider } = useCommonContext();
+  const { provider, getIsWrongNetwork, isConnected } = useCommonContext();
   const chainId: string = useSelector((state: IReduxState) => state.network.chainId);
   const dYelPrice: number = useSelector((state: IReduxState) => state.app?.dYelPrice);
   const dYelAccountBalance: string = useSelector((state: IReduxState) => state.account?.balances?.dYel);
@@ -55,13 +55,15 @@ export const ReverseBonding: FC = memo((): ReactElement => {
   
   useEffect(() => {
     (async function() {
-      const reverseBondingContract: Contract = new Contract(REVERSE_BONDING_ADDRESS, ReverseBondingContract, signer);
-      const reverseBondingPenalty: number = (await reverseBondingContract.percentPenalty()) / 1;
+      if (!getIsWrongNetwork() && isConnected) {
+        const reverseBondingContract: Contract = new Contract(REVERSE_BONDING_ADDRESS, ReverseBondingContract, signer);
+        const reverseBondingPenalty: number = (await reverseBondingContract.percentPenalty()) / 1;
   
-      setReverseBondingContract(reverseBondingContract);
-      setReverseBondingPenalty(reverseBondingPenalty);
+        setReverseBondingContract(reverseBondingContract);
+        setReverseBondingPenalty(reverseBondingPenalty);
+      }
     })();
-  }, [provider, REVERSE_BONDING_ADDRESS]);
+  }, [provider, REVERSE_BONDING_ADDRESS, getIsWrongNetwork(), isConnected]);
   
   useEffect((): void => {
     (async function() {
@@ -76,9 +78,11 @@ export const ReverseBonding: FC = memo((): ReactElement => {
   }, [dYelContract]);
   
   useEffect((): void => {
-    const newDYelContract: Contract = new Contract(DYEL_ADDRESS, dYelTokenContract, signer);
-    setDYelContract(newDYelContract);
-  }, [provider, DYEL_ADDRESS]);
+    if (!getIsWrongNetwork() && isConnected) {
+      const newDYelContract: Contract = new Contract(DYEL_ADDRESS, dYelTokenContract, signer);
+      setDYelContract(newDYelContract);
+    }
+  }, [provider, DYEL_ADDRESS, getIsWrongNetwork(), isConnected]);
   
   useEffect((): void => {
     setIsPending(
@@ -97,9 +101,7 @@ export const ReverseBonding: FC = memo((): ReactElement => {
     }
   };
   
-  const setMax = async (): Promise<void> => {
-    setAmount(dYelAccountBalance);
-  };
+  const setMax = async (): Promise<void> => setAmount(dYelAccountBalance);
   
   const onHandleUsdcAmount = async (): Promise<void> => {
     if (Number(amount) > 0) {
@@ -121,32 +123,36 @@ export const ReverseBonding: FC = memo((): ReactElement => {
   };
   
   const onApprove = async (): Promise<void> => {
-    if (!isPendingTxn(pendingTransactions, 'approve_reverse_bonding')) {
-      let approveTx;
+    if (!getIsWrongNetwork() && isConnected) {
+      if (!isPendingTxn(pendingTransactions, 'approve_reverse_bonding')) {
+        let approveTx;
+    
+        setIsPending(true);
+    
+        try {
+          const gasPrice = await getGasPrice(provider);
+          approveTx = await dYelContract?.approve(REVERSE_BONDING_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
       
-      setIsPending(true);
-  
-      try {
-        const gasPrice = await getGasPrice(provider);
-        approveTx = await dYelContract?.approve(REVERSE_BONDING_ADDRESS, ethers.constants.MaxUint256, { gasPrice });
-    
-        const pendingTxnType: string = 'approve_reverse_bonding';
-        const text: string = 'Approve Reverse Bonding';
-    
-        dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }));
-    
-        await approveTx.wait();
-        dispatch(success({ text: messages.tx_successfully_send }));
-      } catch (err) {
-        metamaskErrorWrap(err, dispatch);
-      } finally {
-        if (approveTx) {
-          dispatch(clearPendingTxn(approveTx.hash));
+          const pendingTxnType: string = 'approve_reverse_bonding';
+          const text: string = 'Approve Reverse Bonding';
+      
+          dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text, type: pendingTxnType }));
+      
+          await approveTx.wait();
+          dispatch(success({ text: messages.tx_successfully_send }));
+        } catch (err) {
+          metamaskErrorWrap(err, dispatch);
+        } finally {
+          if (approveTx) {
+            dispatch(clearPendingTxn(approveTx.hash));
+          }
+          setIsPending(false);
         }
-        setIsPending(false);
+    
+        await onHandleAllowance();
       }
-      
-      await onHandleAllowance();
+    } else {
+      dispatch(error({ text: messages.something_wrong }));
     }
   };
   
