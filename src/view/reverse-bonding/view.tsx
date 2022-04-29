@@ -239,6 +239,9 @@ export const ReverseBonding: FC = memo((): ReactElement => {
             <div className="form card card--custom">
               <div className="field__wrapper">
                 <OutlinedInput
+                  inputProps={{
+                    min: 0,
+                  }}
                   type="number"
                   labelWidth={0}
                   value={amount}
@@ -270,7 +273,12 @@ export const ReverseBonding: FC = memo((): ReactElement => {
                   }}
                   endAdornment={
                     <InputAdornment position="end">
-                      <div className="input__btn--max">{'USDC'}</div>
+                      <div
+                        className="input__btn--max"
+                        style={{ cursor: 'default' }}
+                      >
+                        {'USDC'}
+                      </div>
                     </InputAdornment>
                   }
                 />
