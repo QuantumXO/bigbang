@@ -27,7 +27,7 @@ export function ConnectMenu(): ReactElement {
   }
   
   if (pendingTransactions && pendingTransactions.length > 0) {
-    buttonText = `${pendingTransactions.length} Pending `;
+    buttonText = `${pendingTransactions.length} Pending`;
     clickFunc = () => null;
   }
 

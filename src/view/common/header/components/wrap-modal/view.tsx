@@ -104,12 +104,18 @@ export function WrapModal({ onClose }: IProps): ReactElement {
   
   const onSeekApproval = async () => {
     if (!getIsWrongNetwork()) {
-      await dispatch(changeApproval({ address, provider, networkID }));
-      WTF_setIsApproved(true);
+      const result = await dispatch(changeApproval({ address, provider, networkID }));
+      
+      // @ts-ignore
+      const isError: boolean = result?.payload?.type === 'messages/error';
+      
+      WTF_setIsApproved(!isError);
     } else {
       dispatch(error({ text: messages.wrong_network }));
     }
   };
+  
+  const onSetMax = (): void => setValue(isWrap ? bangBalance : dYelBalance);
   
   const onRenderApproveBtn = (): ReactElement => {
     return (
@@ -198,7 +204,7 @@ export function WrapModal({ onClose }: IProps): ReactElement {
                 }}
                 endAdornment={
                   <InputAdornment position="end">
-                    <div onClick={undefined} className="input__btn--max">{'Max'}</div>
+                    <div onClick={onSetMax} className="input__btn--max">{'Max'}</div>
                   </InputAdornment>
                 }
                 onChange={handleValueChange}

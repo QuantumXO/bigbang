@@ -19,7 +19,7 @@ import SAND from '@assets/images/common/tokens/SAND.svg';
 import ORBS from '@assets/images/common/tokens/ORBS.svg';
 import YEL from '@assets/images/common/tokens/YEL.svg';
 import QI from '@assets/images/common/tokens/QI.svg';
-import BNB from '@assets/images/common/tokens/BNB.svg';
+import wBNB from '@assets/images/common/tokens/BNB.svg';
 import CAKE from '@assets/images/common/tokens/CAKE.svg';
 import BIFI from '@assets/images/common/tokens/BIFI.svg';
 import UNI from '@assets/images/common/tokens/UNI.svg';
@@ -44,7 +44,7 @@ import BIG from '@assets/images/common/tokens/big.png';
 
 const tokens: Record<IBlockchain.TokenType | string, any> = {
   wFTM, SCREAM, GEIST, USDC, TSHARE, MULTI, BOO, wMATIC, BEETS, YFI, LINK, SPELL, SPIRIT, QUICK, CRV, SUSHI, CVX, ALCX,
-  SAND, ORBS, YEL, QI, BNB, CAKE, BIFI, UNI, MBOX, ALPACA, STG, AVAX, JOE, dYel, PTP, AAVE, wMEMO, wETH, MKR, COMP,
+  SAND, ORBS, YEL, QI, wBNB, CAKE, BIFI, UNI, MBOX, ALPACA, STG, AVAX, JOE, dYel, PTP, AAVE, wMEMO, wETH, MKR, COMP,
   FARM, BAL, BIG
 };
 
