@@ -41,6 +41,8 @@ export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement
   });
 
   async function onRedeem(autostake: boolean) {
+    
+    
     if (getIsWrongNetwork()) return;
     if (bond.interestDue === 0 || bond.pendingPayout === 0) {
       dispatch(warning({ text: messages.nothing_to_claim }));

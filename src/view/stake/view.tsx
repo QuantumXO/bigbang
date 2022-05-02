@@ -1,4 +1,4 @@
-import React, { useState, useCallback, ReactElement, ReactNode } from 'react';
+import React, { useState, useCallback, ReactElement, ReactNode, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Grid, InputAdornment, OutlinedInput, Zoom, Slider } from '@material-ui/core';
 import RebaseTimer from './components/rebaseTimer';
@@ -27,7 +27,7 @@ export function Stake(): ReactElement {
   const dispatch = useDispatch();
   const { getIsWrongNetwork, provider, address, onConnect } = useCommonContext();
   
-  const [view, setView] = useState(0);
+  const [view, setView] = useState<0 | 1>(0);
   const [quantity, setQuantity] = useState<string>('');
   
   const isAppLoading: boolean = useSelector<IReduxState, boolean>(state => state.app.loading);
@@ -63,6 +63,9 @@ export function Stake(): ReactElement {
   });
   const { chainId } = useSelector((state: IReduxState) => state.network);
   
+  const [hasStakeAllowance, handleStakeAllowance] = useState(false);
+  const [hasUnstakeAllowance, handleUnstakeAllowance] = useState(false);
+  
   const networkID: number = Number(chainId);
   
   const trimmedBangBalance: string = trim(Number(bangBalance), 9);
@@ -73,6 +76,11 @@ export function Stake(): ReactElement {
     6
   );
   
+  useEffect((): void => {
+    handleStakeAllowance(stakeAllowance > 0);
+    handleUnstakeAllowance(unstakeAllowance > 0);
+  }, [stakeAllowance, unstakeAllowance]);
+  
   const setMax = (): void => {
     if (view === 0) {
       setQuantity(bigBalance);
@@ -82,13 +90,13 @@ export function Stake(): ReactElement {
   };
   
   const onSeekApproval = async (token: 'big' | 'bang'): Promise<void> => {
-    if (getIsWrongNetwork()) return;
-    
-    await dispatch(changeApproval({ address, token, provider, networkID }));
+    if (!getIsWrongNetwork()) {
+      await dispatch(changeApproval({ address, token, provider, networkID }));
+    }
   };
   
   const onChangeStake = async (action: string): Promise<void> => {
-    if (await getIsWrongNetwork()) return;
+    if (getIsWrongNetwork()) return;
     if (quantity === '' || parseFloat(quantity) === 0) {
       dispatch(warning({ text: action === 'stake' ? messages.before_stake : messages.before_unstake }));
     } else {
@@ -97,16 +105,7 @@ export function Stake(): ReactElement {
     }
   };
   
-  const hasAllowance = useCallback(
-    (token: 'big' | 'bang'): boolean | 0 => {
-      if (token === 'big') return stakeAllowance > 0;
-      if (token === 'bang') return unstakeAllowance > 0;
-      return 0;
-    },
-    [stakeAllowance],
-  );
-  
-  const changeView = (newView: number) => (): void => {
+  const changeView = (newView: 0 | 1) => (): void => {
     setView(newView);
     setQuantity('');
   };
@@ -199,7 +198,7 @@ export function Stake(): ReactElement {
       <div className="field__action">
         {view === 0 && (
           <>
-            {address && hasAllowance('big')
+            {address && hasStakeAllowance
               ? (
                 <div
                   className="field__action__btn btn__primary--fulfilled"
@@ -227,7 +226,7 @@ export function Stake(): ReactElement {
         )}
         {view === 1 && (
           <>
-            {address && hasAllowance('bang')
+            {address && hasUnstakeAllowance
               ? (
                 <div
                   className="field__action__btn btn__primary--fulfilled"
@@ -327,7 +326,7 @@ export function Stake(): ReactElement {
               />
               {onRenderStakeFormSlider()}
               {address
-                && ((!hasAllowance('big') && view === 0) || (!hasAllowance('bang') && view === 1))
+                && ((!hasStakeAllowance && view === 0) || (!hasUnstakeAllowance && view === 1))
                 && (
                   <p className='stake__form__description'>
                     Note: The "Approve" transaction is only needed when staking/unstaking for the first time;
