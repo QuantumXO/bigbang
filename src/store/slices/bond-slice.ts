@@ -12,7 +12,7 @@ import { error, info, success, warning } from '../slices/messages-slice';
 import { messages } from '@constants/messages';
 import { getGasPrice } from '@services/helpers/get-gas-price';
 import { metamaskErrorWrap } from '@services/helpers/metamask-error-wrap';
-import { StableBondContract, wFTMReserveContract, YFI_TSHAREBondContract } from '@services/abi';
+import { NativeBondContract, StableBondContract, wFTMReserveContract, CustomBondContract } from '@services/abi';
 import { getToken } from '@services/helpers/get-token';
 import { getBondPrice } from '@services/common/bond/get-bond-price';
 import { useSelector } from 'react-redux';
@@ -38,6 +38,7 @@ interface IRedeemBond {
   networkID: number;
   provider: StaticJsonRpcProvider | JsonRpcProvider;
   autostake: boolean;
+  tokens: IBlockchain.IToken[];
 }
 export interface IBondDetails {
   bond: string;
@@ -112,15 +113,24 @@ export const calcBondDetails = createAsyncThunk(
       value = '0';
     }
     try {
-      const { id: bondId, bondAddress } = bond;
+      const { id: bondId, bondAddress, isWrap } = bond;
       const { TREASURY_ADDRESS } = getBondAddresses(networkID);
       const amountInWei: BigNumber = ethers.utils.parseEther(value);
       const bondCalcContract: Contract = bond.getBondCalculatorContract(networkID, provider);
-  
-      let contractAbi: ContractInterface = StableBondContract;
+      let contractAbi: ContractInterface;
       
-      if (bondId === 'TSHARE' || bondId === 'YFI') {
-        contractAbi = YFI_TSHAREBondContract;
+      if (isWrap) {
+        contractAbi = NativeBondContract; // wFTM bond ABI
+      } else if (
+        bondId === 'TSHARE'
+        || bondId === 'YFI'
+        || bondId === 'BIFI'
+        || bondId === 'QUICK'
+        || bondId === 'wMEMO'
+      ) {
+        contractAbi = CustomBondContract;
+      } else {
+        contractAbi = StableBondContract;
       }
       
       const bondContract: Contract = new Contract(bondAddress, contractAbi, provider);
@@ -273,14 +283,13 @@ export const bondAsset = createAsyncThunk(
 
 export const redeemBond = createAsyncThunk(
   'bonding/redeemBond',
-  async ({ address, bond, networkID, provider, autostake }: IRedeemBond,
+  async ({ address, bond, networkID, provider, autostake, tokens }: IRedeemBond,
   { dispatch }): Promise<void | undefined> => {
     if (!provider) {
       dispatch(warning({ text: messages.please_connect_wallet }));
       return;
     }
   
-    const { tokens } = useSelector((state: IReduxState) => state.network);
     const signer = provider.getSigner();
     const bondContract = new ethers.Contract(bond.bondAddress, StableBondContract, signer);
     

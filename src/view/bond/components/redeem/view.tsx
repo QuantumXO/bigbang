@@ -14,6 +14,7 @@ import { IAccount } from '@models/account';
 
 import './styles.scss';
 import { useCommonContext } from '@services/hooks/network';
+import { IBlockchain } from '@models/blockchain';
 
 interface IBondRedeem {
   bond: IAllBondData;
@@ -39,6 +40,7 @@ export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement
   const bondDetails: IAccount.IUserBondDetails = useSelector<IReduxState, IAccount.IUserBondDetails>(state => {
     return state.account.bonds && state.account.bonds[bond.id];
   });
+  const tokens: IBlockchain.IToken[] = useSelector((state: IReduxState) => state.network.tokens);
 
   async function onRedeem(autostake: boolean) {
     if (getIsWrongNetwork()) return;
@@ -47,7 +49,7 @@ export function BondRedeem({ bond, handleChangeTab }: IBondRedeem): ReactElement
       return;
     }
 
-    await dispatch(redeemBond({ address, bond, networkID: Number(chainId), provider, autostake }));
+    await dispatch(redeemBond({ address, bond, networkID: Number(chainId), provider, autostake, tokens }));
   }
 
   const vestingTime = (): string => {
