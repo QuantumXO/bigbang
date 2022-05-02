@@ -64,7 +64,7 @@ export const loadAppDetails = createAsyncThunk(
           .reduce((tokenBalance0: number, tokenBalance1: number): number => tokenBalance0 + tokenBalance1, 0);
         
         // #TODO change
-        const dYelPrice: number = await getDyelPrice(networkID, provider, treasuryBalance);
+        const dYelPrice: number = await getDyelPrice(networkID, provider);
   
         // const tokenAmountsPromises = bonds.map((bond: Bond) => getTreasuryBalance(bond, tokens, networkID, provider));
         // const tokenAmounts: number[] = await Promise.all(tokenAmountsPromises);
@@ -93,7 +93,7 @@ export const loadAppDetails = createAsyncThunk(
   
         const treasuryRunway: number = rfvTreasury / circSupply;
         const runway: number = Math.log(treasuryRunway) / Math.log(1 + stakingRebase) / 3;
-  
+        
         return {
           currentIndex: String(Number(ethers.utils.formatUnits(currentIndex, 'gwei')) / 4.5),
           totalSupply,

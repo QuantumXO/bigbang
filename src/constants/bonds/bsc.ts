@@ -19,8 +19,8 @@ export const wBNB: Bond = new Bond({
 export const BIGwBNB: Bond = new Bond({
   id: 'BIGwBNB',
   displayName: 'BIG_wBNB',
-  bondIcon: tokensIcons.BIG,
-  bondLPIcon: tokensIcons.wBNB,
+  bondIcon: tokensIcons.wBNB,
+  bondLPIcon: tokensIcons.BIG,
   bondAddress: '0xA5aDE4EAC20a1F1f90a51E5eaA2852D8ea098C89',
   tokensInStrategy: '0',
   networkType: 'BSC',

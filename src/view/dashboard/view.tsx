@@ -38,7 +38,8 @@ export function Dashboard(): ReactElement {
   const isAppLoading: boolean = useSelector<IReduxState, boolean>(state => state.app.loading);
   const app: IAppSlice = useSelector<IReduxState, IAppSlice>(state => state.app);
   
-  const trimmedStakingAPY: string = trim(app.stakingAPY * 100, 1);
+  const stakingAPY: number = app.stakingAPY * 100;
+  const trimmedStakingAPY: string = String(stakingAPY).substring(0, 12);
   
   const cardsLayout: ReactElement = (
     <>

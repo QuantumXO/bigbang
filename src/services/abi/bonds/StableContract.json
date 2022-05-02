@@ -4,7 +4,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_Time",
+          "name": "_BIG",
           "type": "address"
         },
         {
@@ -20,6 +20,11 @@
         {
           "internalType": "address",
           "name": "_DAO",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_bondCalculator",
           "type": "address"
         }
       ],
@@ -142,19 +147,142 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
-          "internalType": "address",
-          "name": "previousOwner",
-          "type": "address"
-        },
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "controlVariable",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minimumPrice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxPayout",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "fee",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxDebt",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint32",
+              "name": "vestingTerm",
+              "type": "uint32"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct BondDepository.Terms",
+          "name": "terms",
+          "type": "tuple"
+        }
+      ],
+      "name": "InitTerms",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
         {
           "indexed": true,
           "internalType": "address",
-          "name": "newOwner",
+          "name": "tokenToRecover",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
         }
       ],
-      "name": "OwnershipPulled",
+      "name": "LogRecoverLostToken",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "bool",
+              "name": "add",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "rate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "target",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint32",
+              "name": "buffer",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "lastTime",
+              "type": "uint32"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct BondDepository.Adjust",
+          "name": "adjust",
+          "type": "tuple"
+        }
+      ],
+      "name": "LogSetAdjustment",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakingContract",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "isHelper",
+          "type": "bool"
+        }
+      ],
+      "name": "LogSetStaking",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "enum BondDepository.PARAMETER",
+          "name": "param",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "LogSetTerms",
       "type": "event"
     },
     {
@@ -173,12 +301,12 @@
           "type": "address"
         }
       ],
-      "name": "OwnershipPushed",
+      "name": "OwnershipTransferred",
       "type": "event"
     },
     {
       "inputs": [],
-      "name": "Big",
+      "name": "BIG",
       "outputs": [
         {
           "internalType": "contract IERC20",
@@ -269,12 +397,12 @@
     },
     {
       "inputs": [],
-      "name": "assetPrice",
+      "name": "bondCalculator",
       "outputs": [
         {
-          "internalType": "int256",
+          "internalType": "contract IBondCalculator",
           "name": "",
-          "type": "int256"
+          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -302,12 +430,12 @@
         },
         {
           "internalType": "uint32",
-          "name": "vesting",
+          "name": "lastTime",
           "type": "uint32"
         },
         {
           "internalType": "uint32",
-          "name": "lastTime",
+          "name": "vesting",
           "type": "uint32"
         }
       ],
@@ -338,6 +466,13 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "claimOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -405,7 +540,7 @@
           "type": "uint256"
         }
       ],
-      "stateMutability": "payable",
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -427,6 +562,11 @@
         },
         {
           "internalType": "uint256",
+          "name": "_fee",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
           "name": "_maxDebt",
           "type": "uint256"
         },
@@ -439,6 +579,19 @@
       "name": "initializeBondTerms",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isLiquidityBond",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -481,6 +634,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -494,6 +660,19 @@
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pendingOwner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -539,61 +718,15 @@
     },
     {
       "inputs": [],
-      "name": "policy",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "priceFeed",
-      "outputs": [
-        {
-          "internalType": "contract AggregatorV3Interface",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "principle",
       "outputs": [
         {
-          "internalType": "contract IWAVAX9",
+          "internalType": "contract IERC20",
           "name": "",
           "type": "address"
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "pullManagement",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "newOwner_",
-          "type": "address"
-        }
-      ],
-      "name": "pushManagement",
-      "outputs": [],
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -654,9 +787,15 @@
     },
     {
       "inputs": [],
-      "name": "renounceManagement",
-      "outputs": [],
-      "stateMutability": "nonpayable",
+      "name": "scaling",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -690,7 +829,7 @@
     {
       "inputs": [
         {
-          "internalType": "enum FTMBondDepository.PARAMETER",
+          "internalType": "enum BondDepository.PARAMETER",
           "name": "_parameter",
           "type": "uint8"
         },
@@ -709,7 +848,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_new",
+          "name": "_newMinPayout",
           "type": "uint256"
         }
       ],
@@ -796,6 +935,11 @@
         },
         {
           "internalType": "uint256",
+          "name": "fee",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
           "name": "maxDebt",
           "type": "uint256"
         },
@@ -819,6 +963,29 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "direct",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "renounce",
+          "type": "bool"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -846,10 +1013,6 @@
       ],
       "stateMutability": "view",
       "type": "function"
-    },
-    {
-      "stateMutability": "payable",
-      "type": "receive"
     }
   ]
 }

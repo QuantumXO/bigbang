@@ -10,7 +10,7 @@ export const USDCInAVAX: Bond = new Bond({
 });
 export const wAVAX: Bond = new Bond({
   id: 'wAVAX',
-  bondIcon: tokensIcons.wAVAX,
+  bondIcon: tokensIcons.AVAX,
   bondAddress: '0xDFc0a3DE50862761F0821a04812Af2b896d480e8',
   tokensInStrategy: '0',
   networkType: 'AVAX',
@@ -19,8 +19,8 @@ export const wAVAX: Bond = new Bond({
 export const BIGwAVAX: Bond = new Bond({
   id: 'BIGwAVAX',
   displayName: 'BIG_wAVAX',
-  bondIcon: tokensIcons.BIG,
-  bondLPIcon: tokensIcons.wAVAX,
+  bondIcon: tokensIcons.AVAX,
+  bondLPIcon: tokensIcons.BIG,
   bondAddress: '0x484A6306DE3811709Ac64d59D2a98A89a1DeD0D0',
   tokensInStrategy: '0',
   networkType: 'AVAX',

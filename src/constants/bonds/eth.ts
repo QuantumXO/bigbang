@@ -19,8 +19,8 @@ export const wETH: Bond = new Bond({
 export const BIGwETH: Bond = new Bond({
   id: 'BIGwETH',
   displayName: 'BIGwETH',
-  bondIcon: tokensIcons.BIG,
-  bondLPIcon: tokensIcons.wETH,
+  bondIcon: tokensIcons.wETH,
+  bondLPIcon: tokensIcons.BIG,
   bondAddress: '',
   tokensInStrategy: '0',
   networkType: 'ETH',

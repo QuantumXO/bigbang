@@ -1,4 +1,4 @@
-import React, { useState, useCallback, ReactElement, ReactNode, useEffect } from 'react';
+import React, { useState, ReactElement, ReactNode, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Grid, InputAdornment, OutlinedInput, Zoom, Slider } from '@material-ui/core';
 import RebaseTimer from './components/rebaseTimer';
@@ -30,34 +30,14 @@ export function Stake(): ReactElement {
   const [view, setView] = useState<0 | 1>(0);
   const [quantity, setQuantity] = useState<string>('');
   
-  const isAppLoading: boolean = useSelector<IReduxState, boolean>(state => state.app.loading);
-  const currentIndex: string = useSelector<IReduxState, string>(state => {
-    return state.app.currentIndex;
-  });
-  const fiveDayRate: number = useSelector<IReduxState, number>(state => {
-    return state.app.fiveDayRate;
-  });
-  const bigBalance: string = useSelector<IReduxState, string>(state => {
-    return state.account.balances && state.account.balances.big;
-  });
-  const bangBalance: string = useSelector<IReduxState, string>(state => {
-    return state.account.balances && state.account.balances.bang;
-  });
-  const stakeAllowance: number = useSelector<IReduxState, number>(state => {
-    return state.account.staking && state.account.staking.big;
-  });
-  const unstakeAllowance: number = useSelector<IReduxState, number>(state => {
-    return state.account.staking && state.account.staking.bang;
-  });
-  const stakingRebase: number = useSelector<IReduxState, number>(state => {
-    return state.app.stakingRebase;
-  });
-  const stakingAPY: number = useSelector<IReduxState, number>(state => {
-    return state.app.stakingAPY;
-  });
-  const stakingTVL: number = useSelector<IReduxState, number>(state => {
-    return state.app.stakingTVL;
-  });
+  const {
+    loading: isAppLoading, currentIndex, fiveDayRate, stakingRebase, stakingAPY, stakingTVL
+  } = useSelector((state: IReduxState) => state.app);
+  const {
+    balances: { big: bigBalance, bang: bangBalance },
+    staking: { big: stakeAllowance, bang: unstakeAllowance },
+  } = useSelector((state: IReduxState) => state.account);
+
   const pendingTransactions: IPendingTxn[] = useSelector<IReduxState, IPendingTxn[]>(state => {
     return state.pendingTransactions;
   });
@@ -69,7 +49,8 @@ export function Stake(): ReactElement {
   const networkID: number = Number(chainId);
   
   const trimmedBangBalance: string = trim(Number(bangBalance), 9);
-  const trimmedStakingAPY: string = trim(stakingAPY * 100, 1);
+  
+  const trimmedStakingAPY: string = String(stakingAPY * 100).substring(0, 12);
   const stakingRebasePercentage: string = trim(stakingRebase * 100, 4);
   const nextRewardValue: string = trim((
     Number(stakingRebasePercentage) / 100) * Number(trimmedBangBalance),
@@ -156,17 +137,9 @@ export function Stake(): ReactElement {
               {isAppLoading ? <Skeleton width="80px" /> : <>{`${trimmedBangBalance} BANG`}</>}
             </div>
           </div>
-          <div className='row divide--top'>
-            <div className='row__label'>{'Wrapped Balance'}</div>
-            <div className='row__value'>
-              <Skeleton width="80px" />
-            </div>
-          </div>
           <div className='row exchange--rate'>
             <div className='row__label'>{'Exchange rate'}</div>
-            <div className='row__value'>
-              <Skeleton width="80px" />
-            </div>
+            <div className='row__value'>{'1 BIG = 1 BANG'}</div>
           </div>
           <div className='row divide--top'>
             <div className='row__label'>{'Next Reward Amount'}</div>
@@ -370,7 +343,7 @@ export function Stake(): ReactElement {
                     <div className="metrics__card__title">{'APY'}</div>
                     <div className="metrics__card__value">
                       {stakingAPY
-                        ? <>{new Intl.NumberFormat('en-US').format(Number(trimmedStakingAPY))}%</>
+                        ? `${trimmedStakingAPY}%`
                         : <Skeleton width="150px" />}
                     </div>
                   </div>
