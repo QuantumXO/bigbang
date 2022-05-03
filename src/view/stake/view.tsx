@@ -285,6 +285,7 @@ export function Stake(): ReactElement {
                 value={quantity}
                 placeholder="Amount"
                 inputProps={{
+                  min: 0,
                   className: 'input',
                 }}
                 className="input__wrapper"
@@ -295,6 +296,7 @@ export function Stake(): ReactElement {
                     </div>
                   </InputAdornment>
                 }
+                disabled={(!hasStakeAllowance && view === 0) || (!hasUnstakeAllowance && view === 1)}
                 onChange={e => setQuantity(e.target.value)}
               />
               {onRenderStakeFormSlider()}
@@ -342,9 +344,7 @@ export function Stake(): ReactElement {
                   <div className="metrics__card__inner">
                     <div className="metrics__card__title">{'APY'}</div>
                     <div className="metrics__card__value">
-                      {stakingAPY
-                        ? `${trimmedStakingAPY}%`
-                        : <Skeleton width="150px" />}
+                      {trimmedStakingAPY ? `${trimmedStakingAPY}%` : <Skeleton width="150px" />}
                     </div>
                   </div>
                 </Grid>
@@ -352,7 +352,7 @@ export function Stake(): ReactElement {
                   <div className="metrics__card__inner">
                     <div className="metrics__card__title">{'TVL'}</div>
                     <div className="metrics__card__value">
-                      {stakingTVL
+                      {(stakingTVL >= 0)
                         ? (
                           new Intl.NumberFormat('en-US', {
                             style: 'currency',
@@ -361,9 +361,7 @@ export function Stake(): ReactElement {
                             minimumFractionDigits: 0,
                           }).format(stakingTVL)
                         )
-                        : (
-                          <Skeleton width="150px" />
-                        )
+                        : <Skeleton width="150px" />
                       }
                     </div>
                   </div>

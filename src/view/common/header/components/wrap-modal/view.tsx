@@ -26,12 +26,6 @@ export function WrapModal({ onClose }: IProps): ReactElement {
   const wrapBond: string = 'BANG'
   const unwrapBond: string = 'dYEL'
   
-  const [value, setValue] = useState<string>('');
-  const [isWrap, setIsWrap] = useState<boolean>(true);
-  const [isWrapPrice, setIsWrapPrice] = useState<boolean>(true);
-  // #TODO need to fix & remove
-  const [WTF_isApproved, WTF_setIsApproved] = useState<boolean>(false);
-  
   const bangBalance = useSelector<IReduxState, string>(state => {
     return state.account.balances && state.account.balances.bang;
   });
@@ -51,18 +45,26 @@ export function WrapModal({ onClose }: IProps): ReactElement {
     return state.account.wrapping?.bang;
   });
   
-  const hasAllowance = useCallback((): boolean => bangAllowance > 0, [bangAllowance]);
-  
   const trimmedBangBalance: string = trim(Number(bangBalance), 6);
   const trimmedDYelBalance: string = trim(Number(dYelBalance), 6);
+  
+  const [value, setValue] = useState<string>('');
+  const [isWrap, setIsWrap] = useState<boolean>(true);
+  const [isWrapPrice, setIsWrapPrice] = useState<boolean>(true);
+  const [hasAllowance, handleHasAllowance] = useState<boolean>(bangAllowance > 0);
+  
+  useEffect((): void => {
+    handleHasAllowance(bangAllowance > 0);
+  }, [bangAllowance]);
   
   useEffect((): void => {
     dispatch(calcWrapDetails({ isWrap, provider, value, networkID }));
   }, [value]);
   
   useEffect((): void => {
-    if (getIsWrongNetwork()) return;
-    dispatch(calcWrapPrice({ isWrap: isWrapPrice, provider, networkID }));
+    if (!getIsWrongNetwork()) {
+      dispatch(calcWrapPrice({ isWrap: isWrapPrice, provider, networkID }));
+    }
   }, [isWrapPrice]);
   
   const handleSwap = (): void => {
@@ -109,7 +111,7 @@ export function WrapModal({ onClose }: IProps): ReactElement {
       // @ts-ignore
       const isError: boolean = result?.payload?.type === 'messages/error';
       
-      WTF_setIsApproved(!isError);
+      handleHasAllowance(!isError);
     } else {
       dispatch(error({ text: messages.wrong_network }));
     }
@@ -118,39 +120,32 @@ export function WrapModal({ onClose }: IProps): ReactElement {
   const onSetMax = (): void => setValue(isWrap ? bangBalance : dYelBalance);
   
   const onRenderApproveBtn = (): ReactElement => {
+    let btnText: string;
+    let btnAction: () => void;
+    
+    if (hasAllowance) {
+      btnText = isWrap
+        ? txnButtonText(pendingTransactions, 'wrapping', 'Wrap')
+        : txnButtonText(pendingTransactions, 'unwrapping', 'Unwrap');
+      btnAction = () => {
+        const inPending: boolean = isWrap
+          ? isPendingTxn(pendingTransactions, 'wrapping')
+          : isPendingTxn(pendingTransactions, 'unwrapping');
+        if (inPending) return;
+        handleOnWrap();
+      };
+    } else {
+      btnText = txnButtonText(pendingTransactions, 'approve_wrapping', 'Approve');
+      btnAction = () => {
+        if (isPendingTxn(pendingTransactions, 'approve_wrapping')) return;
+        onSeekApproval();
+      };
+    }
+    
     return (
-      <>
-        {(hasAllowance() || WTF_isApproved)
-          ? (
-            <div
-              className="action--btn btn__primary--fulfilled"
-              onClick={() => {
-                const inPending: boolean = isWrap
-                  ? isPendingTxn(pendingTransactions, 'wrapping')
-                  : isPendingTxn(pendingTransactions, 'unwrapping');
-                if (inPending) return;
-                handleOnWrap();
-              }}
-            >
-              {isWrap
-                ? txnButtonText(pendingTransactions, 'wrapping', 'Wrap')
-                : txnButtonText(pendingTransactions, 'unwrapping', 'Unwrap')
-              }
-            </div>
-          )
-          : (
-            <div
-              className="action--btn btn__primary--fulfilled"
-              onClick={(): void => {
-                if (isPendingTxn(pendingTransactions, 'approve_wrapping')) return;
-                onSeekApproval();
-              }}
-            >
-              {txnButtonText(pendingTransactions, 'approve_wrapping', 'Approve')}
-            </div>
-          )
-        }
-      </>
+      <div className="action--btn btn__primary--fulfilled" onClick={btnAction}>
+        {btnText}
+      </div>
     );
   };
   
@@ -197,11 +192,13 @@ export function WrapModal({ onClose }: IProps): ReactElement {
                 type="number"
                 labelWidth={0}
                 value={value}
-                placeholder={`${isWrapPrice ? wrapBond : unwrapBond} Amount`}
+                disabled={!hasAllowance}
                 classes={{
                   root: 'input__root',
                   input: 'input',
                 }}
+                inputProps={{ min: 0 }}
+                placeholder={`${isWrapPrice ? wrapBond : unwrapBond} Amount`}
                 endAdornment={
                   <InputAdornment position="end">
                     <div onClick={onSetMax} className="input__btn--max">{'Max'}</div>
@@ -223,15 +220,15 @@ export function WrapModal({ onClose }: IProps): ReactElement {
                 type="number"
                 labelWidth={0}
                 value={wrapValue}
-                placeholder={`${isWrapPrice ? unwrapBond : wrapBond} Amount`}
                 classes={{
                   root: 'input__root',
                   input: 'input',
                 }}
+                placeholder={`${isWrapPrice ? unwrapBond : wrapBond} Amount`}
               />
             </div>
           </div>
-          {!hasAllowance() && (
+          {!hasAllowance && (
             <p className="modal__description">
               Note: The "Approve" transaction is only needed when wrapping for the first time; subsequent wrapping
               only requires you to perform the "Wrap" transaction.

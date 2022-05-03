@@ -226,6 +226,8 @@ export function MintTab({ bond, slippage, handleChangeTab }: IBondPurchaseProps)
                 type="number"
                 labelWidth={0}
                 value={quantity}
+                disabled={!hasAllowance()}
+                inputProps={{ min: 0 }}
                 placeholder="Amount"
                 classes={{
                   root: 'input__root',
